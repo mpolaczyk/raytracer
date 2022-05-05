@@ -80,40 +80,42 @@ namespace bmp
     }
   };
 
-  template<int WIDTH,int HEIGHT>
+
   struct image
   {
-    image()
+    image(int w, int h)
+      : width(w), height(h)
     {
-      buffer = (uint8_t*)malloc(WIDTH * HEIGHT * BYTES_PER_PIXEL * sizeof(uint8_t));
+      buffer = (uint8_t*)malloc(width * height * BYTES_PER_PIXEL * sizeof(uint8_t));
     }
 
     ~image()
     {
-      free(buffer);
+      if (width > 0 && height > 0 && buffer != nullptr)
+      {
+        free(buffer);
+      }
     }
 
     inline void draw_pixel(int x, int y, const pixel* p)
     {
-      assert(x >= 0 && x < WIDTH);
-      assert(y >= 0 && y < HEIGHT);
+      assert(x >= 0 && x < width);
+      assert(y >= 0 && y < height);
 #if _DEBUG 
       assert(p->r >= 0 && p->r <= 255);
       assert(p->g >= 0 && p->g <= 255);
       assert(p->b >= 0 && p->b <= 255);
 #endif
-      int pixel_addr = y * WIDTH * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
+      int pixel_addr = y * width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
       memcpy(buffer + pixel_addr, p, sizeof(pixel));
     }
 
-    
-
-    void save_to_file(char* image_file_name) const
+    void save_to_file(const char* image_file_name) const
     {
       assert(image_file_name != nullptr);
       const uint8_t padding[3] = { 0, 0, 0 };
 
-      int width_in_bytes = WIDTH * BYTES_PER_PIXEL;
+      int width_in_bytes = width * BYTES_PER_PIXEL;
       int padding_size = (4 - (width_in_bytes) % 4) % 4;
       assert(padding_size >= 0 && padding_size <= 3);
       int stride = width_in_bytes+padding_size;
@@ -123,18 +125,18 @@ namespace bmp
       fopen_s(&image_file, image_file_name, mode);
       assert(image_file != nullptr);
 
-      fwrite(create_file_header(HEIGHT, stride), 1, FILE_HEADER_SIZE, image_file);
-      fwrite(create_info_header(HEIGHT, WIDTH), 1, INFO_HEADER_SIZE, image_file);
+      fwrite(create_file_header(height, stride), 1, FILE_HEADER_SIZE, image_file);
+      fwrite(create_info_header(height, width), 1, INFO_HEADER_SIZE, image_file);
 
       if (padding_size == 0)
       {
-        fwrite(buffer, BYTES_PER_PIXEL, HEIGHT * WIDTH, image_file);
+        fwrite(buffer, BYTES_PER_PIXEL, height * width, image_file);
       }
       else
       {
-        for (int x = 0; x < HEIGHT; x++)
+        for (int x = 0; x < height; x++)
         {
-          fwrite(buffer + (x * width_in_bytes), BYTES_PER_PIXEL, WIDTH, image_file);
+          fwrite(buffer + (x * width_in_bytes), BYTES_PER_PIXEL, width, image_file);
           fwrite(padding, 1, padding_size, image_file);
         }
       }
@@ -143,7 +145,9 @@ namespace bmp
     }
 
   private:
-    uint8_t* buffer;
+    uint8_t* buffer = nullptr;
+    int width = 0;
+    int height = 0;
   };
 
   

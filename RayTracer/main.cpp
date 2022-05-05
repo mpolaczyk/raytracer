@@ -24,24 +24,20 @@ color3 ray_color(const ray& r, const hittable_list& world)
 
 int main()
 {
-  frame_renderer<1280, 720> renderer;
+  const char* image_file_name = (const char*)"image.bmp";
+  frame_renderer renderer = frame_renderer(1280, 720);
    
   hittable_list world;
   world.add(make_shared<sphere>(point3(0.f, 0.f, -1.f), 0.5f));
   world.add(make_shared<sphere>(point3(0.f, -100.5f, -1.f), 100.f));
 
-  auto drawFunc = [&]() -> void
-  {
-    renderer.render(&ray_color, world);
-  };
+  benchmark::start();
+  renderer.render(&ray_color, world);
+  benchmark::stop("Render");
   
-  auto saveFunc = [&]() -> void
-  {
-    renderer.save();
-  };
-
-  benchmark::once("Render", drawFunc);
-  benchmark::once("Save", saveFunc);
+  benchmark::start();
+  renderer.save(image_file_name);
+  benchmark::stop("Save");
 
   return 0;
 }

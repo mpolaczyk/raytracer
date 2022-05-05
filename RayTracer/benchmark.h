@@ -21,7 +21,7 @@ namespace benchmark
     int64_t start = time_point_cast<microseconds>(start_point).time_since_epoch().count();
     int64_t end = time_point_cast<microseconds>(end_point).time_since_epoch().count();
     int64_t time = end - start;
-    std::cout << name << " :" << time << "[us]" << std::endl;
+    std::cout << name << ": " << time << "[us]" << std::endl;
     return time;
   }
 
