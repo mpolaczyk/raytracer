@@ -1,11 +1,14 @@
 #pragma once
 
 #include <functional>
+#include <assert.h>
 
 #include "vec3.h"
 #include "bmp.h"
 #include "ray.h"
 #include "hittable.h"
+#include "camera.h"
+#include "common.h"
 
 using namespace std;
 using namespace bmp;
@@ -22,46 +25,71 @@ class frame_renderer
   float viewport_width;
   float focal_length;
 
-  image* img = nullptr;
+  bmp_image* img = nullptr;
+  camera* cam = nullptr;
+
+  int samples_per_pixel = 100;
+  std::vector<float> random_floats;
 
 public:
-  frame_renderer(int width, int height)
+  frame_renderer(int width, int height, camera* cam)
+    : image_width(width), image_height(height), cam(cam)
   {
-    image_width = width;
-    image_height = height;
-    img = new image(image_width, image_height);
+    assert(cam != nullptr);
 
-    // Image
-    aspect_ratio = float(image_width)/ float(image_height);
-
-    // Camera
-    viewport_height = 2.0f;
-    viewport_width = viewport_height * aspect_ratio;
-    focal_length = 1.0f;
+    img = new bmp_image(image_width, image_height);
 
     cout << "Frame renderer: " << image_width << "x" << image_height << endl;
+
+    samples_per_pixel = 10;
+    for (int s = 0; s < samples_per_pixel; s++)
+    {
+      random_floats.push_back(random_float());
+    }
   }
   ~frame_renderer()
   {
     delete img;
   }
 
-  void render(function<color3(const ray& r, const hittable_list& world)> ray_color, const hittable_list& world)
+  color3 inline ray_color(const ray& r, const hittable_list& world, int depth)
   {
-    point3 origin = point3(0, 0, 0);
-    vec3 horizontal = vec3(viewport_width, 0, 0);
-    vec3 vertical = vec3(0, viewport_height, 0);
-    vec3 lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
-    
+    if (depth <= 0)
+    {
+      return color3(0, 0, 0);
+    }
+
+    hit_record rec;
+    if (world.hit(r, 0.001, infinity, rec))
+    {
+      point3 target = rec.p + rec.normal + random_in_unit_sphere();
+      return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth-1);
+    }
+    vec3 unit_direction = unit_vector(r.direction());
+    float t = 0.5f * (unit_direction.y() + 1.0f);
+    return (1.0f - t) * white + t * blue;
+  }
+
+  void render(const hittable_list& world_list)
+  {
+    assert(cam != nullptr);
+    assert(img != nullptr);
+
+    const int max_depth = 50;
+
     for (int y = 0; y < image_height; ++y)
     {
       for (int x = 0; x < image_width; ++x)
       {
-        float u = float(x) / (image_width - 1);
-        float v = float(y) / (image_height - 1);
-        vec3 dir = lower_left_corner + u * horizontal + v * vertical - origin;
-        ray r(origin, dir);
-        pixel p = pixel(ray_color(r, world));
+        color3 pixel_color;
+        for (float s : random_floats)
+        {
+          float u = float(x + s) / (image_width - 1);
+          float v = float(y + s) / (image_height - 1);
+          ray r = cam->get_ray(u, v);
+          pixel_color += ray_color(r, world_list, max_depth);
+        }
+        bmp_pixel p = bmp_pixel(pixel_color/(float)samples_per_pixel);
         img->draw_pixel(x, y, &p);
       }
     }
