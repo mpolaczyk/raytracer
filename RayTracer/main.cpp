@@ -7,6 +7,7 @@
 #include "frame_renderer.h"
 #include "hittable.h"
 #include "sphere.h"
+#include "camera.h"
 
 using std::make_shared;
 
