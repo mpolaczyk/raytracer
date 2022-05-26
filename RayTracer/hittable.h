@@ -15,25 +15,33 @@ struct hit_record
   float t;
 };
 
-
-class hittable 
+class hittable
 {
 public:
-  virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const = 0;
+  hittable() {}
+  hittable(point3 cen, float r) : center(cen), radius(r) {};
+
+  bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
+
+public:
+  // TODO: rethink hittable type
+  point3 center;
+  float radius;
 };
 
 
-class hittable_list : public hittable 
+
+class hittable_list
 {
 public:
   hittable_list() {}
-  hittable_list(shared_ptr<hittable> object) { add(object); }
+  hittable_list(hittable object) { add(object); }
 
   void clear() { objects.clear(); }
-  void add(shared_ptr<hittable> object) { objects.push_back(object); }
+  void add(hittable object) { objects.push_back(object); }
 
-  virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const override;
+  bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
 
 public:
-  std::vector<shared_ptr<hittable>> objects;
+  std::vector<hittable> objects;
 };

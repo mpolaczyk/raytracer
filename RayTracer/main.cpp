@@ -6,10 +6,7 @@
 #include "benchmark.h"
 #include "frame_renderer.h"
 #include "hittable.h"
-#include "sphere.h"
 #include "camera.h"
-
-using std::make_shared;
 
 int main()
 {
@@ -22,10 +19,10 @@ int main()
   frame_renderer renderer = frame_renderer((int)((float)resolution_vertical * aspect_ratio), resolution_vertical, &cam);
    
   hittable_list world;
-  world.add(make_shared<sphere>(point3(0.f, 0.f, -1.f), 0.5f));
-  world.add(make_shared<sphere>(point3(1.f, -0.2f, -1.f), 0.2f));
-  world.add(make_shared<sphere>(point3(-1.f, -0.2f, -1.f), 0.2f));
-  world.add(make_shared<sphere>(point3(0.f, -100.5f, -1.f), 100.f));
+  world.add(hittable(point3(0.f, 0.f, -1.f), 0.5f));
+  world.add(hittable(point3(1.f, -0.2f, -1.f), 0.2f));
+  world.add(hittable(point3(-1.f, -0.2f, -1.f), 0.2f));
+  world.add(hittable(point3(0.f, -100.5f, -1.f), 100.f));
 
   benchmark::start();
   renderer.render(world);
