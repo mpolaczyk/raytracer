@@ -40,6 +40,16 @@ public:
     return *this *= 1 / t;
   }
 
+  vec3& operator-=(const float t)
+  {
+    return *this -= t;
+  }
+
+  vec3& operator+=(const float t)
+  {
+    return *this += t;
+  }
+
   float length() const 
   {
     return sqrt(length_squared());
@@ -65,6 +75,8 @@ vec3 operator*(const vec3& u, const vec3& v);
 vec3 operator*(float t, const vec3& v);
 vec3 operator*(const vec3& v, float t);
 vec3 operator/(vec3 v, float t);
+vec3 operator-(vec3 v, float t);
+vec3 operator+(vec3 v, float t);
 
 float dot(const vec3& u, const vec3& v);
 vec3 cross(const vec3& u, const vec3& v);

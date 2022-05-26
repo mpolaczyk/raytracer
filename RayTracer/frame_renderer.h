@@ -3,10 +3,12 @@
 #include "vec3.h"
 #include "hittable.h"
 #include "ray.h"
-#include "bmp.h"
 
+namespace bmp
+{
+  class bmp_image;
+}
 class camera;
-using namespace bmp;
 
 class frame_renderer
 {
@@ -20,17 +22,18 @@ class frame_renderer
   float viewport_width;
   float focal_length;
 
-  bmp_image* img = nullptr;
+  bmp::bmp_image* img = nullptr;
   camera* cam = nullptr;
 
-  int samples_per_pixel = 100;
-  std::vector<float> random_floats;
+  int AA_samples_per_pixel = 50; // Anti Aliasing oversampling
+  int diffuse_max_bounce_num = 10;         // Diffuse bounce number
+  float diffuse_bounce_brightness = 0.5f;
 
 public:
   frame_renderer(int width, int height, camera* cam);
   ~frame_renderer();
 
   color3 ray_color(const ray& r, const hittable_list& world, int depth);
-  void render(const hittable_list& world_list);
+  void render(const hittable_list& world);
   void save(const char* file_name);
 };

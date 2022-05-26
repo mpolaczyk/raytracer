@@ -23,6 +23,8 @@ int main()
    
   hittable_list world;
   world.add(make_shared<sphere>(point3(0.f, 0.f, -1.f), 0.5f));
+  world.add(make_shared<sphere>(point3(1.f, -0.2f, -1.f), 0.2f));
+  world.add(make_shared<sphere>(point3(-1.f, -0.2f, -1.f), 0.2f));
   world.add(make_shared<sphere>(point3(0.f, -100.5f, -1.f), 100.f));
 
   benchmark::start();

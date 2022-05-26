@@ -1,5 +1,4 @@
 #include "vec3.h"
-#include "common.h"
 
 std::ostream& operator<<(std::ostream& out, const vec3& v)
 {
@@ -36,6 +35,16 @@ vec3 operator/(vec3 v, float t)
   return (1 / t) * v;
 }
 
+vec3 operator-(vec3 v, float t)
+{
+  return v + (t*-1.0);
+}
+
+vec3 operator+(vec3 v, float t)
+{
+  return vec3(t + v.e[0], t + v.e[1], t + v.e[2]);
+}
+
 
 float dot(const vec3& u, const vec3& v)
 {
@@ -52,27 +61,4 @@ vec3 cross(const vec3& u, const vec3& v)
 vec3 unit_vector(vec3 v)
 {
   return v / v.length();
-}
-
-vec3 random()
-{
-  return vec3(random_float(), random_float(), random_float());
-}
-
-vec3 random(float min, float max)
-{
-  return vec3(random_float(min, max), random_float(min, max), random_float(min, max));
-}
-
-vec3 random_in_unit_sphere() 
-{
-  while (true) 
-  {
-    vec3 p = random(-1.0f, 1.0f);
-    if (p.length_squared() >= 1)
-    {
-      continue;
-    }
-    return p;
-  }
 }

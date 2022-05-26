@@ -5,8 +5,8 @@
 
 #include "camera.h"
 #include "common.h"
+#include "bmp.h"
 
-using namespace bmp;
 using namespace std;
 
 frame_renderer::frame_renderer(int width, int height, camera* cam)
@@ -14,59 +14,60 @@ frame_renderer::frame_renderer(int width, int height, camera* cam)
 {
   assert(cam != nullptr);
 
-  img = new bmp_image(image_width, image_height);
+  img = new bmp::bmp_image(image_width, image_height);
 
   cout << "Frame renderer: " << image_width << "x" << image_height << endl;
 
-  samples_per_pixel = 10;
-  for (int s = 0; s < samples_per_pixel; s++)
-  {
-    random_floats.push_back(random_float());
-  }
+  random_cache::init();
 }
 frame_renderer::~frame_renderer()
 {
-  delete img;
+  if (img != nullptr)
+  {
+    delete img;
+  }
 }
 
-color3 inline frame_renderer::ray_color(const ray& r, const hittable_list& world, int depth)
+color3 inline frame_renderer::ray_color(const ray& r, const hittable_list& world, int diffuse_bounce)
 {
-  if (depth <= 0)
+  if (diffuse_bounce <= 0)
   {
-    return color3(0, 0, 0);
+    return black;
   }
 
   hit_record rec;
   if (world.hit(r, 0.001f, infinity, rec))
   {
-    point3 target = rec.p + rec.normal + random_in_unit_sphere();
-    return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
+    // Surface hit, cast a bounced ray
+    // Using cached random values is twice faster but can cause glitches if low sample size.
+    // Both unit_vector calls can be removed too, some performance is restored, quality similar.
+    point3 target = rec.p + rec.normal + unit_vector(random_cache::get_vec3());
+    return diffuse_bounce_brightness * ray_color(ray(rec.p, target - rec.p), world, diffuse_bounce - 1);
   }
   vec3 unit_direction = unit_vector(r.direction());
   float t = 0.5f * (unit_direction.y() + 1.0f);
   return (1.0f - t) * white + t * blue;
 }
 
-void frame_renderer::render(const hittable_list& world_list)
+void frame_renderer::render(const hittable_list& world)
 {
   assert(cam != nullptr);
   assert(img != nullptr);
-
-  const int max_depth = 50;
 
   for (int y = 0; y < image_height; ++y)
   {
     for (int x = 0; x < image_width; ++x)
     {
       color3 pixel_color;
-      for (float s : random_floats)
+      // Anti Aliasing done at the ray level, multiple rays for each pixel.
+      for (int c = 0; c < AA_samples_per_pixel; c++)
       {
-        float u = float(x + s) / (image_width - 1);
-        float v = float(y + s) / (image_height - 1);
+        float u = (float(x) + random_cache::get_float()) / (image_width - 1);
+        float v = (float(y) + random_cache::get_float()) / (image_height - 1);
         ray r = cam->get_ray(u, v);
-        pixel_color += ray_color(r, world_list, max_depth);
+        pixel_color += ray_color(r, world, diffuse_max_bounce_num);
       }
-      bmp_pixel p = bmp_pixel(pixel_color / (float)samples_per_pixel);
+      bmp::bmp_pixel p = bmp::bmp_pixel(pixel_color / (float)AA_samples_per_pixel);
       img->draw_pixel(x, y, &p);
     }
   }

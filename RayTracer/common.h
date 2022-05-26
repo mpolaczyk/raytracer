@@ -9,23 +9,22 @@
 
 const color3 white = color3(1.0f, 1.0f, 1.0f);
 const color3 blue = color3(0.5f, 0.7f, 1.0f);
+const color3 black = color3(0.0f, 0.0f, 0.0f);
 
 const float infinity = std::numeric_limits<float>::infinity();
 const float pi = 3.1415926535897932385f;
 
-inline float degrees_to_radians(float degrees)
-{
-  return degrees * pi / 180.0f;
-}
+float degrees_to_radians(float degrees);
 
-inline float random_float(float min, float max)
+namespace random_cache
 {
-  static std::uniform_real_distribution<float> distribution(min, max);
+  static int num = 50000;
+  static int last_index = 0;
+  static std::vector<float> cache;
+  static std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
   static std::mt19937 generator;
-  return distribution(generator);
-}
 
-inline float random_float() 
-{
-  return random_float(0.0f, 1.0f);
+  void init();
+  float get_float();
+  vec3 get_vec3();
 }
