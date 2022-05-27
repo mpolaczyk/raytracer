@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <ppl.h>
 #include <cstdio>
+#include <vector>
 
 #include "camera.h"
 #include "common.h"
@@ -58,34 +59,11 @@ void frame_renderer::render(const hittable_list& world)
   assert(cam != nullptr);
   assert(img != nullptr);
 
-  struct chunk 
-  {
-    int id = 0;
-    int x = 0;
-    int y = 0;
-    int size_x = 0;
-    int size_y = 0;
-  };
-  // Chunks are vertical stripes
   std::vector<chunk> chunks;
-  for (int n = 0; n < parallel_chunks_num; n++)
+  chunk_generator::generate_chunks(parallel_chunks_strategy, parallel_chunks_num, image_width, image_height, chunks);
+  for (const auto& ch : chunks)
   {
-    int desired_chunk_size_x = image_width / parallel_chunks_num;
-    chunk ch;
-    ch.id = n;
-    ch.x = n * desired_chunk_size_x;
-    ch.y = 0;
-    if (ch.x + desired_chunk_size_x > image_width)
-    {
-      ch.size_x = ch.x + desired_chunk_size_x - image_width;
-    }
-    else
-    {
-      ch.size_x = desired_chunk_size_x;
-    }
-    ch.size_y = image_height;
-    chunks.push_back(ch);
-    std::cout << "Chunk=" << n << " x=" << ch.x << " y=" << ch.y << " size_x=" << ch.size_x << " size_y=" << ch.size_y << endl;
+    std::cout << "Chunk=" << ch.id << " x=" << ch.x << " y=" << ch.y << " size_x=" << ch.size_x << " size_y=" << ch.size_y << endl;
   }
 
   // Process chunks on parallel

@@ -1,8 +1,9 @@
 #pragma once
-#include <vector>
+
 #include "vec3.h"
 #include "hittable.h"
 #include "ray.h"
+#include "chunk_generator.h"
 
 namespace bmp
 {
@@ -29,7 +30,8 @@ class frame_renderer
   int diffuse_max_bounce_num = 10;          // Diffuse bounce number
   float diffuse_bounce_brightness = 0.5f;
 
-  int parallel_chunks_num = 8;
+  int parallel_chunks_num = 32;
+  chunk_strategy parallel_chunks_strategy = chunk_strategy::rectangles;
 
 public:
   frame_renderer(int width, int height, camera* cam);

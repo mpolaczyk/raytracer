@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="bmp.cpp" />
+    <ClCompile Include="chunk_generator.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="frame_renderer.cpp" />
     <ClCompile Include="hittable.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="benchmark.h" />
     <ClInclude Include="bmp.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="chunk_generator.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="frame_renderer.h" />
     <ClInclude Include="hittable.h" />
