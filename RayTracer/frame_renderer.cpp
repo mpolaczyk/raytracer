@@ -2,10 +2,14 @@
 
 #include <functional>
 #include <assert.h>
+#include <windows.h>
+#include <ppl.h>
+#include <cstdio>
 
 #include "camera.h"
 #include "common.h"
 #include "bmp.h"
+#include "benchmark.h"
 
 using namespace std;
 
@@ -54,23 +58,62 @@ void frame_renderer::render(const hittable_list& world)
   assert(cam != nullptr);
   assert(img != nullptr);
 
-  for (int y = 0; y < image_height; ++y)
+  struct chunk 
   {
-    for (int x = 0; x < image_width; ++x)
+    int id = 0;
+    int x = 0;
+    int y = 0;
+    int size_x = 0;
+    int size_y = 0;
+  };
+  // Chunks are vertical stripes
+  std::vector<chunk> chunks;
+  for (int n = 0; n < parallel_chunks_num; n++)
+  {
+    int desired_chunk_size_x = image_width / parallel_chunks_num;
+    chunk ch;
+    ch.id = n;
+    ch.x = n * desired_chunk_size_x;
+    ch.y = 0;
+    if (ch.x + desired_chunk_size_x > image_width)
     {
-      color3 pixel_color;
-      // Anti Aliasing done at the ray level, multiple rays for each pixel.
-      for (int c = 0; c < AA_samples_per_pixel; c++)
-      {
-        float u = (float(x) + random_cache::get_float()) / (image_width - 1);
-        float v = (float(y) + random_cache::get_float()) / (image_height - 1);
-        ray r = cam->get_ray(u, v);
-        pixel_color += ray_color(r, world, diffuse_max_bounce_num);
-      }
-      bmp::bmp_pixel p = bmp::bmp_pixel(pixel_color / (float)AA_samples_per_pixel);
-      img->draw_pixel(x, y, &p);
+      ch.size_x = ch.x + desired_chunk_size_x - image_width;
     }
+    else
+    {
+      ch.size_x = desired_chunk_size_x;
+    }
+    ch.size_y = image_height;
+    chunks.push_back(ch);
+    std::cout << "Chunk=" << n << " x=" << ch.x << " y=" << ch.y << " size_x=" << ch.size_x << " size_y=" << ch.size_y << endl;
   }
+
+  // Process chunks on parallel
+  concurrency::parallel_for_each(begin(chunks), end(chunks), 
+    [&](chunk ch)
+    {
+      char name[100];
+      std::sprintf(name, "Thread=%d", ch.id);
+      benchmark::scope_counter counter(name);
+
+      for (int y = ch.y; y < ch.y+ch.size_y; ++y)
+      {
+        for (int x = ch.x; x < ch.x+ch.size_x; ++x)
+        {
+          color3 pixel_color;
+          // Anti Aliasing done at the ray level, multiple rays for each pixel.
+          for (int c = 0; c < AA_samples_per_pixel; c++)
+          {
+            float u = (float(x) + random_cache::get_float()) / (image_width - 1);
+            float v = (float(y) + random_cache::get_float()) / (image_height - 1);
+            ray r = cam->get_ray(u, v);
+            pixel_color += ray_color(r, world, diffuse_max_bounce_num);
+          }
+          bmp::bmp_pixel p = bmp::bmp_pixel(pixel_color / (float)AA_samples_per_pixel);
+          img->draw_pixel(x, y, &p);
+        }
+      }
+    });
 }
 
 void frame_renderer::save(const char* file_name)

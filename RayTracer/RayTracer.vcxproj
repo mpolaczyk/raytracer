@@ -107,6 +107,7 @@
       <ExceptionHandling>false</ExceptionHandling>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="bmp.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="frame_renderer.cpp" />

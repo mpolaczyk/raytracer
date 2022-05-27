@@ -2,41 +2,38 @@
 
 #include <chrono>
 #include <functional>
-#include <iostream>
 
 using namespace std::chrono;
 
-time_point<high_resolution_clock> start_point, end_point;
-
 namespace benchmark
 {
-  inline void start()
+  struct instance
   {
-    start_point = high_resolution_clock::now();
-  }
+    inline void start(const char* name);
+    inline int64_t repeat(const char* name, int count, std::function<void()>& func);
+    inline int64_t once(const char* name, std::function<void()>& func);
+    inline int64_t stop();
 
-  inline int64_t stop(const char* name)
-  {
-    end_point = high_resolution_clock::now();
-    int64_t start = time_point_cast<microseconds>(start_point).time_since_epoch().count();
-    int64_t end = time_point_cast<microseconds>(end_point).time_since_epoch().count();
-    int64_t time = end - start;
-    std::cout << name << ": " << time << "[us]" << std::endl;
-    return time;
-  }
+  private:
+    time_point<high_resolution_clock> start_point, end_point;
+    const char* name;
+  };
 
-  inline int64_t repeat(int count, const char* name, std::function<void()> func)
+  struct scope_counter
   {
-    start();
-    for (int i = 0; i < count; i++)
-    {
-      func();
-    }
-    return stop(name);
-  }
+    scope_counter(const char* name);
+    ~scope_counter();
 
-  inline int64_t once(const char* name, std::function<void()> func)
+    instance state;
+  };  
+
+  static instance static_instance;
+  static void static_start(const char* name)
   {
-    return repeat(1, name, func);
+    static_instance.start(name);
+  }
+  static int64_t static_stop()
+  {
+    return static_instance.stop();
   }
 }

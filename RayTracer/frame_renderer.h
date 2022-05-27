@@ -6,7 +6,7 @@
 
 namespace bmp
 {
-  class bmp_image;
+  struct bmp_image;
 }
 class camera;
 
@@ -25,9 +25,11 @@ class frame_renderer
   bmp::bmp_image* img = nullptr;
   camera* cam = nullptr;
 
-  int AA_samples_per_pixel = 50; // Anti Aliasing oversampling
-  int diffuse_max_bounce_num = 10;         // Diffuse bounce number
+  int AA_samples_per_pixel = 50;            // Anti Aliasing oversampling
+  int diffuse_max_bounce_num = 10;          // Diffuse bounce number
   float diffuse_bounce_brightness = 0.5f;
+
+  int parallel_chunks_num = 8;
 
 public:
   frame_renderer(int width, int height, camera* cam);
