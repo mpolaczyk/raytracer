@@ -12,16 +12,14 @@
 #include "bmp.h"
 #include "benchmark.h"
 
-using namespace std;
-
-frame_renderer::frame_renderer(int width, int height, camera* cam)
+frame_renderer::frame_renderer(uint32_t width, uint32_t height, camera* cam)
   : image_width(width), image_height(height), cam(cam)
 {
   assert(cam != nullptr);
 
   img = new bmp::bmp_image(image_width, image_height);
 
-  cout << "Frame renderer: " << image_width << "x" << image_height << endl;
+  std::cout << "Frame renderer: " << image_width << "x" << image_height << std::endl;
 
   random_cache::init();
 }
@@ -33,7 +31,7 @@ frame_renderer::~frame_renderer()
   }
 }
 
-color3 inline frame_renderer::ray_color(const ray& r, const hittable_list& world, int diffuse_bounce)
+color3 inline frame_renderer::ray_color(const ray& r, const hittable_list& world, uint32_t diffuse_bounce)
 {
   if (diffuse_bounce <= 0)
   {
@@ -63,7 +61,7 @@ void frame_renderer::render(const hittable_list& world)
   chunk_generator::generate_chunks(parallel_chunks_strategy, parallel_chunks_num, image_width, image_height, chunks);
   for (const auto& ch : chunks)
   {
-    std::cout << "Chunk=" << ch.id << " x=" << ch.x << " y=" << ch.y << " size_x=" << ch.size_x << " size_y=" << ch.size_y << endl;
+    std::cout << "Chunk=" << ch.id << " x=" << ch.x << " y=" << ch.y << " size_x=" << ch.size_x << " size_y=" << ch.size_y << std::endl;
   }
 
   // Process chunks on parallel
@@ -74,13 +72,13 @@ void frame_renderer::render(const hittable_list& world)
       std::sprintf(name, "Thread=%d", ch.id);
       benchmark::scope_counter counter(name);
 
-      for (int y = ch.y; y < ch.y+ch.size_y; ++y)
+      for (uint32_t y = ch.y; y < ch.y+ch.size_y; ++y)
       {
-        for (int x = ch.x; x < ch.x+ch.size_x; ++x)
+        for (uint32_t x = ch.x; x < ch.x+ch.size_x; ++x)
         {
           color3 pixel_color;
           // Anti Aliasing done at the ray level, multiple rays for each pixel.
-          for (int c = 0; c < AA_samples_per_pixel; c++)
+          for (uint32_t c = 0; c < AA_samples_per_pixel; c++)
           {
             float u = (float(x) + random_cache::get_float()) / (image_width - 1);
             float v = (float(y) + random_cache::get_float()) / (image_height - 1);

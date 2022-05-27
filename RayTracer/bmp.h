@@ -4,9 +4,9 @@
 
 namespace bmp
 {
-  constexpr int BYTES_PER_PIXEL = 3; /// RGB
-  constexpr int FILE_HEADER_SIZE = 14;
-  constexpr int INFO_HEADER_SIZE = 40;
+  constexpr uint32_t BYTES_PER_PIXEL = 3; /// RGB
+  constexpr uint32_t FILE_HEADER_SIZE = 14;
+  constexpr uint32_t INFO_HEADER_SIZE = 40;
 
   struct bmp_pixel
   {
@@ -26,7 +26,7 @@ namespace bmp
 
   struct bmp_image
   {
-    bmp_image(int w, int h)
+    bmp_image(uint32_t w, uint32_t h)
       : width(w), height(h)
     {
       buffer = (uint8_t*)malloc(width * height * BYTES_PER_PIXEL * sizeof(uint8_t));
@@ -40,17 +40,17 @@ namespace bmp
       }
     }
 
-    void draw_pixel(int x, int y, const bmp_pixel* p);
+    void draw_pixel(uint32_t x, uint32_t y, const bmp_pixel* p);
     void save_to_file(const char* image_file_name) const;
 
   private:
 
-    uint8_t* create_file_header(int height, int stride) const;
-    uint8_t* create_info_header(int height, int width) const;
+    uint8_t* create_file_header(uint32_t height, uint32_t stride) const;
+    uint8_t* create_info_header(uint32_t height, uint32_t width) const;
 
     uint8_t* buffer = nullptr;
-    int width = 0;
-    int height = 0;
+    uint32_t width = 0;
+    uint32_t height = 0;
   };
 
   

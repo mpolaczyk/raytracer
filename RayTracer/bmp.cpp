@@ -4,9 +4,9 @@
 
 #include "bmp.h"
 
-uint8_t* bmp::bmp_image::create_file_header(int height, int stride) const
+uint8_t* bmp::bmp_image::create_file_header(uint32_t height, uint32_t stride) const
 {
-  int file_size = FILE_HEADER_SIZE + INFO_HEADER_SIZE + (stride * height);
+  uint32_t file_size = FILE_HEADER_SIZE + INFO_HEADER_SIZE + (stride * height);
 
   static uint8_t file_header[] = {
       0,0,     /// signature
@@ -26,7 +26,7 @@ uint8_t* bmp::bmp_image::create_file_header(int height, int stride) const
   return file_header;
 }
 
-uint8_t* bmp::bmp_image::create_info_header(int height, int width) const
+uint8_t* bmp::bmp_image::create_info_header(uint32_t height, uint32_t width) const
 {
   static uint8_t info_header[] = {
       0,0,0,0, /// header size
@@ -57,7 +57,7 @@ uint8_t* bmp::bmp_image::create_info_header(int height, int width) const
   return info_header;
 }
 
-void bmp::bmp_image::draw_pixel(int x, int y, const bmp_pixel* p)
+void bmp::bmp_image::draw_pixel(uint32_t x, uint32_t y, const bmp_pixel* p)
 {
   assert(x >= 0 && x < width);
   assert(y >= 0 && y < height);
@@ -66,7 +66,7 @@ void bmp::bmp_image::draw_pixel(int x, int y, const bmp_pixel* p)
   assert(p->g >= 0 && p->g <= 255);
   assert(p->b >= 0 && p->b <= 255);
 #endif
-  int pixel_addr = y * width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
+  uint32_t pixel_addr = y * width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
   memcpy(buffer + pixel_addr, p, sizeof(bmp_pixel));
 }
 
@@ -75,10 +75,10 @@ void bmp::bmp_image::save_to_file(const char* image_file_name) const
   assert(image_file_name != nullptr);
   const uint8_t padding[3] = { 0, 0, 0 };
 
-  int width_in_bytes = width * BYTES_PER_PIXEL;
-  int padding_size = (4 - (width_in_bytes) % 4) % 4;
+  uint32_t width_in_bytes = width * BYTES_PER_PIXEL;
+  uint32_t padding_size = (4 - (width_in_bytes) % 4) % 4;
   assert(padding_size >= 0 && padding_size <= 3);
-  int stride = width_in_bytes + padding_size;
+  uint32_t stride = width_in_bytes + padding_size;
 
   const char* mode = "wb";
   FILE* image_file = nullptr;
@@ -94,7 +94,7 @@ void bmp::bmp_image::save_to_file(const char* image_file_name) const
   }
   else
   {
-    for (int x = 0; x < height; x++)
+    for (uint32_t x = 0; x < height; x++)
     {
       fwrite(buffer + (x * width_in_bytes), BYTES_PER_PIXEL, width, image_file);
       fwrite(padding, 1, padding_size, image_file);
