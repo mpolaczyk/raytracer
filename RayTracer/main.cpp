@@ -1,9 +1,7 @@
 // Inspired by https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
-#include <memory>
+#include "stdafx.h"
 
-#include "common.h"
-#include "benchmark.h"
 #include "frame_renderer.h"
 #include "hittable.h"
 #include "camera.h"

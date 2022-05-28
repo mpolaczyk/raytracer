@@ -1,12 +1,8 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "ray.h"
-
-using std::shared_ptr;
-using std::make_shared;
 
 struct hit_record 
 {

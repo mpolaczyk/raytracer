@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "vec3.h"
 
 std::ostream& operator<<(std::ostream& out, const vec3& v)
@@ -37,7 +39,7 @@ vec3 operator/(vec3 v, float t)
 
 vec3 operator-(vec3 v, float t)
 {
-  return v + (t*-1.0);
+  return v + (t*-1.0f);
 }
 
 vec3 operator+(vec3 v, float t)

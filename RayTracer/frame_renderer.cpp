@@ -1,16 +1,13 @@
+#include "stdafx.h"
+
 #include "frame_renderer.h"
 
-#include <functional>
-#include <assert.h>
-#include <windows.h>
-#include <ppl.h>
-#include <cstdio>
 #include <vector>
 
+#include <ppl.h>
+
 #include "camera.h"
-#include "common.h"
 #include "bmp.h"
-#include "benchmark.h"
 #include "thread_pool.h"
 
 frame_renderer::frame_renderer(uint32_t width, uint32_t height, camera* cam)

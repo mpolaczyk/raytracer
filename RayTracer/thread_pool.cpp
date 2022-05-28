@@ -1,7 +1,6 @@
-#include <iostream>
+#include "stdafx.h"
 
 #include "thread_pool.h"
-
 
 void thread_pool::queue_job(const std::function<void()>& job)
 {
@@ -42,6 +41,7 @@ void thread_pool::thread_loop()
       job = jobs.front();
       jobs.pop();
     }
+    
     job();
   }
 }

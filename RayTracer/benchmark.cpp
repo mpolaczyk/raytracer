@@ -1,5 +1,4 @@
-
-#include <iostream>
+#include "stdafx.h"
 
 #include "benchmark.h"
 

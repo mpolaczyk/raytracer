@@ -1,5 +1,4 @@
-
-#include <iostream>
+#include "stdafx.h"
 
 #include "chunk_generator.h"
 
