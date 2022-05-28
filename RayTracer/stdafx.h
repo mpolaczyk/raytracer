@@ -10,14 +10,9 @@
 
 #define USE_PIX_RELEASE 1
 
-#if defined _DEBUG
+#if defined _DEBUG || NDEBUG && USE_PIX_RELEASE
 #define USE_PIX
-#include "pix3.h"
-#endif
-
-#if defined NDEBUG && USE_PIX_RELEASE
-#define USE_PIX
-#include "pix3.h"
+#include "pix3.h" // https://devblogs.microsoft.com/pix/winpixeventruntime
 #endif
 
 #include "common.h"

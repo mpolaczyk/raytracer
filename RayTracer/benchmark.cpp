@@ -8,16 +8,21 @@ namespace benchmark
   {
     name = in_name;
     start_point = high_resolution_clock::now();
+#ifdef USE_PIX
+    PIXBeginEvent(PIX_COLOR(155, 1127, 0), in_name);
+#endif
   }
 
   uint64_t instance::repeat(const char* name, uint32_t count, std::function<void()>& func)
   {
-    start(name);
+    uint64_t sum = 0;
     for (uint32_t i = 0; i < count; i++)
     {
+      start(name);
       func();
+      sum += stop();
     }
-    return stop();
+    return sum;
   }
 
   uint64_t instance::once(const char* name, std::function<void()>& func)
@@ -32,6 +37,9 @@ namespace benchmark
     uint64_t end = time_point_cast<microseconds>(end_point).time_since_epoch().count();
     uint64_t time = end - start;
     std::cout << name << ": " << time << "[us] = " << time / 1000 << "[ms] = " << time / 1000000 << "[s]" << std::endl;
+#ifdef USE_PIX
+    PIXEndEvent();
+#endif
     return time;
   }
   

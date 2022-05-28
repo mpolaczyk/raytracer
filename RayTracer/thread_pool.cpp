@@ -41,7 +41,6 @@ void thread_pool::thread_loop()
       job = jobs.front();
       jobs.pop();
     }
-    
     job();
   }
 }

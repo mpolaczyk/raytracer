@@ -30,7 +30,6 @@ int main()
   benchmark::static_start("Save");
   renderer.save(image_file_name);
   benchmark::static_stop();
-  
 
   return 0;
 }

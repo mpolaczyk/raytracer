@@ -81,6 +81,3 @@ vec3 operator+(vec3 v, float t);
 float dot(const vec3& u, const vec3& v);
 vec3 cross(const vec3& u, const vec3& v);
 vec3 unit_vector(vec3 v);
-vec3 random();
-vec3 random(float min, float max);
-vec3 random_in_unit_sphere();
