@@ -3,18 +3,18 @@
 
 #include "chunk_generator.h"
 
-void chunk_generator::generate_chunks(chunk_strategy strategy, uint32_t num, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks)
+void chunk_generator::generate_chunks(chunk_strategy_type strategy, uint32_t num, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks)
 {
   uint32_t snum = (uint32_t)sqrt(num);
   switch (strategy)
   {
-  case chunk_strategy::vertical_stripes:
+  case chunk_strategy_type::vertical_stripes:
     return generate_rectangles(num, 1, image_width, image_height, out_chunks);
     
-  case chunk_strategy::horizontal_stripes:
+  case chunk_strategy_type::horizontal_stripes:
     return generate_rectangles(1, num, image_width, image_height, out_chunks);
     
-  case chunk_strategy::rectangles:
+  case chunk_strategy_type::rectangles:
     if (snum * snum != num)
     {
       // Round to the nearest power of two https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2

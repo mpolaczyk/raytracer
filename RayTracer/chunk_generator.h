@@ -2,7 +2,7 @@
 
 #include <vector>
 
-enum class chunk_strategy
+enum class chunk_strategy_type
 {
   none = 0,
   vertical_stripes,
@@ -21,7 +21,7 @@ struct chunk
 
 struct chunk_generator
 {
-  static void generate_chunks(chunk_strategy strategy, uint32_t num, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks);
+  static void generate_chunks(chunk_strategy_type strategy, uint32_t num, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks);
 
 private: 
   static void generate_rectangles(uint32_t num_x, uint32_t num_y, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks);
