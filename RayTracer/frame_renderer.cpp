@@ -101,32 +101,41 @@ void frame_renderer::render_chunk(const hittable_list& world, const chunk& ch)
         ray r = cam.get_ray(u, v);
         pixel_color += ray_color(r, world, settings.diffuse_max_bounce_num);
       }
+      // Save to bmp
       bmp::bmp_pixel p = bmp::bmp_pixel(pixel_color / (float)settings.AA_samples_per_pixel);
       img->draw_pixel(x, y, &p);
     }
   }
 }
 
-color3 inline frame_renderer::ray_color(const ray& r, const hittable_list& world, uint32_t diffuse_bounce)
+color3 inline frame_renderer::ray_color(const ray& r, const hittable_list& world, uint32_t depth)
 {
-  if (diffuse_bounce <= 0)
+  if (depth <= 0)
   {
     return black;
   }
 
   hit_record rec;
-  if (world.hit(r, 0.001f, infinity, rec))
+  if (world.hit(r, 0.001f, infinity, rec))  // 0.001f to fix "shadow acne"
   {
-    // Surface hit, cast a bounced ray
+    // Diffuse reflection
     // Using cached random values is twice faster but can cause glitches if low sample size.
-    // Both unit_vector calls can be removed too, some performance is restored, quality similar.
-    point3 target = rec.p + rec.normal + unit_vector(random_cache::get_vec3());
-    return settings.diffuse_bounce_brightness * ray_color(ray(rec.p, target - rec.p), world, diffuse_bounce - 1);
+    vec3 bounce_target;
+    if (settings.diffuse_strategy == diffuse_strategy_type::sphere)
+    {
+      bounce_target = rec.p + rec.normal + unit_vector(random_cache::get_vec3());
+    }
+    else if (settings.diffuse_strategy == diffuse_strategy_type::hemisphere)
+    {
+      bounce_target = rec.p + random_unit_in_hemisphere(rec.normal);
+    }
+    ray bounce_ray = ray(rec.p, bounce_target - rec.p);
+    return settings.diffuse_bounce_brightness * ray_color(bounce_ray, world, depth - 1);
   }
 
-  vec3 unit_direction = unit_vector(r.direction);
-  float y =  0.5f * (unit_direction.y() + 1.0f); // base blend based on y component of a ray
-  return (1.0 - y)* white + y * blue; // blend between white and blue
+  vec3 unit_direction = r.direction;  // unit_vector(r.direction)
+  float y =  0.5f * (unit_direction.y() + 1.0f);  // base blend based on y component of a ray
+  return (1.0f - y) * white + y * blue;            // linear blend (lerp) between white and blue
 }
 
 void frame_renderer::save(const char* file_name)
