@@ -14,7 +14,11 @@ int main()
   int resolution_vertical = 1440;
 
   camera cam(aspect_ratio, focal_length);
-  frame_renderer renderer = frame_renderer((int)((float)resolution_vertical * aspect_ratio), resolution_vertical, &cam);
+  frame_renderer renderer = frame_renderer(
+    (int)((float)resolution_vertical * aspect_ratio), 
+    resolution_vertical, 
+    renderer_settings::low_quality_preset, 
+    cam);
    
   hittable_list world;
   world.add(hittable(point3(0.f, 0.f, -1.f), 0.5f));

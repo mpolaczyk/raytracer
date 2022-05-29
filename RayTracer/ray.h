@@ -7,18 +7,16 @@ class ray
 public:
   ray() {}
   ray(const point3& origin, const vec3& direction)
-    : orig(origin), dir(direction)
+    : origin(origin), direction(direction)
   {}
 
-  point3 origin() const { return orig; }
-  vec3 direction() const { return dir; }
-
-  point3 at(float t) const
+  // Returns a point at distance "t" from the origin
+  inline point3 at(float t) const
   {
-    return orig + t * dir;
+    return origin + t * direction;
   }
 
 public:
-  point3 orig;
-  vec3 dir;
+  point3 origin;
+  vec3 direction;
 };

@@ -4,20 +4,20 @@
 
 bool hittable::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
 {
-  vec3 oc = r.origin() - center;
-  auto a = r.direction().length_squared();
-  auto half_b = dot(oc, r.direction());
-  auto c = oc.length_squared() - radius * radius;
+  vec3 oc = r.origin - center;
+  float a = r.direction.length_squared();
+  float half_b = dot(oc, r.direction);
+  float c = oc.length_squared() - radius * radius;
 
-  auto discriminant = half_b * half_b - a * c;
-  if (discriminant < 0)
+  float delta = half_b * half_b - a * c;
+  if (delta < 0.0f)
   {
     return false;
   }
-  auto sqrtd = sqrt(discriminant);
 
   // Find the nearest root that lies in the acceptable range.
-  auto root = (-half_b - sqrtd) / a;
+  float sqrtd = sqrt(delta);
+  float root = (-half_b - sqrtd) / a;
   if (root < t_min || t_max < root)
   {
     root = (-half_b + sqrtd) / a;
@@ -38,9 +38,9 @@ bool hittable_list::hit(const ray& r, float t_min, float t_max, hit_record& rec)
 {
   hit_record temp_rec;
   bool hit_anything = false;
-  auto closest_so_far = t_max;
+  float closest_so_far = t_max;
 
-  for (const auto& object : objects)
+  for (const hittable& object : objects)
   {
     if (object.hit(r, t_min, closest_so_far, temp_rec))
     {
