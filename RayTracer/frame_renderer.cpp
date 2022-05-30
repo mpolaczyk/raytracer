@@ -7,6 +7,8 @@
 
 #include "bmp.h"
 #include "thread_pool.h"
+#include "hittable.h"
+#include "material.h"
 
 // Designated initializers c++20 https://en.cppreference.com/w/cpp/language/aggregate_initialization
 renderer_settings renderer_settings::high_quality_preset
@@ -50,11 +52,11 @@ void frame_renderer::render(const hittable_list& world)
   // Build chunks of work
   std::vector<chunk> chunks;
   chunk_generator::generate_chunks(settings.chunks_strategy, settings.chunks_num, image_width, image_height, chunks);
-  for (const auto& ch : chunks)
-  {
-    std::cout << "Chunk=" << ch.id << " x=" << ch.x << " y=" << ch.y << " size_x=" << ch.size_x << " size_y=" << ch.size_y << std::endl;
-  }
-
+  //for (const auto& ch : chunks)
+  //{
+  //  std::cout << "Chunk=" << ch.id << " x=" << ch.x << " y=" << ch.y << " size_x=" << ch.size_x << " size_y=" << ch.size_y << std::endl;
+  //}
+  
   // Process chunks on parallel
   if (settings.threading_strategy == threading_strategy_type::none)
   {
@@ -71,7 +73,7 @@ void frame_renderer::render(const hittable_list& world)
     {
       pool.queue_job([&]() { render_chunk(world, ch); });
     }
-    pool.start(settings.threads_num);
+    pool.start(settings.threads_num > 0 ? settings.threads_num : std::thread::hardware_concurrency());
     while (pool.is_busy()) { }
     pool.stop();
   }
@@ -86,7 +88,7 @@ void frame_renderer::render_chunk(const hittable_list& world, const chunk& ch)
   std::thread::id thread_id = std::this_thread::get_id();
   char name[100];
   std::sprintf(name, "Thread=%d Chunk=%d", thread_id, ch.id);
-  benchmark::scope_counter counter(name);
+  benchmark::scope_counter benchmark_render_chunk(name, false);
 
   for (uint32_t y = ch.y; y < ch.y + ch.size_y; ++y)
   {
@@ -110,6 +112,7 @@ void frame_renderer::render_chunk(const hittable_list& world, const chunk& ch)
 
 color3 inline frame_renderer::ray_color(const ray& r, const hittable_list& world, uint32_t depth)
 {
+  benchmark::scope_counter benchmark_ray_color("Ray color", false);
   if (depth <= 0)
   {
     return black;
@@ -118,24 +121,19 @@ color3 inline frame_renderer::ray_color(const ray& r, const hittable_list& world
   hit_record rec;
   if (world.hit(r, 0.001f, infinity, rec))  // 0.001f to fix "shadow acne"
   {
-    // Diffuse reflection
-    // Using cached random values is twice faster but can cause glitches if low sample size.
-    vec3 bounce_target;
-    if (settings.diffuse_strategy == diffuse_strategy_type::sphere)
+    ray scattered;
+    color3 attenuation;
+    if (rec.material->scatter(r, rec, attenuation, scattered))
     {
-      bounce_target = rec.p + rec.normal + unit_vector(random_cache::get_vec3());
+      return attenuation * ray_color(scattered, world, depth - 1);
     }
-    else if (settings.diffuse_strategy == diffuse_strategy_type::hemisphere)
-    {
-      bounce_target = rec.p + random_unit_in_hemisphere(rec.normal);
-    }
-    ray bounce_ray = ray(rec.p, bounce_target - rec.p);
-    return settings.diffuse_bounce_brightness * ray_color(bounce_ray, world, depth - 1);
+    return black;
+    
   }
 
-  vec3 unit_direction = r.direction;  // unit_vector(r.direction)
+  vec3 unit_direction = r.direction;              // unit_vector(r.direction)
   float y =  0.5f * (unit_direction.y() + 1.0f);  // base blend based on y component of a ray
-  return (1.0f - y) * white + y * blue;            // linear blend (lerp) between white and blue
+  return (1.0f - y) * white + y * white_blue;     // linear blend (lerp) between white and blue
 }
 
 void frame_renderer::save(const char* file_name)

@@ -4,18 +4,23 @@
 
 #include "ray.h"
 
+class material;
+
 struct hit_record 
 {
   point3 p;
   vec3 normal;
   float t;
+  material* material;
 };
 
 class hittable
 {
 public:
   hittable() {}
-  hittable(point3 cen, float r) : center(cen), radius(r) {};
+  hittable(point3 cen, float r, material* material) 
+    : center(cen), radius(r), material(material)
+  {};
 
   bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
 
@@ -23,9 +28,8 @@ public:
   // TODO: rethink hittable type
   point3 center;
   float radius;
+  material* material;
 };
-
-
 
 class hittable_list
 {

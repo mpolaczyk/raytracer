@@ -5,6 +5,7 @@
 #include "frame_renderer.h"
 #include "hittable.h"
 #include "camera.h"
+#include "material.h"
 
 int main()
 {
@@ -17,23 +18,49 @@ int main()
   frame_renderer renderer = frame_renderer(
     (int)((float)resolution_vertical * aspect_ratio), 
     resolution_vertical, 
-    renderer_settings::low_quality_preset, 
+    renderer_settings::medium_quality_preset, 
     cam);
    
+  material white_diffuse;
+  white_diffuse.type = material_type::diffuse;
+  white_diffuse.albedo = white_blue;
+
+  material green_diffuse;
+  green_diffuse.albedo = green;
+  green_diffuse.type = material_type::diffuse;
+
+  material red_diffuse;
+  red_diffuse.albedo = red;
+  red_diffuse.type = material_type::diffuse;
+
+  material yellow_diffuse;
+  yellow_diffuse.albedo = yellow;
+  yellow_diffuse.type = material_type::diffuse;
+
+  material metal;
+  metal.albedo = grey;
+  metal.type = material_type::metal_shiny;
+
+  material fuzz;
+  fuzz.albedo = grey;
+  fuzz.type = material_type::metal_matt;
+
   hittable_list world;
-  world.add(hittable(point3(0.f, 0.f, -1.f), 0.5f));
-  world.add(hittable(point3(1.f, -0.2f, -1.f), 0.2f));
-  world.add(hittable(point3(-1.f, -0.2f, -1.f), 0.2f));
-  world.add(hittable(point3(0.f, -100.5f, -1.f), 100.f));
+  world.add(hittable(point3(0.f, 0.f, -1.f), 0.5f, &metal));
+  world.add(hittable(point3(0.8f, -0.2f, -0.8f), 0.2f, &red_diffuse));
+  world.add(hittable(point3(-0.8f, -0.2f, -0.8f), 0.2f, &green_diffuse));
+  world.add(hittable(point3(0.f, -0.2f, 0.4f), 0.4f, &yellow_diffuse));
+  world.add(hittable(point3(0.f, -100.5f, -1.f), 100.f, &fuzz));
 
   {
     benchmark::scope_counter benchmark_render("Render");
     renderer.render(world);
   }
 
-  benchmark::static_start("Save");
-  renderer.save(image_file_name);
-  benchmark::static_stop();
+  {
+    benchmark::scope_counter benchmark_render("Save");
+    renderer.save(image_file_name);
+  }
 
   return 0;
 }

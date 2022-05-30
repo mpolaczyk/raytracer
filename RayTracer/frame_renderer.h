@@ -19,12 +19,6 @@ enum class threading_strategy_type
   thread_pool
 };
 
-enum class diffuse_strategy_type
-{
-  sphere,       // Fake Lambertian, uniform distrinution, bounces in every direction including into the surface
-  hemisphere    // Fake Lambertian, uniform distribution, bounces outside of the surface
-};
-
 struct renderer_settings
 {
   static renderer_settings high_quality_preset;
@@ -35,17 +29,16 @@ struct renderer_settings
   uint32_t AA_samples_per_pixel = 20;            
 
   // Diffuse reflection
-  diffuse_strategy_type diffuse_strategy = diffuse_strategy_type::hemisphere;
   uint32_t diffuse_max_bounce_num = 7;
   float diffuse_bounce_brightness = 0.6f;
 
   // How work is split
-  uint32_t chunks_num = 64;
+  uint32_t chunks_num = 512;
   chunk_strategy_type chunks_strategy = chunk_strategy_type::rectangles;
 
   // How work is processed
   threading_strategy_type threading_strategy = threading_strategy_type::thread_pool;
-  uint32_t threads_num = 16; // Apples only to thread pool strategy
+  uint32_t threads_num = 0; // Apples only to thread pool strategy, 0 enforces std::thread::hardware_concurrency()
 };
 
 class frame_renderer

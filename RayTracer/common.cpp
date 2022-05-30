@@ -19,6 +19,16 @@ vec3 random_unit_in_hemisphere(const vec3& normal)
   return sign(dot(random_unit, normal)) * random_unit;
 }
 
+bool is_near_zero(vec3& value)
+{
+  return (fabs(value[0]) < small_number) && (fabs(value[1]) < small_number) && (fabs(value[2]) < small_number);
+}
+
+vec3 reflect(const vec3& vec, const vec3& normal) 
+{
+  return vec - 2 * dot(vec, normal) * normal;
+}
+
 namespace random_cache
 {
   void init()
