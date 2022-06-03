@@ -7,7 +7,7 @@
 
 #include "bmp.h"
 #include "thread_pool.h"
-#include "hittable.h"
+#include "sphere.h"
 #include "material.h"
 
 // Designated initializers c++20 https://en.cppreference.com/w/cpp/language/aggregate_initialization
@@ -44,7 +44,7 @@ frame_renderer::~frame_renderer()
   }
 }
 
-void frame_renderer::render(const hittable_list& world)
+void frame_renderer::render(const sphere_list& world)
 {
   assert(cam != nullptr);
   assert(img != nullptr);
@@ -83,7 +83,7 @@ void frame_renderer::render(const hittable_list& world)
   }
 }
 
-void frame_renderer::render_chunk(const hittable_list& world, const chunk& ch)
+void frame_renderer::render_chunk(const sphere_list& world, const chunk& ch)
 {
   std::thread::id thread_id = std::this_thread::get_id();
   char name[100];
@@ -110,7 +110,7 @@ void frame_renderer::render_chunk(const hittable_list& world, const chunk& ch)
   }
 }
 
-color3 inline frame_renderer::ray_color(const ray& r, const hittable_list& world, uint32_t depth)
+color3 inline frame_renderer::ray_color(const ray& r, const sphere_list& world, uint32_t depth)
 {
   benchmark::scope_counter benchmark_ray_color("Ray color", false);
   if (depth <= 0)

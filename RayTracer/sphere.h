@@ -14,34 +14,34 @@ struct hit_record
   material* material;
 };
 
-class hittable
+class sphere
 {
 public:
-  hittable() {}
-  hittable(point3 cen, float r, material* material) 
+  sphere() {}
+  sphere(point3 cen, float r, material* material) 
     : center(cen), radius(r), material(material)
   {};
 
   bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
 
 public:
-  // TODO: rethink hittable type
+  // TODO: rethink sphere type
   point3 center;
   float radius;
   material* material;
 };
 
-class hittable_list
+class sphere_list
 {
 public:
-  hittable_list() {}
-  hittable_list(hittable object) { add(object); }
+  sphere_list() {}
+  sphere_list(sphere object) { add(object); }
 
   void clear() { objects.clear(); }
-  void add(hittable object) { objects.push_back(object); }
+  void add(sphere object) { objects.push_back(object); }
 
   bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
 
 public:
-  std::vector<hittable> objects;
+  std::vector<sphere> objects;
 };

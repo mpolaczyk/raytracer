@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 #include "frame_renderer.h"
-#include "hittable.h"
+#include "sphere.h"
 #include "camera.h"
 #include "material.h"
 
@@ -45,12 +45,12 @@ int main()
   fuzz.albedo = grey;
   fuzz.type = material_type::metal_matt;
 
-  hittable_list world;
-  world.add(hittable(point3(0.f, 0.f, -1.f), 0.5f, &metal));
-  world.add(hittable(point3(0.8f, -0.2f, -0.8f), 0.2f, &red_diffuse));
-  world.add(hittable(point3(-0.8f, -0.2f, -0.8f), 0.2f, &green_diffuse));
-  world.add(hittable(point3(0.f, -0.2f, 0.4f), 0.4f, &yellow_diffuse));
-  world.add(hittable(point3(0.f, -100.5f, -1.f), 100.f, &fuzz));
+  sphere_list world;
+  world.add(sphere(point3(0.f, 0.f, -1.f), 0.5f, &metal));
+  world.add(sphere(point3(0.8f, -0.2f, -0.8f), 0.2f, &red_diffuse));
+  world.add(sphere(point3(-0.8f, -0.2f, -0.8f), 0.2f, &green_diffuse));
+  world.add(sphere(point3(0.f, -0.2f, 0.4f), 0.4f, &yellow_diffuse));
+  world.add(sphere(point3(0.f, -100.5f, -1.f), 100.f, &fuzz));
 
   {
     benchmark::scope_counter benchmark_render("Render");

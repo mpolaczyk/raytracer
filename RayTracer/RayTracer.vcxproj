@@ -99,7 +99,7 @@
     <ClCompile Include="chunk_generator.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="frame_renderer.cpp" />
-    <ClCompile Include="hittable.cpp" />
+    <ClCompile Include="sphere.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="material.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -116,7 +116,7 @@
     <ClInclude Include="chunk_generator.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="frame_renderer.h" />
-    <ClInclude Include="hittable.h" />
+    <ClInclude Include="sphere.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ray.h" />

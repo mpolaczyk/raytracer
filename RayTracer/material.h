@@ -1,14 +1,15 @@
 #pragma once
 
 #include "ray.h"
-#include "hittable.h"
+#include "sphere.h"
 
 enum class material_type
 {
   none,
   diffuse,
   metal_shiny,
-  metal_matt
+  metal_matt,
+  dialectric
 };
 
 class material
@@ -23,4 +24,5 @@ private:
   bool scatter_diffuse(const ray& in_ray, const hit_record& in_rec, color3& out_attenuation, ray& out_scattered) const;
   bool scatter_metal_shiny(const ray& in_ray, const hit_record& in_rec, color3& out_attenuation, ray& out_scattered) const;
   bool scatter_metal_matt(const ray& in_ray, const hit_record& in_rec, color3& out_attenuation, ray& out_scattered) const;
+  bool scatter_dialectric(const ray& in_ray, const hit_record& in_rec, color3& out_attenuation, ray& out_scattered) const;
 };

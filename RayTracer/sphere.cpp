@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "hittable.h"
+#include "sphere.h"
 
-bool hittable::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
+bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
 {
   vec3 oc = r.origin - center;
   float a = r.direction.length_squared();
@@ -35,13 +35,13 @@ bool hittable::hit(const ray& r, float t_min, float t_max, hit_record& rec) cons
   return true;
 }
 
-bool hittable_list::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
+bool sphere_list::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
 {
   hit_record temp_rec;
   bool hit_anything = false;
   float closest_so_far = t_max;
 
-  for (const hittable& object : objects)
+  for (const sphere& object : objects)
   {
     if (object.hit(r, t_min, closest_so_far, temp_rec))
     {

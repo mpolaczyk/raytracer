@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vec3.h"
-#include "hittable.h"
+#include "sphere.h"
 #include "ray.h"
 #include "chunk_generator.h"
 #include "camera.h"
@@ -62,8 +62,8 @@ public:
   frame_renderer(uint32_t width, uint32_t height, const renderer_settings& settings, const camera& cam);
   ~frame_renderer();
 
-  color3 ray_color(const ray& r, const hittable_list& world, uint32_t depth);
-  void render(const hittable_list& world);
-  void render_chunk(const hittable_list& world, const chunk& ch);
+  color3 ray_color(const ray& r, const sphere_list& world, uint32_t depth);
+  void render(const sphere_list& world);
+  void render_chunk(const sphere_list& world, const chunk& ch);
   void save(const char* file_name);
 };
