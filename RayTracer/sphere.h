@@ -12,6 +12,7 @@ struct hit_record
   vec3 normal;
   float t;
   material* material;
+  bool front_face;
 };
 
 class sphere
@@ -22,7 +23,7 @@ public:
     : center(cen), radius(r), material(material)
   {};
 
-  bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
+  bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const;
 
 public:
   // TODO: rethink sphere type
@@ -40,7 +41,7 @@ public:
   void clear() { objects.clear(); }
   void add(sphere object) { objects.push_back(object); }
 
-  bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
+  bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const;
 
 public:
   std::vector<sphere> objects;

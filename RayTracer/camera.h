@@ -6,13 +6,12 @@
 class camera
 {
 public:
-  camera(float aspect_ratio, float focal_length)
-    : aspect_ratio(aspect_ratio), focal_length(focal_length)
+  camera(float aspect_ratio, float focal_length, point3 origin)
+    : aspect_ratio(aspect_ratio), focal_length(focal_length), origin(origin)
   {
     float viewport_height = 2.0f;
     float viewport_width = aspect_ratio * viewport_height;
 
-    origin = point3(0, 0, 0);
     horizontal = vec3(viewport_width, 0, 0);
     vertical = vec3(0, viewport_height, 0);
     lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);

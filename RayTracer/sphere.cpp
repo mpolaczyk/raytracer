@@ -2,11 +2,11 @@
 
 #include "sphere.h"
 
-bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
+bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
-  vec3 oc = r.origin - center;
-  float a = r.direction.length_squared();
-  float half_b = dot(oc, r.direction);
+  vec3 oc = in_ray.origin - center;
+  float a = in_ray.direction.length_squared();
+  float half_b = dot(oc, in_ray.direction);
   float c = oc.length_squared() - radius * radius;
 
   float delta = half_b * half_b - a * c;
@@ -27,15 +27,28 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
     }
   }
 
-  rec.t = root;
-  rec.p = r.at(rec.t);
-  rec.normal = (rec.p - center) / radius;
-  rec.material = material;
+  out_hit.t = root;
+  out_hit.p = in_ray.at(out_hit.t);
+  out_hit.material = material;
 
+  // Normal always against the ray
+  vec3 outward_normal = (out_hit.p - center) / radius;
+  if (dot(in_ray.direction, outward_normal) < 0)
+  {
+    // Ray is inside
+    out_hit.normal = outward_normal;
+    out_hit.front_face = true;
+  }
+  else
+  {
+    // Ray is outside
+    out_hit.normal = -outward_normal;
+    out_hit.front_face = false;
+  }
   return true;
 }
 
-bool sphere_list::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
+bool sphere_list::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
   hit_record temp_rec;
   bool hit_anything = false;
@@ -43,11 +56,11 @@ bool sphere_list::hit(const ray& r, float t_min, float t_max, hit_record& rec) c
 
   for (const sphere& object : objects)
   {
-    if (object.hit(r, t_min, closest_so_far, temp_rec))
+    if (object.hit(in_ray, t_min, closest_so_far, temp_rec))
     {
       hit_anything = true;
       closest_so_far = temp_rec.t;
-      rec = temp_rec;
+      out_hit = temp_rec;
     }
   }
 

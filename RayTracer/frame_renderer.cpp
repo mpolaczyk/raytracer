@@ -46,9 +46,6 @@ frame_renderer::~frame_renderer()
 
 void frame_renderer::render(const sphere_list& world)
 {
-  assert(cam != nullptr);
-  assert(img != nullptr);
-
   // Build chunks of work
   std::vector<chunk> chunks;
   chunk_generator::generate_chunks(settings.chunks_strategy, settings.chunks_num, image_width, image_height, chunks);

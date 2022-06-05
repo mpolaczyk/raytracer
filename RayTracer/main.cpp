@@ -12,9 +12,9 @@ int main()
   const char* image_file_name = (const char*)"image.bmp";
   float aspect_ratio = 16.0f / 9.0f;
   float focal_length = 1.0f;
-  int resolution_vertical = 1440;
+  int resolution_vertical = 1080;
 
-  camera cam(aspect_ratio, focal_length);
+  camera cam(aspect_ratio, focal_length, point3(0.0f, 0.0f, -0.2f));
   frame_renderer renderer = frame_renderer(
     (int)((float)resolution_vertical * aspect_ratio), 
     resolution_vertical, 
@@ -29,28 +29,33 @@ int main()
   green_diffuse.albedo = green;
   green_diffuse.type = material_type::diffuse;
 
-  material red_diffuse;
-  red_diffuse.albedo = red;
-  red_diffuse.type = material_type::diffuse;
-
   material yellow_diffuse;
   yellow_diffuse.albedo = yellow;
   yellow_diffuse.type = material_type::diffuse;
 
-  material metal;
-  metal.albedo = grey;
-  metal.type = material_type::metal_shiny;
+  material red_diffuse;
+  red_diffuse.albedo = red;
+  red_diffuse.type = material_type::diffuse;
 
-  material fuzz;
-  fuzz.albedo = grey;
-  fuzz.type = material_type::metal_matt;
+  material metal_shiny;
+  metal_shiny.albedo = yellow;
+  metal_shiny.type = material_type::metal_shiny;
+
+  material dialectric;
+  dialectric.albedo = grey;
+  dialectric.type = material_type::dialectric;
+
+  material metal_matt;
+  metal_matt.albedo = grey;
+  metal_matt.type = material_type::metal_matt;
 
   sphere_list world;
-  world.add(sphere(point3(0.f, 0.f, -1.f), 0.5f, &metal));
-  world.add(sphere(point3(0.8f, -0.2f, -0.8f), 0.2f, &red_diffuse));
-  world.add(sphere(point3(-0.8f, -0.2f, -0.8f), 0.2f, &green_diffuse));
-  world.add(sphere(point3(0.f, -0.2f, 0.4f), 0.4f, &yellow_diffuse));
-  world.add(sphere(point3(0.f, -100.5f, -1.f), 100.f, &fuzz));
+  world.add(sphere(point3(0.8f, -0.2f, -1.4f), 0.2f, &red_diffuse));
+  world.add(sphere(point3(-0.8f, -0.2f, -1.4f), 0.2f, &green_diffuse));
+  world.add(sphere(point3(0.0f, 0.f, -6.0f), 0.4f, &yellow_diffuse));
+
+  world.add(sphere(point3(0.f, 0.f, -1.f), 0.5f, &dialectric));
+  world.add(sphere(point3(0.f, -100.5f, -1.f), 100.f, &metal_matt));
 
   {
     benchmark::scope_counter benchmark_render("Render");

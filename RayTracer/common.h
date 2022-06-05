@@ -24,6 +24,7 @@ vec3 random_unit_in_hemisphere(const vec3& normal);
 bool is_near_zero(vec3& value);
 vec3 reflect(const vec3& v, const vec3& n);
 vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
+float reflectance(float cosine, float ref_idx);
 
 namespace random_cache
 {
