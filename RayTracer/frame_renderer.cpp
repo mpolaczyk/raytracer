@@ -33,8 +33,6 @@ frame_renderer::frame_renderer(uint32_t width, uint32_t height, const renderer_s
   img = new bmp::bmp_image(image_width, image_height);
 
   std::cout << "Frame renderer: " << image_width << "x" << image_height << std::endl;
-
-  random_cache::init();
 }
 frame_renderer::~frame_renderer()
 {

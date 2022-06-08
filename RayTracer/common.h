@@ -32,7 +32,6 @@ namespace random_cache
   static int last_index = 0;
   static std::vector<float> cache;
   static std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
-  static std::mt19937 generator;
 
   void init();
   float get_float();

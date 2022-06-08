@@ -9,12 +9,17 @@
 
 int main()
 {
+  random_cache::init();
+
   const char* image_file_name = (const char*)"image.bmp";
   float aspect_ratio = 16.0f / 9.0f;
-  float focal_length = 1.0f;
+  float field_of_view = 90.0f;
   int resolution_vertical = 1080;
 
-  camera cam(aspect_ratio, focal_length, point3(0.0f, 0.0f, -0.2f));
+  vec3 view_at = vec3(0.0f, 0.5f, -1.0f);
+  vec3 view_from = vec3(0.0f, 0.5f, 0.0f);
+  
+  camera cam(view_from, view_at, field_of_view, aspect_ratio, 0.5f);
   frame_renderer renderer = frame_renderer(
     (int)((float)resolution_vertical * aspect_ratio), 
     resolution_vertical, 
@@ -52,9 +57,9 @@ int main()
   sphere_list world;
   world.add(sphere(point3(0.8f, -0.2f, -1.4f), 0.2f, &red_diffuse));
   world.add(sphere(point3(-0.8f, -0.2f, -1.4f), 0.2f, &green_diffuse));
-  world.add(sphere(point3(0.0f, 0.f, -6.0f), 0.4f, &yellow_diffuse));
+  world.add(sphere(point3(0.0f, 0.7f, -3.0f), 0.5f, &yellow_diffuse));
 
-  world.add(sphere(point3(0.f, 0.f, -1.f), 0.5f, &dialectric));
+  world.add(sphere(point3(0.f, 0.f, -1.f), 0.3f, &dialectric));
   world.add(sphere(point3(0.f, -100.5f, -1.f), 100.f, &metal_matt));
 
   {

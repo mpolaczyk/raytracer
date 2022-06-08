@@ -49,6 +49,8 @@ namespace random_cache
 {
   void init()
   {
+    uint32_t seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 generator(seed);
     for (int s = 0; s < num; s++)
     {
       cache.push_back(distribution(generator));

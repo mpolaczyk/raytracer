@@ -47,7 +47,7 @@ bool material::scatter_metal_shiny(const ray& in_ray, const hit_record& in_hit, 
 
 bool material::scatter_metal_matt(const ray& in_ray, const hit_record& in_hit, color3& out_attenuation, ray& out_scattered) const
 {
-  float fuzz = 0.1f;
+  float fuzz = 0.02f;
   vec3 reflected = reflect(unit_vector(in_ray.direction), in_hit.normal);
   out_scattered = ray(in_hit.p, reflected + fuzz * unit_vector(random_cache::get_vec3()));
   out_attenuation = albedo;
