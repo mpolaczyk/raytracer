@@ -58,13 +58,12 @@ public:
     }
     else
     {
-      // TODO: Despite shooting at the focus plane, the view is still different (I expect object in the focus plane to preserve the same size, but camera slides backwards)
       // Don't shoot rays from the point, shoot from the plane that is proportionally smaller to focus plane
       point3 cpo = c.get_point(uu, vv);       // point on the camera plane at origin
       vec3 fpo = f.get_point(uu, vv);         // point on the focus plane at origin
       vec3 fpf = fpo - w * dist_to_focus;     // point on the plane crossing frustum, forward camera
       
-      return ray(cpo - offset, unit_vector(fpf - origin + offset)); 
+      return ray(cpo - offset, unit_vector(fpf - cpo + offset)); 
     }
     
   }
