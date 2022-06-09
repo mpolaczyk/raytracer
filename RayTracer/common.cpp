@@ -12,6 +12,12 @@ float sign(float value)
   return value >= 0.0f ? 1.0f : -1.0f;  //  Assume 0 is positive
 }
 
+vec3 random_in_unit_disk() 
+{
+  vec3 random_unit = unit_vector(random_cache::get_vec3());
+  return random_unit * random_cache::get_float();
+}
+
 vec3 random_unit_in_hemisphere(const vec3& normal)
 {
   vec3 random_unit = unit_vector(random_cache::get_vec3());

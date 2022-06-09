@@ -3,67 +3,81 @@
 #include "vec3.h"
 #include "ray.h"
 
+struct plane
+{
+  vec3 horizontal;            // size horizontal
+  vec3 vertical;              // size vertical
+  point3 lower_left_corner;   // world space coordinates
+  point3 get_point(float u, float v) const
+  {
+    return lower_left_corner + u * horizontal + v * vertical;
+  }
+};
+
 class camera
 {
 public:
   
-  camera(point3 look_from, point3 look_at, float vfov, float aspect_ratio, float alpha=0.0f)
-    : aspect_ratio(aspect_ratio), alpha(alpha), origin(look_from)
+  camera(point3 look_from, point3 look_at, float field_of_view, float aspect_ratio, float aperture, float dist_to_focus, float type=0.0f)
+    : type(type), origin(look_from), dist_to_focus(dist_to_focus)
   {
-    float theta = degrees_to_radians(vfov);
+    float theta = degrees_to_radians(field_of_view);
     float h = tan(theta / 2.0f);
-    viewport_height = 2.0f * h;
-    viewport_width = aspect_ratio * viewport_height;
+    viewport_height = 2.0f * h;                       // viewport size at the distance 1
+    viewport_width = aspect_ratio * viewport_height;  
 
     const vec3 view_up(0.0f, 1.0f, 0.0f);
     w = unit_vector(look_from - look_at);   // back from camera vector
     u = unit_vector(cross(view_up, w));     // right vector
     v = cross(w, u);                        // up vector
 
-    // Regular camera plane
-    horizontal = viewport_width * u;
-    vertical = viewport_height * v;
-    lower_left_corner = origin - horizontal / 2.0f - vertical / 2.0f;
+    // Focus plane at origin (size of the frustum at the focus distance)
+    f.horizontal = viewport_width * u * dist_to_focus;
+    f.vertical = viewport_height * v * dist_to_focus;
+    f.lower_left_corner = origin - f.horizontal / 2.0f - f.vertical / 2.0f;
 
-    // Proportionally smaller camera plane
-    a_horizontal = viewport_width * u * alpha;
-    a_vertical = viewport_height * v * alpha;
-    a_lower_left_corner = origin - a_horizontal / 2.0f - a_vertical / 2.0f;
+    // Camera plane at origin (proportional to type)
+    c.horizontal = f.horizontal * type;
+    c.vertical = f.vertical * type;
+    c.lower_left_corner = origin - c.horizontal / 2.0f - c.vertical / 2.0f;
+
+    lens_radius = aperture / 2;
   }
 
   ray inline get_ray(float uu, float vv) const 
   {
-    if (alpha == 0.0f)
+    vec3 rd = lens_radius * random_in_unit_disk();
+    vec3 offset = u * rd.x() + v * rd.y();
+
+    if (type == 0.0f)
     {
-      // Shoot rays from the point to the frustum plane
-      vec3 cp = lower_left_corner + uu * horizontal + vv * vertical;  // point on the camera plane
-      vec3 fp = cp - w;                                               // point on the plane crossing frustum, forward camera
-      return ray(origin, unit_vector(fp - origin));                   // perspective camera
+      // Shoot rays from the point to the focus plane - perspective camera
+      vec3 fpo = f.get_point(uu, vv);                                   // point on the focus plane at origin
+      vec3 fpf = fpo - w*dist_to_focus;                                 // point on the focus plane at the focus distance forward camera
+      return ray(origin - offset, unit_vector(fpf - origin + offset));
     }
     else
     {
-      // Don't shoot rays from the point, shoot from the plane that is proportionally smaller to frustum plane
-      vec3 cp = a_lower_left_corner + uu * a_horizontal + vv * a_vertical;  // point on the camera plane  
-      vec3 cp2 = lower_left_corner + uu * horizontal + vv * vertical;  // point on the camera plane
-      float compensate = 0.9f + alpha * 0.6f;                          // objects look like they slide away, compensate for it by moving the camera forward vector
-      vec3 fp = cp2 - w*compensate;                                    // point on the plane crossing frustum, forward camera
-      return ray(cp, unit_vector(fp-origin));  // orthographic camera
+      // TODO: Despite shooting at the focus plane, the view is still different (I expect object in the focus plane to preserve the same size, but camera slides backwards)
+      // Don't shoot rays from the point, shoot from the plane that is proportionally smaller to focus plane
+      point3 cpo = c.get_point(uu, vv);       // point on the camera plane at origin
+      vec3 fpo = f.get_point(uu, vv);         // point on the focus plane at origin
+      vec3 fpf = fpo - w * dist_to_focus;     // point on the plane crossing frustum, forward camera
+      
+      return ray(cpo - offset, unit_vector(fpf - origin + offset)); 
     }
     
   }
 
 private:
-  float aspect_ratio;
-  float alpha; // 0.0f perspective camera, 1.0f orthographic camera
+  float lens_radius;
+  float dist_to_focus;
+  float type; // 0.0f perspective camera, 1.0f orthographic camera
   float viewport_height;
   float viewport_width;
   point3 origin;
-  vec3 horizontal;
-  vec3 vertical;
-  point3 lower_left_corner;
-  vec3 a_horizontal;
-  vec3 a_vertical;
-  point3 a_lower_left_corner;
+  plane f;  // focus plane at origin
+  plane c;  // camera plane at origin
   vec3 w;
   vec3 u;
   vec3 v;
