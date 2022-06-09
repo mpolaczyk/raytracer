@@ -21,6 +21,14 @@ struct camera_setup
     : look_from(look_from), look_at(look_at), field_of_view(field_of_view), aspect_ratio(aspect_ratio), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
   { }
 
+  static camera_setup lerp(const camera_setup& a, const camera_setup& b, float f)
+  {
+    camera_setup answer = a;
+    answer.dist_to_focus = lerp_float(a.dist_to_focus, b.dist_to_focus, f);
+    answer.type = lerp_float(a.type, b.type, f);
+    return answer;
+  }
+
   point3 look_from;
   point3 look_at;
   float field_of_view = 90.0f;
