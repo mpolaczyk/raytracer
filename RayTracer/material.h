@@ -15,6 +15,15 @@ enum class material_type
 class material
 {
 public:
+
+  static material white_diffuse_preset;
+  static material green_diffuse_preset;
+  static material yellow_diffuse_preset;
+  static material red_diffuse_preset;
+  static material metal_shiny_preset;
+  static material glass_preset;
+  static material metal_matt_preset;
+  
   material_type type = material_type::none;
   color3 albedo;
 

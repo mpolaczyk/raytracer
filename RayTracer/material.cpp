@@ -2,6 +2,49 @@
 
 #include "material.h"
 
+// Designated initializers c++20 https://en.cppreference.com/w/cpp/language/aggregate_initialization
+material material::white_diffuse_preset
+{
+  .type = material_type::diffuse,
+  .albedo = white_blue
+};
+
+material material::green_diffuse_preset
+{
+  .type = material_type::diffuse,
+  .albedo = green
+};
+
+material material::yellow_diffuse_preset
+{
+  .type = material_type::diffuse,
+  .albedo = yellow
+};
+
+material material::red_diffuse_preset
+{
+  .type = material_type::diffuse,
+  .albedo = red
+};
+
+material material::metal_shiny_preset
+{
+  .type = material_type::metal_shiny,
+  .albedo = grey
+};
+
+material material::glass_preset
+{
+  .type = material_type::dialectric,
+  .albedo = grey
+};
+
+material material::metal_matt_preset
+{
+  .type = material_type::metal_matt,
+  .albedo = grey
+};
+
 bool material::scatter(const ray& in_ray, const hit_record& in_rec, color3& out_attenuation, ray& out_scattered) const
 {
   // if else based material selection on purpose - much cheaper than OOP based approach
