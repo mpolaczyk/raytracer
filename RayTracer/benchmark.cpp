@@ -6,11 +6,13 @@ namespace benchmark
 {
   void instance::start(const char* in_name, bool in_verbose)
   {
+#if DO_BENCHMARK
     name = in_name;
     verbose = in_verbose;
     start_point = high_resolution_clock::now();
 #ifdef USE_PIX
     PIXBeginEvent(PIX_COLOR(155, 1127, 0), in_name);
+#endif
 #endif
   }
 
@@ -33,6 +35,7 @@ namespace benchmark
 
   uint64_t instance::stop()
   {
+#if DO_BENCHMARK
     end_point = high_resolution_clock::now();
     uint64_t start = time_point_cast<microseconds>(start_point).time_since_epoch().count();
     uint64_t end = time_point_cast<microseconds>(end_point).time_since_epoch().count();
@@ -45,6 +48,9 @@ namespace benchmark
     PIXEndEvent();
 #endif
     return time;
+#else
+    return 0;
+#endif
   }
   
   scope_counter::scope_counter(const char* name, bool verbose)

@@ -14,6 +14,7 @@
 #define USE_PIX
 #include "pix3.h" // https://devblogs.microsoft.com/pix/winpixeventruntime
 #endif
+#define DO_BENCHMARK 1
 
 #include "common.h"
 #include "benchmark.h"
