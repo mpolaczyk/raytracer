@@ -137,7 +137,7 @@ void frame_renderer::render_chunk(const sphere_list& in_world, const chunk& in_c
   {
     for (uint32_t x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
     {
-      color3 pixel_color;
+      vec3 pixel_color;
       // Anti Aliasing done at the ray level, multiple rays for each pixel.
       for (uint32_t c = 0; c < settings.AA_samples_per_pixel; c++)
       {
@@ -153,7 +153,7 @@ void frame_renderer::render_chunk(const sphere_list& in_world, const chunk& in_c
   }
 }
 
-color3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in_world, uint32_t depth)
+vec3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in_world, uint32_t depth)
 {
   if (depth <= 0)
   {
@@ -164,7 +164,7 @@ color3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in
   if (in_world.hit(in_ray, 0.001f, infinity, hit))  // 0.001f to fix "shadow acne"
   {
     ray scattered;
-    color3 attenuation;
+    vec3 attenuation;
     if (hit.material->scatter(in_ray, hit, attenuation, scattered))
     {
       return attenuation * ray_color(scattered, in_world, depth - 1);
@@ -174,7 +174,7 @@ color3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in
   }
 
   vec3 unit_direction = in_ray.direction;              // unit_vector(r.direction)
-  float y =  0.5f * (unit_direction.y() + 1.0f);  // base blend based on y component of a ray
+  float y =  0.5f * (unit_direction.y + 1.0f);  // base blend based on y component of a ray
   return (1.0f - y) * white + y * white_blue;     // linear blend (lerp) between white and blue
 }
 

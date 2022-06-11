@@ -7,17 +7,17 @@ struct plane
 {
   vec3 horizontal;            // size horizontal
   vec3 vertical;              // size vertical
-  point3 lower_left_corner;   // world space coordinates
-  point3 get_point(float u, float v) const
+  vec3 lower_left_corner;   // world space coordinates
+  vec3 get_point(float u, float v) const
   {
-    return lower_left_corner + u * horizontal + v * vertical;
+    return lower_left_corner + horizontal * u + v * vertical;
   }
 };
 
 struct camera_setup
 {
   camera_setup() = default;
-  camera_setup(point3 look_from, point3 look_at, float field_of_view, float aspect_ratio, float aperture, float dist_to_focus, float type = 0.0f)
+  camera_setup(vec3 look_from, vec3 look_at, float field_of_view, float aspect_ratio, float aperture, float dist_to_focus, float type = 0.0f)
     : look_from(look_from), look_at(look_at), field_of_view(field_of_view), aspect_ratio(aspect_ratio), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
   { }
 
@@ -29,8 +29,8 @@ struct camera_setup
     return answer;
   }
 
-  point3 look_from;
-  point3 look_at;
+  vec3 look_from;
+  vec3 look_at;
   float field_of_view = 90.0f;
   float aspect_ratio = 1.77777779f;
   float aperture = 0.0f;       // defocus blur
@@ -72,7 +72,7 @@ public:
   ray inline get_ray(float uu, float vv) const 
   {
     vec3 rd = lens_radius * random_in_unit_disk();
-    vec3 offset = u * rd.x() + v * rd.y();
+    vec3 offset = u * rd.x + v * rd.y;
 
     if (setup.type == 0.0f)
     {
@@ -84,7 +84,7 @@ public:
     else
     {
       // Don't shoot rays from the point, shoot from the plane that is proportionally smaller to focus plane
-      point3 cpo = c.get_point(uu, vv);             // point on the camera plane at origin
+      vec3 cpo = c.get_point(uu, vv);             // point on the camera plane at origin
       vec3 fpo = f.get_point(uu, vv);               // point on the focus plane at origin
       vec3 fpf = fpo - w * setup.dist_to_focus;     // point on the plane crossing frustum, forward camera
       return ray(cpo - offset, unit_vector(fpf - cpo + offset)); 

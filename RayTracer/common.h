@@ -5,14 +5,14 @@
 
 #include "vec3.h"
 
-const color3 white = color3(1.0f, 1.0f, 1.0f);
-const color3 grey = color3(0.6f, 0.6f, 0.6f);
-const color3 black = color3(0.0f, 0.0f, 0.0f);
-const color3 red = color3(1.0f, 0.0f, 0.0f);
-const color3 green = color3(0.0f, 1.0f, 0.0f);
-const color3 blue = color3(0.0f, 0.0f, 1.0f);
-const color3 white_blue = color3(0.5f, 0.7f, 1.0f);
-const color3 yellow = color3(1.0f, 1.0f, 0.0f);
+const vec3 white = vec3(1.0f, 1.0f, 1.0f);
+const vec3 grey = vec3(0.6f, 0.6f, 0.6f);
+const vec3 black = vec3(0.0f, 0.0f, 0.0f);
+const vec3 red = vec3(1.0f, 0.0f, 0.0f);
+const vec3 green = vec3(0.0f, 1.0f, 0.0f);
+const vec3 blue = vec3(0.0f, 0.0f, 1.0f);
+const vec3 white_blue = vec3(0.5f, 0.7f, 1.0f);
+const vec3 yellow = vec3(1.0f, 1.0f, 0.0f);
 
 const float infinity = std::numeric_limits<float>::infinity();
 const float pi = 3.1415926535897932385f;

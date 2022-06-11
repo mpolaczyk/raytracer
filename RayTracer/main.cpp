@@ -47,22 +47,22 @@ int main()
     {
       float pos_offset = size_x / 2.0f;
       int material_id = (x*2 + z*5) % (materials.size() - 1);
-      sphere obj(point3((float)x - pos_offset, 0.0f, (float)z- pos_offset), 0.4f, &materials[material_id]);
+      sphere obj(vec3((float)x - pos_offset, 0.0f, (float)z- pos_offset), 0.4f, &materials[material_id]);
       world.add(obj);
     }
   }
-  world.add(sphere(point3(-2.f, 2.0f, 1.0f), 0.5f, &material::glass_preset));
-  world.add(sphere(point3( 0.f, 2.0f, 1.0f), 0.5f, &material::glass_preset));
-  world.add(sphere(point3( 2.f, 2.0f, 1.0f), 0.5f, &material::glass_preset));
-  world.add(sphere(point3(-2.f, 2.0f, 2.5f), 0.5f, &material::glass_preset));
-  world.add(sphere(point3( 0.f, 2.0f, 2.5f), 0.5f, &material::glass_preset));
-  world.add(sphere(point3( 2.f, 2.0f, 2.5f), 0.5f, &material::glass_preset));
-  world.add(sphere(point3(-2.f, 2.0f, 4.0f), 0.5f, &material::glass_preset));
-  world.add(sphere(point3( 0.f, 2.0f, 4.0f), 0.5f, &material::glass_preset));
-  world.add(sphere(point3( 2.f, 2.0f, 4.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(vec3(-2.f, 2.0f, 1.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(vec3( 0.f, 2.0f, 1.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(vec3( 2.f, 2.0f, 1.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(vec3(-2.f, 2.0f, 2.5f), 0.5f, &material::glass_preset));
+  world.add(sphere(vec3( 0.f, 2.0f, 2.5f), 0.5f, &material::glass_preset));
+  world.add(sphere(vec3( 2.f, 2.0f, 2.5f), 0.5f, &material::glass_preset));
+  world.add(sphere(vec3(-2.f, 2.0f, 4.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(vec3( 0.f, 2.0f, 4.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(vec3( 2.f, 2.0f, 4.0f), 0.5f, &material::glass_preset));
 
 
-  world.add(sphere(point3(0.f, -100.5f, -1.f), 100.f, &material::metal_shiny_preset));
+  world.add(sphere(vec3(0.f, -100.5f, -1.f), 100.f, &material::metal_shiny_preset));
   world.build_boxes();
 
   frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_settings::medium_quality_preset);

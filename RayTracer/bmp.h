@@ -10,16 +10,16 @@ namespace bmp
 
   struct bmp_pixel
   {
-    uint8_t b;
-    uint8_t g;
-    uint8_t r;
-    bmp_pixel() {}
+    uint8_t b = 0;
+    uint8_t g = 0;
+    uint8_t r = 0;
+    bmp_pixel() = default;
     bmp_pixel(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) { }
-    bmp_pixel(const color3& color)
+    bmp_pixel(const vec3& color)
     {
-      r = static_cast<uint8_t>(color.x() * 255.0f);
-      g = static_cast<uint8_t>(color.y() * 255.0f);
-      b = static_cast<uint8_t>(color.z() * 255.0f);
+      r = static_cast<uint8_t>(color.x * 255.0f);
+      g = static_cast<uint8_t>(color.y * 255.0f);
+      b = static_cast<uint8_t>(color.z * 255.0f);
     }
   };
 

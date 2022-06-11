@@ -3,81 +3,63 @@
 #include <cmath>
 #include <iostream>
 
-using std::sqrt;
-
-class vec3 
+struct vec3
 {
 public:
-  vec3() : e{ 0.0f, 0.0f, 0.0f } {}
-  vec3(float e0, float e1, float e2) : e{ e0, e1, e2 } {}
+  vec3() = default;
+  vec3(float in_x, float in_y, float in_z) : e{ in_x, in_y, in_z } {}
 
-  float inline x() const { return e[0]; }
-  float inline y() const { return e[1]; }
-  float inline z() const { return e[2]; }
-
-  vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
   float operator[](int i) const { return e[i]; }
   float& operator[](int i) { return e[i]; }
 
-  vec3& operator+=(const vec3& v) 
+  vec3 operator - () const { return vec3(-x, -y, -z); }
+
+  vec3& operator += (const vec3& v) { x += v.x; y += v.y; z += v.z; return *this; }
+  vec3& operator -= (const vec3& v) { x -= v.x; y -= v.y; z -= v.z; return *this; }
+  vec3& operator *= (const vec3& v) { x *= v.x; y *= v.y; z *= v.z; return *this; }
+  vec3& operator /= (const vec3& v) { x /= v.x; y /= v.y; z /= v.z; return *this; }
+
+  vec3& operator += (float t) { return *this += t; }
+  vec3& operator -= (float t) { return *this -= t; }
+  vec3& operator *= (float t) { return *this *= t; }
+  vec3& operator /= (float t) { return *this /= t; }
+
+  inline float length() const
   {
-    e[0] += v.e[0];
-    e[1] += v.e[1];
-    e[2] += v.e[2];
-    return *this;
+    return std::sqrt(length_squared());
   }
 
-  vec3& operator*=(const float t) 
+  inline float length_squared() const 
   {
-    e[0] *= t;
-    e[1] *= t;
-    e[2] *= t;
-    return *this;
-  }
-
-  vec3& operator/=(const float t) 
-  {
-    return *this *= 1 / t;
-  }
-
-  vec3& operator-=(const float t)
-  {
-    return *this -= t;
-  }
-
-  vec3& operator+=(const float t)
-  {
-    return *this += t;
-  }
-
-  float length() const 
-  {
-    return sqrt(length_squared());
-  }
-
-  float length_squared() const 
-  {
-    return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
+    return x * x + y * y + z * z;
   }
 
 public:
-  float e[3];
+  union 
+  {
+    float e[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    struct { float x, y, z, padding; };
+  };
 };
 
-// Type aliases for vec3
-using point3 = vec3;   // 3D point
-using color3 = vec3;    // RGB color
+inline vec3 operator + (const vec3& v, float t) { return vec3(v.x + t, v.y + t, v.z + t); }
+inline vec3 operator - (const vec3& v, float t) { return vec3(v.x - t, v.y - t, v.z - t); }
+inline vec3 operator * (const vec3& v, float t) { return vec3(v.x * t, v.y * t, v.z * t); }
+inline vec3 operator / (const vec3& v, float t) { return vec3(v.x / t, v.y / t, v.z / t); }
 
-std::ostream& operator<<(std::ostream& out, const vec3& v);
-vec3 operator+(const vec3& u, const vec3& v);
-vec3 operator-(const vec3& u, const vec3& v);
-vec3 operator*(const vec3& u, const vec3& v);
-vec3 operator*(float t, const vec3& v);
-vec3 operator*(const vec3& v, float t);
-vec3 operator/(vec3 v, float t);
-vec3 operator-(vec3 v, float t);
-vec3 operator+(vec3 v, float t);
+inline vec3 operator + (float t, const vec3& v) { return v + t; }
+inline vec3 operator - (float t, const vec3& v) { return v - t; }
+inline vec3 operator * (float t, const vec3& v) { return v * t; }
+inline vec3 operator / (float t, const vec3& v) { return v / t; }
 
-float dot(const vec3& u, const vec3& v);
-vec3 cross(const vec3& u, const vec3& v);
-vec3 unit_vector(vec3 v);
+inline vec3 operator + (const vec3& u, const vec3& v) { return vec3(u.x + v.x, u.y + v.y, u.z + v.z); }
+inline vec3 operator - (const vec3& u, const vec3& v) { return vec3(u.x - v.x, u.y - v.y, u.z - v.z); }
+inline vec3 operator * (const vec3& u, const vec3& v) { return vec3(u.x * v.x, u.y * v.y, u.z * v.z); }
+inline vec3 operator / (const vec3& u, const vec3& v) { return vec3(u.x / v.x, u.y / v.y, u.z / v.z); }
+
+inline std::ostream& operator<<(std::ostream& out, const vec3& v) { return out << '[' << v.x << ',' << v.y << ',' << v.z << ']'; }
+
+inline vec3 unit_vector(vec3 v) { return v / v.length(); }
+
+inline float dot(const vec3& u, const vec3& v) { return u.x * v.x + u.y * v.y + u.z * v.z; }
+inline vec3 cross(const vec3& u, const vec3& v) { return vec3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x); };

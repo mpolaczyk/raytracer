@@ -9,7 +9,7 @@ class material;
 
 struct hit_record 
 {
-  point3 p;
+  vec3 p;
   vec3 normal;
   float t;
   material* material;
@@ -20,7 +20,7 @@ class sphere
 {
 public:
   sphere() {}
-  sphere(point3 in_origin, float radius, material* material)
+  sphere(vec3 in_origin, float radius, material* material)
     : origin(in_origin), radius(radius), material(material)
   {
   };
@@ -30,7 +30,7 @@ public:
 
 public:
   // TODO: rethink sphere type
-  point3 origin;
+  vec3 origin;
   float radius;
   material* material;
   aabb bounding_box;

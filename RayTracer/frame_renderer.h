@@ -69,6 +69,6 @@ public:
 private:
   void render(const sphere_list& in_world);
   void render_chunk(const sphere_list& in_world, const chunk& in_chunk);
-  color3 ray_color(const ray& in_ray, const sphere_list& in_world, uint32_t depth);
+  vec3 ray_color(const ray& in_ray, const sphere_list& in_world, uint32_t depth);
   void save(const char* file_name);
 };

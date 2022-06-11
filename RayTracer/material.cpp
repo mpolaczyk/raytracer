@@ -45,7 +45,7 @@ material material::metal_matt_preset
   .albedo = grey
 };
 
-bool material::scatter(const ray& in_ray, const hit_record& in_rec, color3& out_attenuation, ray& out_scattered) const
+bool material::scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const
 {
   // if else based material selection on purpose - much cheaper than OOP based approach
   if (type == material_type::diffuse)
@@ -66,7 +66,7 @@ bool material::scatter(const ray& in_ray, const hit_record& in_rec, color3& out_
   }
 }
 
-bool material::scatter_diffuse(const ray& in_ray, const hit_record& in_hit, color3& out_attenuation, ray& out_scattered) const
+bool material::scatter_diffuse(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
 {
   // Fake Lambertian, uniform distribution, bounces outside of the surface
   vec3 scatter_direction = random_unit_in_hemisphere(in_hit.normal);
@@ -80,7 +80,7 @@ bool material::scatter_diffuse(const ray& in_ray, const hit_record& in_hit, colo
   return true;
 }
 
-bool material::scatter_metal_shiny(const ray& in_ray, const hit_record& in_hit, color3& out_attenuation, ray& out_scattered) const
+bool material::scatter_metal_shiny(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
 {
   vec3 reflected = reflect(unit_vector(in_ray.direction), in_hit.normal);
   out_scattered = ray(in_hit.p, reflected);
@@ -88,7 +88,7 @@ bool material::scatter_metal_shiny(const ray& in_ray, const hit_record& in_hit, 
   return (dot(out_scattered.direction, in_hit.normal) > 0);
 }
 
-bool material::scatter_metal_matt(const ray& in_ray, const hit_record& in_hit, color3& out_attenuation, ray& out_scattered) const
+bool material::scatter_metal_matt(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
 {
   float fuzz = 0.02f;
   vec3 reflected = reflect(unit_vector(in_ray.direction), in_hit.normal);
@@ -97,9 +97,9 @@ bool material::scatter_metal_matt(const ray& in_ray, const hit_record& in_hit, c
   return (dot(out_scattered.direction, in_hit.normal) > 0);
 }
 
-bool material::scatter_dialectric(const ray& in_ray, const hit_record& in_hit, color3& out_attenuation, ray& out_scattered) const
+bool material::scatter_dialectric(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
 {
-  out_attenuation = color3(1.0f, 1.0f, 1.0f);
+  out_attenuation = vec3(1.0f, 1.0f, 1.0f);
   float ir = 1.5f;
   float refraction_ratio = in_hit.front_face ? (1.0f / ir) : ir;
   vec3 unit_direction = unit_vector(in_ray.direction);
