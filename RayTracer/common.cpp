@@ -51,11 +51,6 @@ float reflectance(float cosine, float ref_idx)
   return r0 + (1 - r0) * pow((1 - cosine), 5);
 }
 
-float lerp_float(float a, float b, float f)
-{
-  return a + f * (b - a);
-}
-
 namespace random_cache
 {
   void init()

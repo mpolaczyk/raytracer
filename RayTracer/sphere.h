@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "ray.h"
+#include "aabb.h"
 
 class material;
 
@@ -19,17 +20,20 @@ class sphere
 {
 public:
   sphere() {}
-  sphere(point3 cen, float r, material* material) 
-    : center(cen), radius(r), material(material)
-  {};
+  sphere(point3 in_origin, float radius, material* material)
+    : origin(in_origin), radius(radius), material(material)
+  {
+  };
 
   bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const;
+  bool get_bounding_box(aabb& out_box) const;
 
 public:
   // TODO: rethink sphere type
-  point3 center;
+  point3 origin;
   float radius;
   material* material;
+  aabb bounding_box;
 };
 
 class sphere_list
@@ -42,6 +46,8 @@ public:
   void add(sphere object) { objects.push_back(object); }
 
   bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const;
+  bool get_bounding_box(aabb& out_box) const;
+  void build_boxes();
 
 public:
   std::vector<sphere> objects;

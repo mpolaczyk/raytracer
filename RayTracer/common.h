@@ -26,7 +26,9 @@ bool is_near_zero(vec3& value);
 vec3 reflect(const vec3& v, const vec3& n);
 vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
 float reflectance(float cosine, float ref_idx);
-float lerp_float(float a, float b, float f);
+inline float lerp_float(float a, float b, float f) { return a + f * (b - a); }
+inline float min2(float a, float b) { return a < b ? a : b; }
+inline float max2(float a, float b) { return a < b ? b : a; }
 
 namespace random_cache
 {

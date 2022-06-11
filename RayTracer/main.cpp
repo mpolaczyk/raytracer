@@ -7,17 +7,13 @@
 #include "camera.h"
 #include "material.h"
 
-
-
-
-
 int main()
 {
   random_cache::init();
     
-  vec3 look_from = vec3(0.9f, 1.7f, 2.0f);
-  vec3 look_at = vec3(0.0f, 0.0f, 0.0f);
-  float field_of_view = 70.0f;
+  vec3 look_from = vec3(0.0f, 3.7f, 5.0f);
+  vec3 look_at = vec3(0.0f, 0.0f, 2.2f);
+  float field_of_view = 90.0f;
   float aspect_ratio = 16.0f / 9.0f;
   float aperture = 0.05f;
   float dist_to_focus = (look_from - look_at).length();
@@ -35,33 +31,41 @@ int main()
   camera_states.push_back(std::make_pair(20, state2));
 
   sphere_list world;
-  std::vector<sphere> spheres;
-  spheres.push_back(sphere(point3(0.0f, 0.0f, 0.0f), 0.4f, &material::red_diffuse_preset));
-  spheres.push_back(sphere(point3(0.0f, 0.0f, 0.0f), 0.4f, &material::glass_preset));
-  spheres.push_back(sphere(point3(0.0f, 0.0f, 0.0f), 0.4f, &material::green_diffuse_preset));
-  spheres.push_back(sphere(point3(0.0f, 0.0f, 0.0f), 0.4f, &material::metal_matt_preset));
-  spheres.push_back(sphere(point3(0.0f, 0.0f, 0.0f), 0.4f, &material::white_diffuse_preset));
-  spheres.push_back(sphere(point3(0.0f, 0.0f, 0.0f), 0.4f, &material::glass_preset));
-  spheres.push_back(sphere(point3(0.0f, 0.0f, 0.0f), 0.4f, &material::yellow_diffuse_preset));
-  spheres.push_back(sphere(point3(0.0f, 0.0f, 0.0f), 0.4f, &material::metal_shiny_preset));
-  for (int i = 0;i < spheres.size(); i++)
+  std::vector<material> materials;
+  materials.push_back(material::red_diffuse_preset);
+  materials.push_back(material::glass_preset);
+  materials.push_back(material::green_diffuse_preset);
+  materials.push_back(material::metal_matt_preset);
+  materials.push_back(material::white_diffuse_preset);
+  materials.push_back(material::yellow_diffuse_preset);
+  materials.push_back(material::metal_shiny_preset);
+  int size_x = 12;
+  int size_z = 12;
+  for (int x = 0; x < size_x; x++)
   {
-    float alpha = i * (2*pi / spheres.size());
-    spheres[i].center.e[0] = 1.1f * sin(alpha);
-    spheres[i].center.e[2] = 1.1f * cos(alpha);
-    world.add(spheres[i]);
+    for (int z = 0; z < size_z; z++)
+    {
+      float pos_offset = size_x / 2.0f;
+      int material_id = (x*2 + z*5) % (materials.size() - 1);
+      sphere obj(point3((float)x - pos_offset, 0.0f, (float)z- pos_offset), 0.4f, &materials[material_id]);
+      world.add(obj);
+    }
   }
-  for (int i = 0; i < spheres.size(); i++)
-  {
-    float alpha = (i * 2.0f * pi / spheres.size()) + 3*pi/8;
-    spheres[i].center.e[0] = 1.8f * sin(alpha);
-    spheres[i].center.e[2] = 1.8f * cos(alpha);
-    world.add(spheres[i]);
-  }
-  world.add(sphere(point3(0.f, 0.0f, 0.f), 0.6f, &material::glass_preset));
-  world.add(sphere(point3(0.f, -100.5f, -1.f), 100.f, &material::metal_matt_preset));
+  world.add(sphere(point3(-2.f, 2.0f, 1.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(point3( 0.f, 2.0f, 1.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(point3( 2.f, 2.0f, 1.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(point3(-2.f, 2.0f, 2.5f), 0.5f, &material::glass_preset));
+  world.add(sphere(point3( 0.f, 2.0f, 2.5f), 0.5f, &material::glass_preset));
+  world.add(sphere(point3( 2.f, 2.0f, 2.5f), 0.5f, &material::glass_preset));
+  world.add(sphere(point3(-2.f, 2.0f, 4.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(point3( 0.f, 2.0f, 4.0f), 0.5f, &material::glass_preset));
+  world.add(sphere(point3( 2.f, 2.0f, 4.0f), 0.5f, &material::glass_preset));
 
-  frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_settings::high_quality_preset);
+
+  world.add(sphere(point3(0.f, -100.5f, -1.f), 100.f, &material::metal_shiny_preset));
+  world.build_boxes();
+
+  frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_settings::medium_quality_preset);
 
   if (true)
   {

@@ -95,6 +95,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="aabb.cpp" />
     <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="bmp.cpp" />
     <ClCompile Include="chunk_generator.cpp" />
@@ -111,6 +112,7 @@
     <ClCompile Include="vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aabb.h" />
     <ClInclude Include="benchmark.h" />
     <ClInclude Include="bmp.h" />
     <ClInclude Include="camera.h" />
