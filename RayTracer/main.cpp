@@ -14,7 +14,7 @@ diffuse_material yellow_diffuse(yellow);
 diffuse_material red_diffuse(red);
 metal_material metal_shiny(grey, 0.0f);
 metal_material metal_matt(grey, 0.02f);
-dialectric_material glass(1.5f);
+dialectric_material glass(2.8f);
 
 solid_color cha = solid_color(0.2, 0.3, 0.1);
 solid_color chb = solid_color(0.9, 0.9, 0.9);
@@ -48,21 +48,22 @@ void draw_scene_massive(sphere_list& world)
     {
       float pos_offset = size_x / 2.0f;
       int material_id = (x * 2 + z * 5) % (materials.size() - 1);
-      sphere obj(vec3((float)x - pos_offset, 0.0f, (float)z - pos_offset), 0.4f, materials[material_id]);
+      sphere* obj = new sphere(vec3((float)x - pos_offset, 0.0f, (float)z - pos_offset), 0.4f, materials[material_id]);
       world.add(obj);
     }
   }
-  world.add(sphere(vec3(-2.f, 2.0f, 1.0f), 0.5f, &glass));
-  world.add(sphere(vec3(0.f, 2.0f, 1.0f), 0.5f, &glass));
-  world.add(sphere(vec3(2.f, 2.0f, 1.0f), 0.5f, &glass));
-  world.add(sphere(vec3(-2.f, 2.0f, 2.5f), 0.5f, &glass));
-  world.add(sphere(vec3(0.f, 2.0f, 2.5f), 0.5f, &glass));
-  world.add(sphere(vec3(2.f, 2.0f, 2.5f), 0.5f, &glass));
-  world.add(sphere(vec3(-2.f, 2.0f, 4.0f), 0.5f, &glass));
-  world.add(sphere(vec3(0.f, 2.0f, 4.0f), 0.5f, &glass));
-  world.add(sphere(vec3(2.f, 2.0f, 4.0f), 0.5f, &glass));
-
-  world.add(sphere(vec3(0.f, -100.5f, -1.f), 100.f, &world_base));
+  sphere* a = new sphere(vec3(-2.f, 2.0f, 1.0f), 0.5f, &glass);
+  sphere* b = new sphere(vec3(0.f, 2.0f, 1.0f), 0.5f, &glass);
+  sphere* c = new sphere(vec3(2.f, 2.0f, 1.0f), 0.5f, &glass);
+  sphere* d = new sphere(vec3(-2.f, 2.0f, 2.5f), 0.5f, &glass);
+  sphere* e = new sphere(vec3(0.f, 2.0f, 2.5f), 0.5f, &glass);
+  sphere* f = new sphere(vec3(2.f, 2.0f, 2.5f), 0.5f, &glass);
+  sphere* g = new sphere(vec3(-2.f, 2.0f, 4.0f), 0.5f, &glass);
+  sphere* h = new sphere(vec3(0.f, 2.0f, 4.0f), 0.5f, &glass);
+  sphere* i = new sphere(vec3(2.f, 2.0f, 4.0f), 0.5f, &glass);
+  world.add(a); world.add(b); world.add(c); world.add(d); world.add(e); world.add(f); world.add(g); world.add(h); world.add(i);
+  sphere* j = new sphere(vec3(0.f, -100.5f, -1.f), 100.f, &world_base);
+  world.add(j);
   world.build_boxes();
 }
 
@@ -71,9 +72,13 @@ void draw_scene_lights(sphere_list& world)
   look_from = vec3(0.0f, 1.0f, -2.0f);
   look_at = vec3(0.0f, 0.0f, 0.0f);
 
-  world.add(sphere(vec3(1.f, 0.8f, -1.f), 0.1f, &red_diffuse));
-  world.add(sphere(vec3(0.f, 0.5f, -1.f), 0.3f, &green_diffuse));
-  world.add(sphere(vec3(0.f, -100.5f, -1.f), 100.f, &world_base));
+  // Ignore leaks for now, it does not matter.
+  sphere* a = new sphere(vec3(1.f, 0.8f, -1.f), 0.1f, &red_diffuse);
+  sphere* b = new sphere(vec3(0.f, 0.5f, -1.f), 0.3f, &green_diffuse);
+  sphere* c = new sphere(vec3(-1.f, 0.5f, -1.f), 0.3f, &metal_shiny);
+  sphere* d = new sphere(vec3(0.3f, 0.5f, -1.4f), 0.2f, &glass);
+  sphere* e = new sphere(vec3(0.f, -100.5f, -1.f), 100.f, &world_base);
+  world.add(a); world.add(b); world.add(c); world.add(d); world.add(e);
   world.build_boxes();
 }
 

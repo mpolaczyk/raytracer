@@ -30,7 +30,7 @@ bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hi
 
   out_hit.t = root;
   out_hit.p = in_ray.at(out_hit.t);
-  out_hit.material = material;
+  out_hit.mat = mat;
 
   // Normal always against the ray
   vec3 outward_normal = (out_hit.p - origin) / radius;
@@ -62,14 +62,14 @@ bool sphere_list::hit(const ray& in_ray, float t_min, float t_max, hit_record& o
   bool hit_anything = false;
   float closest_so_far = t_max;
 
-  for (const sphere& object : objects)
+  for (const hittable* object : objects)
   {
     // TODO: no hierarchical check, only replacement of the object hit function
-    if (!object.bounding_box.hit(in_ray, t_min, t_max))
+    if (!object->bounding_box.hit(in_ray, t_min, t_max))
     {
       continue;
     }
-    if (object.hit(in_ray, t_min, closest_so_far, temp_rec))
+    if (object->hit(in_ray, t_min, closest_so_far, temp_rec))
     {
       hit_anything = true;
       closest_so_far = temp_rec.t;
@@ -87,9 +87,9 @@ bool sphere_list::get_bounding_box(aabb& out_box) const
   aabb temp_box;
   bool first_box = true;
 
-  for (const auto& object : objects)
+  for (const hittable* object : objects)
   {
-    if (!object.get_bounding_box(temp_box)) return false;
+    if (!object->get_bounding_box(temp_box)) return false;
     out_box = first_box ? temp_box : aabb::merge(out_box, temp_box);
     first_box = false;
   }
@@ -99,8 +99,8 @@ bool sphere_list::get_bounding_box(aabb& out_box) const
 
 void sphere_list::build_boxes()
 {
-  for (sphere& object : objects)
+  for (hittable* object : objects)
   {
-    object.get_bounding_box(object.bounding_box);
+    object->get_bounding_box(object->bounding_box);
   }
 }

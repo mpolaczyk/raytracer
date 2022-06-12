@@ -37,6 +37,19 @@ inline vec3 max3(const vec3& a, const vec3& b)
 {
   return vec3(max1(a[0], b[0]), max1(a[1], b[1]), max1(a[2], b[2]));
 }
+inline void get_sphere_uv(const vec3& p, float& out_u, float& out_v)
+{
+  // p: a given point on the sphere of radius one, centered at the origin.
+  // u: returned value [0,1] of angle around the Y axis from X=-1.
+  // v: returned value [0,1] of angle from Y=-1 to Y=+1.
+  //     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
+  //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
+  //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
+  float theta = acos(-p.y);
+  float phi = atan2(-p.z, p.x) + pi;
+  out_u = phi / (2.0f * pi);
+  out_v = theta / pi;
+}
 
 namespace random_cache
 {
@@ -49,3 +62,4 @@ namespace random_cache
   float get_float();
   vec3 get_vec3();
 }
+

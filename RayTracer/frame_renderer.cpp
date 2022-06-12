@@ -184,7 +184,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in_w
   {
     ray scattered;
     vec3 attenuation;
-    if (hit.material->scatter(in_ray, hit, attenuation, scattered))
+    if (hit.mat->scatter(in_ray, hit, attenuation, scattered))
     {
       return attenuation * ray_color(scattered, in_world, in_background, depth - 1);
     }
