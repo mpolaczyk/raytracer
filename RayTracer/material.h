@@ -3,35 +3,42 @@
 #include "ray.h"
 #include "sphere.h"
 
-enum class material_type
-{
-  none,
-  diffuse,
-  metal_shiny,
-  metal_matt,
-  dialectric
-};
-
 class material
 {
 public:
+  virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const;
+};
 
-  static material white_diffuse_preset;
-  static material green_diffuse_preset;
-  static material yellow_diffuse_preset;
-  static material red_diffuse_preset;
-  static material metal_shiny_preset;
-  static material glass_preset;
-  static material metal_matt_preset;
-  
-  material_type type = material_type::none;
+
+class diffuse_material : public material
+{
+public:
+  diffuse_material(const vec3& albedo) : albedo(albedo) {}
+
+  virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
+
   vec3 albedo;
+};
 
-  bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const;
 
-private:
-  bool scatter_diffuse(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const;
-  bool scatter_metal_shiny(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const;
-  bool scatter_metal_matt(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const;
-  bool scatter_dialectric(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const;
+class metal_material : public material
+{
+public:
+  metal_material(const vec3& albedo, float fuzz) : albedo(albedo), fuzz(fuzz) {}
+
+  virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
+
+  vec3 albedo;
+  float fuzz = 0.02f;
+};
+
+
+class dialectric_material : public material
+{
+public:
+  dialectric_material(float index_of_refraction) : index_of_refraction(index_of_refraction) {}
+
+  virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
+
+  float index_of_refraction = 1.5f;
 };
