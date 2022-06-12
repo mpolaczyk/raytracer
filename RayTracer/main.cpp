@@ -19,7 +19,12 @@ int main()
   metal_material metal_shiny(grey, 0.0f);
   metal_material metal_matt(grey, 0.02f);
   dialectric_material glass(1.5f);
-  
+
+  solid_color cha = solid_color(0.2, 0.3, 0.1);
+  solid_color chb = solid_color(0.9, 0.9, 0.9);
+  checker_texture ch = checker_texture(&cha, &chb);
+  texture_material world_base(&ch);
+
   vec3 look_from = vec3(0.0f, 3.7f, 5.0f);
   vec3 look_at = vec3(0.0f, 0.0f, 2.2f);
   float field_of_view = 90.0f;
@@ -70,8 +75,7 @@ int main()
   world.add(sphere(vec3( 0.f, 2.0f, 4.0f), 0.5f, &glass));
   world.add(sphere(vec3( 2.f, 2.0f, 4.0f), 0.5f, &glass));
 
-
-  world.add(sphere(vec3(0.f, -100.5f, -1.f), 100.f, &metal_shiny));
+  world.add(sphere(vec3(0.f, -100.5f, -1.f), 100.f, &world_base));
   world.build_boxes();
 
   frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_settings::medium_quality_preset);

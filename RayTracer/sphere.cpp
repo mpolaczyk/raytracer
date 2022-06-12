@@ -46,6 +46,7 @@ bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hi
     out_hit.normal = -outward_normal;
     out_hit.front_face = false;
   }
+  get_sphere_uv(outward_normal, out_hit.u, out_hit.v);
   return true;
 }
 

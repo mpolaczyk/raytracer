@@ -2,6 +2,7 @@
 
 #include "ray.h"
 #include "sphere.h"
+#include "texture.h"
 
 class material
 {
@@ -18,6 +19,17 @@ public:
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
 
   vec3 albedo;
+};
+
+
+class texture_material : public material
+{
+public:
+  texture_material(texture* texture) : texture(texture) {}
+
+  virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
+
+  texture* texture = nullptr;
 };
 
 

@@ -12,13 +12,25 @@ bool diffuse_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3
 {
   // Fake Lambertian, uniform distribution, bounces outside of the surface
   vec3 scatter_direction = random_unit_in_hemisphere(in_hit.normal);
-
   if (is_near_zero(scatter_direction))
   {
     scatter_direction = in_hit.normal;
   }
   out_scattered = ray(in_hit.p, scatter_direction);
   out_attenuation = albedo;
+  return true;
+}
+
+bool texture_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
+{
+  // Fake Lambertian, uniform distribution, bounces outside of the surface
+  vec3 scatter_direction = random_unit_in_hemisphere(in_hit.normal);
+  if (is_near_zero(scatter_direction))
+  {
+    scatter_direction = in_hit.normal;
+  }
+  out_scattered = ray(in_hit.p, scatter_direction);
+  out_attenuation = texture->value(in_hit.u, in_hit.v, in_hit.p);
   return true;
 }
 
