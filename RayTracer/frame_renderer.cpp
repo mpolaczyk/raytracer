@@ -144,7 +144,7 @@ void frame_renderer::render_chunk(const sphere_list& in_world, const chunk& in_c
         float u = (float(x) + random_cache::get_float()) / (image_width - 1);
         float v = (float(y) + random_cache::get_float()) / (image_height - 1);
         ray r = cam.get_ray(u, v);
-        pixel_color += ray_color(r, in_world, settings.diffuse_max_bounce_num);
+        pixel_color += ray_color(r, in_world, settings.background, settings.diffuse_max_bounce_num);
       }
       // Save to bmp
       bmp::bmp_pixel p = bmp::bmp_pixel(pixel_color / (float)settings.AA_samples_per_pixel);
@@ -153,12 +153,31 @@ void frame_renderer::render_chunk(const sphere_list& in_world, const chunk& in_c
   }
 }
 
-vec3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in_world, uint32_t depth)
+vec3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in_world, const vec3& in_background, uint32_t depth)
 {
   if (depth <= 0)
   {
     return black;
   }
+
+  // NEW CODE FOR LIGHTING
+  //hit_record hit;
+  //// If the ray hits nothing, return the background color.
+  //if (!in_world.hit(in_ray, 0.001, infinity, hit))
+  //{
+  //  return in_background;
+  //}
+  //
+  //ray scattered;
+  //vec3 attenuation;
+  //vec3 emitted = hit.material->emitted(hit.u, hit.v, hit.p);
+  //
+  //if (!hit.material->scatter(in_ray, hit, attenuation, scattered))
+  //{
+  //  return emitted;
+  //}
+  //
+  //return emitted + attenuation * ray_color(scattered, in_background, in_world, depth - 1);
 
   hit_record hit;
   if (in_world.hit(in_ray, 0.001f, infinity, hit))  // 0.001f to fix "shadow acne"
@@ -167,12 +186,12 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in_w
     vec3 attenuation;
     if (hit.material->scatter(in_ray, hit, attenuation, scattered))
     {
-      return attenuation * ray_color(scattered, in_world, depth - 1);
+      return attenuation * ray_color(scattered, in_world, in_background, depth - 1);
     }
     return black;
     
   }
-
+  
   vec3 unit_direction = in_ray.direction;              // unit_vector(r.direction)
   float y =  0.5f * (unit_direction.y + 1.0f);  // base blend based on y component of a ray
   return (1.0f - y) * white + y * white_blue;     // linear blend (lerp) between white and blue

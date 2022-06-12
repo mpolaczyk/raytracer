@@ -7,6 +7,10 @@ bool material::scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_at
 {
   return false;
 }
+vec3 material::emitted(float u, float v, const vec3& p) const
+{
+  return vec3(0.0f, 0.0f, 0.0f);
+}
 
 bool diffuse_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
 {

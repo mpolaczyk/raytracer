@@ -32,6 +32,8 @@ struct renderer_settings
   uint32_t diffuse_max_bounce_num = 7;
   float diffuse_bounce_brightness = 0.6f;
 
+  vec3 background = vec3(0.0f, 0.0f, 0.0f);
+
   // How work is split
   uint32_t chunks_num = 512;
   chunk_strategy_type chunks_strategy = chunk_strategy_type::rectangles;
@@ -69,6 +71,6 @@ public:
 private:
   void render(const sphere_list& in_world);
   void render_chunk(const sphere_list& in_world, const chunk& in_chunk);
-  vec3 ray_color(const ray& in_ray, const sphere_list& in_world, uint32_t depth);
+  vec3 ray_color(const ray& in_ray, const sphere_list& in_world, const vec3& in_background, uint32_t depth);
   void save(const char* file_name);
 };
