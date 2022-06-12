@@ -3,10 +3,10 @@
 #include <cmath>
 #include <iostream>
 
-#define USE_SIMD 0
+#define USE_SIMD 1
 
 #if USE_SIMD
-#include <xmmintrin.h>
+#include <intrin.h> // SSE3 required
 #endif
 
 __declspec(align(16)) struct vec3
@@ -17,6 +17,8 @@ public:
 #if USE_SIMD
   vec3(float f) { R128 = _mm_set_ps1(f); }
   vec3(const __m128& r128) { R128 = r128; }
+#else
+  vec3(float f) { x = f; y = f; z = f; }
 #endif
 
   float operator[](int i) const { return e[i]; }
@@ -46,12 +48,24 @@ public:
 
   inline float length() const
   {
+#if USE_SIMD 
+    __m128 a = _mm_mul_ps(R128, R128);
+    a = _mm_hadd_ps(a, a);
+    return _mm_cvtss_f32(_mm_sqrt_ps(_mm_hadd_ps(a, a)));
+#else
     return std::sqrt(length_squared());
+#endif
   }
 
   inline float length_squared() const 
   {
+#if 0 // USE_SIMD // commented out, non vectorized is faster in that case
+    __m128 a = _mm_mul_ps(R128, R128);
+    a = _mm_hadd_ps(a, a);
+    return _mm_cvtss_f32(_mm_hadd_ps(a,a));
+#else
     return x * x + y * y + z * z;
+#endif
   }
 
 public:
@@ -93,7 +107,29 @@ inline vec3 operator * (const vec3& u, const vec3& v) { return vec3(u.x * v.x, u
 inline vec3 operator / (const vec3& u, const vec3& v) { return vec3(u.x / v.x, u.y / v.y, u.z / v.z); }
 #endif
 
-inline vec3 unit_vector(vec3 v) { return v / v.length(); }
-inline float dot(const vec3& u, const vec3& v) { return u.x * v.x + u.y * v.y + u.z * v.z; }
-inline vec3 cross(const vec3& u, const vec3& v) { return vec3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x); };
+inline vec3 unit_vector(const vec3& v)
+{
+#if USE_SIMD 
+  __m128 a = _mm_mul_ps(v.R128, v.R128);
+  a = _mm_hadd_ps(a, a);
+  return _mm_div_ps(v.R128, _mm_sqrt_ps(_mm_hadd_ps(a, a)));
+#else
+  return v / v.length();
+#endif
+}
 
+inline float dot(const vec3& u, const vec3& v) 
+{ 
+#if USE_SIMD 
+  __m128 a = _mm_mul_ps(u.R128, v.R128);
+  a = _mm_hadd_ps(a, a);
+  return _mm_cvtss_f32(_mm_hadd_ps(a, a));
+#else
+  return u.x * v.x + u.y * v.y + u.z * v.z;
+#endif
+}
+
+inline vec3 cross(const vec3& u, const vec3& v) 
+{ 
+  return vec3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x); 
+};

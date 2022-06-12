@@ -27,8 +27,16 @@ vec3 reflect(const vec3& v, const vec3& n);
 vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
 float reflectance(float cosine, float ref_idx);
 inline float lerp_float(float a, float b, float f) { return a + f * (b - a); }
-inline float min2(float a, float b) { return a < b ? a : b; }
-inline float max2(float a, float b) { return a < b ? b : a; }
+inline float min1(float a, float b) { return a < b ? a : b; }
+inline float max1(float a, float b) { return a < b ? b : a; }
+inline vec3 min3(const vec3& a, const vec3& b)
+{
+  return vec3(min1(a[0], b[0]), min1(a[1], b[1]), min1(a[2], b[2]));
+}
+inline vec3 max3(const vec3& a, const vec3& b)
+{
+  return vec3(max1(a[0], b[0]), max1(a[1], b[1]), max1(a[2], b[2]));
+}
 
 namespace random_cache
 {
