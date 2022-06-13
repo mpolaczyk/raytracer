@@ -71,3 +71,13 @@ bool dialectric_material::scatter(const ray& in_ray, const hit_record& in_hit, v
 
   return true;
 }
+
+bool diffuse_light_material::scatter(const ray& r_in, const hit_record& rec, vec3& out_attenuation, ray& out_scattered) const
+{
+  return false;
+}
+
+vec3 diffuse_light_material::emitted(float u, float v, const vec3& p) const
+{
+  return texture->value(u, v, p);
+}

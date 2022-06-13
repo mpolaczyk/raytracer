@@ -104,3 +104,45 @@ void sphere_list::build_boxes()
     object->get_bounding_box(object->bounding_box);
   }
 }
+
+bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+{
+  float t = (k - in_ray.origin.z) / in_ray.direction.z;
+  if (t < t_min || t > t_max)
+  {
+    return false;
+  }
+  float x = in_ray.origin.x + t * in_ray.direction.x;
+  float y = in_ray.origin.y + t * in_ray.direction.y;
+  if (x < x0 || x > x1 || y < y0 || y > y1)
+  {
+    return false;
+  }
+  out_hit.u = (x - x0) / (x1 - x0);
+  out_hit.v = (y - y0) / (y1 - y0);
+  out_hit.t = t;
+  vec3 outward_normal = vec3(0.0f, 0.0f, 1.0f);
+  if (dot(in_ray.direction, outward_normal) < 0)
+  {
+    // Ray is inside
+    out_hit.normal = outward_normal;
+    out_hit.front_face = true;
+  }
+  else
+  {
+    // Ray is outside
+    out_hit.normal = -outward_normal;
+    out_hit.front_face = false;
+  }
+  out_hit.mat = mat;
+  out_hit.p = in_ray.at(t);
+  return true;
+}
+
+bool xy_rect::get_bounding_box(aabb& out_box) const
+{
+  // The bounding box must have non-zero width in each dimension, so pad the Z
+  // dimension a small amount.
+  out_box = aabb(vec3(x0, y0, k - 0.0001f), vec3(x1, y1, k + 0.0001f));
+  return true;
+}

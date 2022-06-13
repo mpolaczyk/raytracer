@@ -21,6 +21,8 @@ enum class threading_strategy_type
 
 struct renderer_settings
 {
+  static renderer_settings ten_thousand_per_pixel_preset;
+  static renderer_settings thousand_per_pixel_preset;
   static renderer_settings high_quality_preset;
   static renderer_settings medium_quality_preset;
   static renderer_settings low_quality_preset;

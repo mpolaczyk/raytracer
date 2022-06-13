@@ -11,6 +11,16 @@
 #include "material.h"
 
 // Designated initializers c++20 https://en.cppreference.com/w/cpp/language/aggregate_initialization
+renderer_settings renderer_settings::ten_thousand_per_pixel_preset
+{
+  .AA_samples_per_pixel = 10000,
+  .diffuse_max_bounce_num = 10
+};
+renderer_settings renderer_settings::thousand_per_pixel_preset
+{
+  .AA_samples_per_pixel = 1000,
+  .diffuse_max_bounce_num = 10
+};
 renderer_settings renderer_settings::high_quality_preset
 { 
   .AA_samples_per_pixel = 50,
@@ -161,40 +171,41 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in_w
   }
 
   // NEW CODE FOR LIGHTING
-  //hit_record hit;
-  //// If the ray hits nothing, return the background color.
-  //if (!in_world.hit(in_ray, 0.001, infinity, hit))
-  //{
-  //  return in_background;
-  //}
-  //
-  //ray scattered;
-  //vec3 attenuation;
-  //vec3 emitted = hit.material->emitted(hit.u, hit.v, hit.p);
-  //
-  //if (!hit.material->scatter(in_ray, hit, attenuation, scattered))
-  //{
-  //  return emitted;
-  //}
-  //
-  //return emitted + attenuation * ray_color(scattered, in_background, in_world, depth - 1);
-
   hit_record hit;
-  if (in_world.hit(in_ray, 0.001f, infinity, hit))  // 0.001f to fix "shadow acne"
+  // If the ray hits nothing, return the background color.
+  if (!in_world.hit(in_ray, 0.001f, infinity, hit))
   {
-    ray scattered;
-    vec3 attenuation;
-    if (hit.mat->scatter(in_ray, hit, attenuation, scattered))
-    {
-      return attenuation * ray_color(scattered, in_world, in_background, depth - 1);
-    }
-    return black;
-    
+    return in_background;
   }
   
-  vec3 unit_direction = in_ray.direction;              // unit_vector(r.direction)
-  float y =  0.5f * (unit_direction.y + 1.0f);  // base blend based on y component of a ray
-  return (1.0f - y) * white + y * white_blue;     // linear blend (lerp) between white and blue
+  ray scattered;
+  vec3 attenuation;
+  vec3 emitted = hit.mat->emitted(hit.u, hit.v, hit.p);
+  
+  if (!hit.mat->scatter(in_ray, hit, attenuation, scattered))
+  {
+    return emitted;
+  }
+  
+  return emitted + attenuation * ray_color(scattered, in_world, in_background, depth - 1);
+
+  // OLD CODE
+  //hit_record hit;
+  //if (in_world.hit(in_ray, 0.001f, infinity, hit))  // 0.001f to fix "shadow acne"
+  //{
+  //  ray scattered;
+  //  vec3 attenuation;
+  //  if (hit.mat->scatter(in_ray, hit, attenuation, scattered))
+  //  {
+  //    return attenuation * ray_color(scattered, in_world, in_background, depth - 1);
+  //  }
+  //  return black;
+  //  
+  //}
+  //
+  //vec3 unit_direction = in_ray.direction;              // unit_vector(r.direction)
+  //float y =  0.5f * (unit_direction.y + 1.0f);  // base blend based on y component of a ray
+  //return (1.0f - y) * white + y * white_blue;     // linear blend (lerp) between white and blue
 }
 
 void frame_renderer::save(const char* file_name)

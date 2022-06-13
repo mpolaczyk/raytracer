@@ -57,21 +57,14 @@ public:
 };
 
 
-class diffuse_light : public material 
+class diffuse_light_material : public material
 {
 public:
-  diffuse_light(texture* texture) : texture(texture) {}
+  diffuse_light_material(texture* texture) : texture(texture) {}
 
-  virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const override 
-  {
-    return false;
-  }
-
-  virtual vec3 emitted(float u, float v, const vec3& p) const override 
-  {
-    return texture->value(u, v, p);
-  }
-
+  virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& out_attenuation, ray& out_scattered) const override;
+  virtual vec3 emitted(float u, float v, const vec3& p) const override;
+  
 public:
   texture* texture;
 };
