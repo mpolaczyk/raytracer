@@ -11,3 +11,6 @@
 *.idb
 *.iobj
 *.ipdb
+Archive/*
+Build/*
+Intermediate/*
