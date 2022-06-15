@@ -23,6 +23,9 @@ struct renderer_settings
 {
   static renderer_settings ten_thousand_per_pixel_preset;
   static renderer_settings thousand_per_pixel_preset;
+  static renderer_settings super_mega_ultra_high_quality_preset;
+  static renderer_settings mega_ultra_high_quality_preset;
+  static renderer_settings ultra_high_quality_preset;
   static renderer_settings high_quality_preset;
   static renderer_settings medium_quality_preset;
   static renderer_settings low_quality_preset;

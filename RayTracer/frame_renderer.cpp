@@ -21,6 +21,21 @@ renderer_settings renderer_settings::thousand_per_pixel_preset
   .AA_samples_per_pixel = 1000,
   .diffuse_max_bounce_num = 10
 };
+renderer_settings renderer_settings::super_mega_ultra_high_quality_preset
+{
+  .AA_samples_per_pixel = 500,
+  .diffuse_max_bounce_num = 20
+};
+renderer_settings renderer_settings::mega_ultra_high_quality_preset
+{
+  .AA_samples_per_pixel = 200,
+  .diffuse_max_bounce_num = 20
+};
+renderer_settings renderer_settings::ultra_high_quality_preset
+{
+  .AA_samples_per_pixel = 100,
+  .diffuse_max_bounce_num = 20
+};
 renderer_settings renderer_settings::high_quality_preset
 { 
   .AA_samples_per_pixel = 50,

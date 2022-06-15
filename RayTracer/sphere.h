@@ -70,9 +70,39 @@ public:
   xy_rect(float _x0, float _x1, float _y0, float _y1, float _k, material* mat)
     : x0(_x0), x1(_x1), y0(_y0), y1(_y1), k(_k), hittable(mat) { };
 
-  virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const override;
+  virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
 
 public:
   float x0, x1, y0, y1, k;
+};
+
+class xz_rect : public hittable
+{
+public:
+  xz_rect() : hittable(nullptr) {}
+
+  xz_rect(float _x0, float _x1, float _z0, float _z1, float _k, material* mat)
+    : x0(_x0), x1(_x1), z0(_z0), z1(_z1), k(_k), hittable(mat) { };
+
+  virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
+  virtual bool get_bounding_box(aabb& out_box) const override;
+
+public:
+  float x0, x1, z0, z1, k;
+};
+
+class yz_rect : public hittable 
+{
+public:
+  yz_rect() : hittable(nullptr) {}
+
+  yz_rect(float _y0, float _y1, float _z0, float _z1, float _k, material* mat)
+    : y0(_y0), y1(_y1), z0(_z0), z1(_z1), k(_k), hittable(mat) { };
+
+  virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
+  virtual bool get_bounding_box(aabb& out_box) const override;
+
+public:
+  float y0, y1, z0, z1, k;
 };

@@ -11,23 +11,29 @@
 // Textures
 solid_texture t_g(grey);
 solid_texture t_ggg(grey*1.5f);
-solid_texture t_sky(vec3(0.53f, 0.81f, 0.92f)*0.2f);
-solid_texture t_lightbulb(vec3(4.0f, 4.0f, 4.0f)*0.5f);
+solid_texture t_sky(white*0.4f);
+solid_texture t_lightbulb(vec3(2.0f, 2.0f, 2.0f));
+solid_texture t_lightbulb_strong(vec3(8.0f, 8.0f, 8.0f));
+solid_texture t_lightbulb_ultra_strong(vec3(15.0f, 15.0f, 15.0f));
 checker_texture t_ch(&t_g, &t_ggg);
 // Materials
 diffuse_material white_blue_diffuse(white_blue);
+diffuse_material white_diffuse(white);
 diffuse_material green_diffuse(green);
 diffuse_material yellow_diffuse(yellow);
 diffuse_material red_diffuse(red);
 metal_material metal_shiny(grey, 0.0f);
 metal_material metal_matt(grey, 0.02f);
-dialectric_material glass(2.8f);
+dialectric_material glass(1.5f);
 texture_material world_base(&t_ch);
 // Lights
-diffuse_light_material diff_light_strong = diffuse_light_material(&t_lightbulb);
-diffuse_light_material diff_light_weak = diffuse_light_material(&t_sky);
+diffuse_light_material diff_light = diffuse_light_material(&t_lightbulb);
+diffuse_light_material diff_light_strong = diffuse_light_material(&t_lightbulb_strong);
+diffuse_light_material diff_light_ultra_strong = diffuse_light_material(&t_lightbulb_ultra_strong);
+diffuse_light_material diff_light_sky = diffuse_light_material(&t_sky);
 
 // Camera settings
+int resolution_vertical = 1080;
 vec3 look_from = vec3(0.0f, 1.0f, -1.0f);
 vec3 look_at = vec3(0.0f, 0.0f, 0.0f);
 float field_of_view = 80.0f;
@@ -41,6 +47,14 @@ float aperture = 0.02f;
 // - light reflected of a diffuse object seen on a different object
 // - reflections of an object that is not on the screen
 // - reflections of all above in a bigger mirror
+// - global illumination
+// - glass growing and focusing light in a point
+// - glass pendulum throwing a light beam at objects
+// - off screen source of light
+// - changing glass ir, camera alpha, metal fuzz etc.
+// - transition between perspective and orthographic views, done with camera alpha and glass ball as a lense
+// - different rays counts for different screen parts
+// - refreshing only those parts that changed (low ray count prepass, high ray count pass)
 
 void draw_scene_massive(sphere_list& world)
 {
@@ -93,9 +107,34 @@ void draw_scene_lights(sphere_list& world)
   sphere* d = new sphere(vec3(0.3f, 0.4f, -1.4f), 0.2f, &green_diffuse);
   sphere* g = new sphere(vec3(-0.3f, 0.4f, -1.4f), 0.2f, &red_diffuse);
   sphere* e = new sphere(vec3(0.f, -100.5f, -1.f), 100.f, &world_base);
-  sphere* f = new sphere(vec3(0.f, 0.9f, -1.f), 0.4f, &diff_light_strong);
-  sphere* h = new sphere(vec3(0.f, 0.0f, 0.f), 100.0f, &diff_light_weak);
+  sphere* f = new sphere(vec3(0.f, 0.9f, -1.f), 0.4f, &diff_light);
+  sphere* h = new sphere(vec3(0.f, 0.0f, 0.f), 100.0f, &diff_light_sky);
   world.add(a); world.add(b); world.add(c); world.add(d); world.add(e); world.add(f); world.add(g); world.add(h);
+}
+
+void draw_scene_box(sphere_list& world)
+{
+  resolution_vertical = 600;
+  look_from = vec3(278, 278, -800);
+  look_at = vec3(278, 278, 0);
+  field_of_view = 40.0f;
+  aspect_ratio = 1.0f;
+
+  yz_rect* r1 = new yz_rect(0, 555, 0, 555, 555, &green_diffuse);
+  yz_rect* r2 = new yz_rect(0, 555, 0, 555, 0, &red_diffuse);
+  xz_rect* r3 = new xz_rect(213, 343, 127, 332, 554, &diff_light_ultra_strong);
+  xz_rect* r4 = new xz_rect(0, 555, 0, 555, 0, &white_diffuse);
+  xz_rect* r5 = new xz_rect(0, 555, 0, 555, 555, &white_diffuse);
+  xy_rect* r6 = new xy_rect(0, 555, 0, 555, 555, &white_diffuse);
+  world.add(r1); world.add(r2); world.add(r3); world.add(r4); world.add(r5); world.add(r6);
+
+  sphere* e1 = new sphere(vec3(230.0f, 290.0f, 250.f), 120.f, &glass);
+  world.add(e1);
+  sphere* e3 = new sphere(vec3(270.0f, 50.0f, 210.f), 30.f, &metal_shiny);
+  world.add(e3);
+
+  sphere* e2 = new sphere(vec3(270.0f, 270.0f, 250.f), 1100.f, &diff_light_sky);
+  world.add(e2);
 }
 
 int main()
@@ -104,17 +143,17 @@ int main()
 
   sphere_list world;
   //draw_scene_massive(world);
-  draw_scene_lights(world);
+  //draw_scene_lights(world);
+  draw_scene_box(world);
 
   world.build_boxes();
 
   float dist_to_focus = (look_from - look_at).length();
 
-  int resolution_vertical = 1080;
   int resolution_horizontal = (int)((float)resolution_vertical) * aspect_ratio;
 
   std::vector<std::pair<uint32_t, camera_setup>> camera_states;
-  camera_setup state0 = camera_setup(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.2f);
+  camera_setup state0 = camera_setup(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
   camera_setup state1 = camera_setup(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 1.0f);
   camera_setup state2 = camera_setup(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
 
@@ -122,7 +161,7 @@ int main()
   camera_states.push_back(std::make_pair(10, state1));
   camera_states.push_back(std::make_pair(20, state2));
 
-  frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_settings::medium_quality_preset);
+  frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_settings::ultra_high_quality_preset);
 
   if (true)
   {

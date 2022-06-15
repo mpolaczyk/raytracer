@@ -5,11 +5,11 @@
 
 #include "vec3.h"
 
-const vec3 white = vec3(1.0f, 1.0f, 1.0f);
+const vec3 white = vec3(0.73f, .73f, .73f);
 const vec3 grey = vec3(0.6f, 0.6f, 0.6f);
 const vec3 black = vec3(0.0f, 0.0f, 0.0f);
-const vec3 red = vec3(1.0f, 0.0f, 0.0f);
-const vec3 green = vec3(0.0f, 1.0f, 0.0f);
+const vec3 red = vec3(0.65f, 0.05f, 0.05f);
+const vec3 green = vec3(.12f, .45f, .15f);
 const vec3 blue = vec3(0.0f, 0.0f, 1.0f);
 const vec3 white_blue = vec3(0.5f, 0.7f, 1.0f);
 const vec3 yellow = vec3(1.0f, 1.0f, 0.0f);
@@ -26,9 +26,11 @@ bool is_near_zero(vec3& value);
 vec3 reflect(const vec3& v, const vec3& n);
 vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
 float reflectance(float cosine, float ref_idx);
+bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal);
 inline float lerp_float(float a, float b, float f) { return a + f * (b - a); }
 inline float min1(float a, float b) { return a < b ? a : b; }
 inline float max1(float a, float b) { return a < b ? b : a; }
+inline float clamp(float a, float b, float f) { return  min1(b, max1(a, f)); }
 inline vec3 min3(const vec3& a, const vec3& b)
 {
   return vec3(min1(a[0], b[0]), min1(a[1], b[1]), min1(a[2], b[2]));
@@ -53,7 +55,7 @@ inline void get_sphere_uv(const vec3& p, float& out_u, float& out_v)
 
 namespace random_cache
 {
-  static int num = 50000;
+  static int num = 500000;
   static int last_index = 0;
   static std::vector<float> cache;
   static std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);

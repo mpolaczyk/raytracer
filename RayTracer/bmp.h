@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec3.h"
+#include "common.h"
 
 namespace bmp
 {
@@ -17,9 +17,9 @@ namespace bmp
     bmp_pixel(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) { }
     bmp_pixel(const vec3& color)
     {
-      r = static_cast<uint8_t>(color.x * 255.0f);
-      g = static_cast<uint8_t>(color.y * 255.0f);
-      b = static_cast<uint8_t>(color.z * 255.0f);
+      r = static_cast<uint8_t>(clamp(0.0f, 255.0f, color.x * 255.0f));
+      g = static_cast<uint8_t>(clamp(0.0f, 255.0f, color.y * 255.0f));
+      b = static_cast<uint8_t>(clamp(0.0f, 255.0f, color.z * 255.0f));
     }
   };
 

@@ -51,6 +51,21 @@ float reflectance(float cosine, float ref_idx)
   return r0 + (1 - r0) * pow((1 - cosine), 5);
 }
 
+bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal)
+{
+  if (dot(in_ray_direction, in_outward_normal) < 0)
+  {
+    // Ray is inside
+    out_normal = in_outward_normal;
+    return true;
+  }
+  else
+  {
+    // Ray is outside
+    out_normal = -in_outward_normal;
+    return false;
+  }
+}
 namespace random_cache
 {
   void init()
