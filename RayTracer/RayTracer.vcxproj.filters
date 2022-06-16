@@ -1,36 +1,136 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="bmp.cpp" />
-    <ClCompile Include="frame_renderer.cpp" />
-    <ClCompile Include="sphere.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="benchmark.cpp" />
-    <ClCompile Include="common.cpp" />
-    <ClCompile Include="vec3.cpp" />
-    <ClCompile Include="chunk_generator.cpp" />
-    <ClCompile Include="thread_pool.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="material.cpp" />
-    <ClCompile Include="aabb.cpp" />
+    <ClCompile Include="aabb.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="sphere.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="vec3.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="benchmark.cpp">
+      <Filter>Processing</Filter>
+    </ClCompile>
+    <ClCompile Include="chunk_generator.cpp">
+      <Filter>Processing</Filter>
+    </ClCompile>
+    <ClCompile Include="frame_renderer.cpp">
+      <Filter>Processing</Filter>
+    </ClCompile>
+    <ClCompile Include="thread_pool.cpp">
+      <Filter>Processing</Filter>
+    </ClCompile>
+    <ClCompile Include="material.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="common.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="bmp.cpp">
+      <Filter>Processing</Filter>
+    </ClCompile>
+    <ClCompile Include="main_old.cpp" />
+    <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx12.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bmp.h" />
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="frame_renderer.h" />
-    <ClInclude Include="sphere.h" />
-    <ClInclude Include="ray.h" />
-    <ClInclude Include="benchmark.h" />
-    <ClInclude Include="common.h" />
-    <ClInclude Include="vec3.h" />
-    <ClInclude Include="chunk_generator.h" />
-    <ClInclude Include="thread_pool.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="material.h" />
-    <ClInclude Include="aabb.h" />
-    <ClInclude Include="texture.h" />
+    <ClInclude Include="aabb.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="ray.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="vec3.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="benchmark.h">
+      <Filter>Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="chunk_generator.h">
+      <Filter>Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="frame_renderer.h">
+      <Filter>Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_pool.h">
+      <Filter>Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="material.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="bmp.h">
+      <Filter>Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx12.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="image_0.bmp" />
+    <Filter Include="Math">
+      <UniqueIdentifier>{02ce4a4f-4175-4e95-bbab-11cc90f822e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Processing">
+      <UniqueIdentifier>{e03e927c-53a4-4fd8-b5a7-be63b02733a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{f5bcb8ed-7e79-47a2-8101-c72f6f11618b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
