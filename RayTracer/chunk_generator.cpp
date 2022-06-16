@@ -29,7 +29,7 @@ void chunk_generator::generate_chunks(chunk_strategy_type strategy, uint32_t num
     return generate_rectangles(snum, snum, image_width, image_height, out_chunks);
 
   default:
-    break;
+    return generate_rectangles(1, 1, image_width, image_height, out_chunks);
   }
 }
 

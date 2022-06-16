@@ -64,4 +64,3 @@ namespace random_cache
   float get_float();
   vec3 get_vec3();
 }
-

@@ -9,6 +9,13 @@ enum class chunk_strategy_type
   horizontal_stripes,
   rectangles,
 };
+static inline const char* chunk_strategy_names[] = 
+{ 
+  "None", 
+  "Vertical stripes", 
+  "Horizontal stripes", 
+  "Rectangles" 
+};
 
 struct chunk
 {

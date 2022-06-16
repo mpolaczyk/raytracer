@@ -7,6 +7,9 @@
 #include <dxgi1_4.h>
 #include <tchar.h>
 
+#include "camera.h"
+#include "frame_renderer.h"
+
 #ifdef _DEBUG
 #define DX12_ENABLE_DEBUG_LAYER
 #endif
@@ -55,9 +58,9 @@ int main(int, char**)
 {
   // Create application window
   //ImGui_ImplWin32_EnableDpiAwareness();
-  WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("ImGui Example"), NULL };
+  WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("RayTracer"), NULL };
   ::RegisterClassEx(&wc);
-  HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Dear ImGui DirectX12 Example"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
+  HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("RayTracer"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
   if (!CreateDeviceD3D(hwnd))
@@ -104,12 +107,29 @@ int main(int, char**)
   //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
   //IM_ASSERT(font != NULL);
 
-  // Our state
+  // Imgui state
   bool show_demo_window = true;
-  bool show_another_window = false;
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-  // Main loop
+  // Camera state
+  int ar[2] = { 16, 9 };
+  bool use_custom_focus_distance = false;
+  camera_setup camera;
+  camera.aspect_ratio = (float)ar[0] / (float)ar[1];
+  camera.field_of_view = 80.0f;
+  camera.aperture = 0.02f;
+  camera.dist_to_focus = 1.0f;
+  camera.look_from = vec3(0.0f, 1.0f, -1.0f);
+  camera.look_at = vec3(0.0f, 0.0f, 0.0f);
+  camera.type = 1.0f;
+
+  // Renderer state
+  int resolution_vertical = 1080;
+  int resolution_horizontal = (int)((float)resolution_vertical * camera.aspect_ratio);
+  renderer_settings renderer = renderer_settings::mega_ultra_high_quality_preset;
+  int chunk_strategy = (int)renderer.chunks_strategy;
+  int threading_strategy = (int)renderer.threading_strategy;
+
   bool done = false;
   while (!done)
   {
@@ -134,41 +154,66 @@ int main(int, char**)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
     if (show_demo_window)
+    {
       ImGui::ShowDemoWindow(&show_demo_window);
-
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-    {
-      static float f = 0.0f;
-      static int counter = 0;
-
-      ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-      ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-      ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-      ImGui::Checkbox("Another Window", &show_another_window);
-
-      ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-      ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-      if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-        counter++;
-      ImGui::SameLine();
-      ImGui::Text("counter = %d", counter);
-
-      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-      ImGui::End();
     }
-
-    // 3. Show another simple window.
-    if (show_another_window)
+    
     {
-      ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-      ImGui::Text("Hello from another window!");
-      if (ImGui::Button("Close Me"))
-        show_another_window = false;
-      ImGui::End();
+      ImGui::Begin("RayTracer");
+
+      ImGui::Separator();
+      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
+      ImGui::Separator();
+      ImGui::InputInt2("Aspect ratio", ar);
+      camera.aspect_ratio = (float)ar[0] / (float)ar[1];
+      ImGui::Text("Aspect ratio = %.3f", camera.aspect_ratio);
+      ImGui::InputFloat("Field of view", &camera.field_of_view, 1.0f, 189.0f, "%.0f");
+      ImGui::InputFloat("Projection", &camera.type, 0.1f, 1.0f, "%.2f");
+      ImGui::Text("0 = Orthografic; 1 = Perspective");
+      ImGui::Separator();
+      ImGui::InputFloat3("Look from", camera.look_from.e, "%.2f");
+      ImGui::InputFloat3("Look at", camera.look_at.e, "%.2f");
+      ImGui::Separator();
+      if (use_custom_focus_distance)
+      {
+        ImGui::InputFloat("Focus distance", &camera.dist_to_focus, 0.0f, 1000.0f, "%.2f");
+      }
+      else
+      {
+        camera.dist_to_focus = (camera.look_from - camera.look_at).length();
+        ImGui::Text("Focus distance = %.3f", camera.dist_to_focus);
+      }
+      ImGui::Checkbox("Use custom focus distance", &use_custom_focus_distance);
+      ImGui::InputFloat("Aperture", &camera.aperture, 0.1f, 1.0f, "%.2f");
+
+      ImGui::Separator();
+      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
+      ImGui::Separator();
+      ImGui::InputInt("Resolution v", &resolution_vertical, 1, 2160);
+      resolution_horizontal = (int)((float)resolution_vertical * camera.aspect_ratio);
+      ImGui::Text("Resolution h = %d", resolution_horizontal);
+      ImGui::Separator();
+      ImGui::Combo("Chunk strategy", &chunk_strategy, chunk_strategy_names, IM_ARRAYSIZE(chunk_strategy_names));
+      renderer.chunks_strategy = (chunk_strategy_type)chunk_strategy;
+      if (chunk_strategy != (int)chunk_strategy_type::none)
+      {
+        ImGui::InputInt("Chunks", &renderer.chunks_num);
+      }
+      ImGui::Separator();
+      ImGui::Combo("Threading strategy", &threading_strategy, threading_strategy_names, IM_ARRAYSIZE(threading_strategy_names));
+      renderer.threading_strategy = (threading_strategy_type)threading_strategy;
+      if (threading_strategy == (int)threading_strategy_type::thread_pool)
+      {
+        ImGui::InputInt("Threads", &renderer.threads_num);
+        ImGui::Text("0 enforces std::thread::hardware_concurrency");
+      }
+      ImGui::Separator();
+      ImGui::InputInt("Rays per pixel", &renderer.AA_samples_per_pixel,1,10);
+      ImGui::Separator();
+      ImGui::InputInt("Ray bounces", &renderer.diffuse_max_bounce_num, 1);
+      ImGui::InputFloat("Bounce brightness", &renderer.diffuse_bounce_brightness, 0.01f, 0.1f, "%.2f");
+
     }
 
     // Rendering
