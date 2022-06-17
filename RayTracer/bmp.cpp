@@ -55,7 +55,7 @@ uint8_t* bmp::bmp_image::create_info_header(uint32_t height, uint32_t width) con
   return info_header;
 }
 
-void bmp::bmp_image::draw_pixel(uint32_t x, uint32_t y, const bmp_pixel* p)
+void bmp::bmp_image::draw_pixel(uint32_t x, uint32_t y, const bmp_pixel* p, bmp_format format)
 {
   assert(x >= 0 && x < width);
   assert(y >= 0 && y < height);
@@ -65,7 +65,15 @@ void bmp::bmp_image::draw_pixel(uint32_t x, uint32_t y, const bmp_pixel* p)
   assert(p->b >= 0 && p->b <= 255);
 #endif
   uint32_t pixel_addr = y * width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
-  memcpy(buffer + pixel_addr, p, sizeof(bmp_pixel));
+  if (format == bmp_format::rgba)
+  {
+    bmp_pixel p2(p->b, p->g, p->r);
+    memcpy(buffer + pixel_addr, &p2, sizeof(bmp_pixel));
+  }
+  else if (format == bmp_format::bgra)
+  {
+    memcpy(buffer + pixel_addr, p, sizeof(bmp_pixel));
+  }
 }
 
 void bmp::bmp_image::save_to_file(const char* image_file_name) const

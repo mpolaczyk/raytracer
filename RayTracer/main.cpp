@@ -83,7 +83,7 @@ int main(int, char**)
   //IM_ASSERT(font != NULL);
 
   // Imgui state
-  bool show_demo_window = true;
+  bool show_demo_window = false;
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   // Camera
@@ -134,25 +134,10 @@ int main(int, char**)
   world.add(r1); world.add(r2); world.add(r3); world.add(r4); world.add(r5); world.add(r6);   world.add(e1); world.add(e3); world.add(e2);
   world.build_boxes();
 
-  // Render 
-  int my_image_width = 0;
-  int my_image_height = 0;
-  ID3D11ShaderResourceView* my_texture = nullptr;
-
-  if (1)
-  {
-    bool ret = LoadTextureFromFile("image_0.bmp", &my_texture, my_image_width, my_image_height);
-    IM_ASSERT(ret);
-  }
-  else 
-  {
-    renderer.set_config(resolution_horizontal, resolution_vertical, renderer_setting);
-    renderer.render_single(world, camera_setting);
-    my_image_width = renderer.image_width;
-    my_image_height = renderer.image_height;
-    bool ret = LoadTextureFromBuffer(renderer.img->buffer, &my_texture, renderer.image_width, renderer.image_height);
-    IM_ASSERT(ret);
-  }
+  // Output window 
+  int output_width = 0;
+  int output_height = 0;
+  ID3D11ShaderResourceView* output_texture = nullptr;
 
   // Main loop
   bool done = false;
@@ -244,19 +229,17 @@ int main(int, char**)
       {
         renderer.set_config(resolution_horizontal, resolution_vertical, renderer_setting);
         renderer.render_single(world, camera_setting);
-        my_image_width = renderer.image_width;
-        my_image_height = renderer.image_height;
-        //bool ret = LoadTextureFromBuffer(renderer.img->buffer, &my_texture, renderer.image_width, renderer.image_height);
-        //IM_ASSERT(ret);
-        bool ret = LoadTextureFromFile("image_0.bmp", &my_texture, my_image_width, my_image_height);
+        output_width = renderer.image_width;
+        output_height = renderer.image_height;
+        bool ret = LoadTextureFromBuffer(renderer.img_rgb->get_buffer(), &output_texture, output_width, output_height);
         IM_ASSERT(ret);
       }
       ImGui::End();
 
-      if (my_texture != nullptr)
+      if (output_texture != nullptr)
       {
         ImGui::Begin("Output", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Image((ImTextureID)my_texture, ImVec2(my_image_width, my_image_height));
+        ImGui::Image((ImTextureID)output_texture, ImVec2(output_width, output_height));
         ImGui::End();
       }
 
@@ -316,7 +299,6 @@ bool LoadTextureFromBuffer(unsigned char* buffer, ID3D11ShaderResourceView** out
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MipLevels = desc.MipLevels;
     srvDesc.Texture2D.MostDetailedMip = 0;
-
     if (SUCCEEDED(g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, out_srv)))
     {
       pTexture->Release();
@@ -335,7 +317,6 @@ bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_sr
   {
     out_width = image_width;
     out_height = image_height;
-
     bool answer = LoadTextureFromBuffer(image_data, out_srv, image_width, image_height);
     stbi_image_free(image_data);
     return answer;

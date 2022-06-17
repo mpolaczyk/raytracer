@@ -57,9 +57,13 @@ renderer_config renderer_config::low_quality_preset
 frame_renderer::frame_renderer() {}
 frame_renderer::~frame_renderer()
 {
-  if (img != nullptr)
+  if (img_rgb != nullptr)
   {
-    delete img;
+    delete img_rgb;
+  }
+  if (img_bgr != nullptr)
+  {
+    delete img_bgr;
   }
 }
 
@@ -68,11 +72,16 @@ void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_
   settings = in_settings;
   image_width = width;
   image_height = height;
-  if (img != nullptr)
+  if (img_rgb != nullptr)
   {
-    delete img;
+    delete img_rgb;
   }
-  img = new bmp::bmp_image(image_width, image_height);
+  img_rgb = new bmp::bmp_image(image_width, image_height);
+  if (img_bgr != nullptr)
+  {
+    delete img_bgr;
+  }
+  img_bgr = new bmp::bmp_image(image_width, image_height);
   std::cout << "Frame renderer: " << image_width << "x" << image_height << std::endl;
 }
 
@@ -177,7 +186,8 @@ void frame_renderer::render_chunk(const hittable_list& in_world, const chunk& in
       }
       // Save to bmp
       bmp::bmp_pixel p = bmp::bmp_pixel(pixel_color / (float)settings.AA_samples_per_pixel);
-      img->draw_pixel(x, y, &p);
+      img_bgr->draw_pixel(x, y, &p);
+      img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
     }
   }
 }
@@ -229,5 +239,5 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const hittable_list& in
 
 void frame_renderer::save(const char* file_name)
 {
-  img->save_to_file(file_name);
+  img_bgr->save_to_file(file_name);
 }

@@ -66,7 +66,8 @@ public:
   renderer_config settings;
   camera cam;
 
-  bmp::bmp_image* img = nullptr;
+  bmp::bmp_image* img_bgr = nullptr;
+  bmp::bmp_image* img_rgb = nullptr;
 
   void set_config(uint32_t width, uint32_t height, const renderer_config& in_settings);
   void render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states);
