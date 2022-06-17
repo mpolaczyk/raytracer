@@ -239,7 +239,7 @@ int main(int, char**)
       if (output_texture != nullptr)
       {
         ImGui::Begin("Output", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Image((ImTextureID)output_texture, ImVec2(output_width, output_height));
+        ImGui::Image((ImTextureID)output_texture, ImVec2(output_width, output_height), ImVec2(0,1), ImVec2(1,0));
         ImGui::End();
       }
 
