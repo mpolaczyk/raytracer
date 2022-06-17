@@ -11,48 +11,48 @@
 #include "material.h"
 
 // Designated initializers c++20 https://en.cppreference.com/w/cpp/language/aggregate_initialization
-renderer_settings renderer_settings::ten_thousand_per_pixel_preset
+renderer_config renderer_config::ten_thousand_per_pixel_preset
 {
   .AA_samples_per_pixel = 10000,
   .diffuse_max_bounce_num = 10
 };
-renderer_settings renderer_settings::thousand_per_pixel_preset
+renderer_config renderer_config::thousand_per_pixel_preset
 {
   .AA_samples_per_pixel = 1000,
   .diffuse_max_bounce_num = 10
 };
-renderer_settings renderer_settings::super_mega_ultra_high_quality_preset
+renderer_config renderer_config::super_mega_ultra_high_quality_preset
 {
   .AA_samples_per_pixel = 500,
   .diffuse_max_bounce_num = 20
 };
-renderer_settings renderer_settings::mega_ultra_high_quality_preset
+renderer_config renderer_config::mega_ultra_high_quality_preset
 {
   .AA_samples_per_pixel = 200,
   .diffuse_max_bounce_num = 20
 };
-renderer_settings renderer_settings::ultra_high_quality_preset
+renderer_config renderer_config::ultra_high_quality_preset
 {
   .AA_samples_per_pixel = 100,
   .diffuse_max_bounce_num = 20
 };
-renderer_settings renderer_settings::high_quality_preset
+renderer_config renderer_config::high_quality_preset
 { 
   .AA_samples_per_pixel = 50,
   .diffuse_max_bounce_num = 20
 };
-renderer_settings renderer_settings::medium_quality_preset
+renderer_config renderer_config::medium_quality_preset
 {
   .AA_samples_per_pixel = 20,
   .diffuse_max_bounce_num = 10
 };
-renderer_settings renderer_settings::low_quality_preset
+renderer_config renderer_config::low_quality_preset
 {
   .AA_samples_per_pixel = 5,
   .diffuse_max_bounce_num = 3
 };
 
-frame_renderer::frame_renderer(uint32_t width, uint32_t height, const renderer_settings& in_settings)
+frame_renderer::frame_renderer(uint32_t width, uint32_t height, const renderer_config& in_settings)
   : settings(in_settings), image_width(width), image_height(height)
 {
   img = new bmp::bmp_image(image_width, image_height);
@@ -72,7 +72,7 @@ void frame_renderer::set_camera(const camera& in_cam)
   cam = in_cam;
 }
 
-void frame_renderer::render_multiple(const sphere_list& in_world, const std::vector<std::pair<uint32_t, camera_setup>>& in_camera_states)
+void frame_renderer::render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states)
 {
   camera cam;
   if (in_camera_states.size() < 2)
@@ -84,8 +84,8 @@ void frame_renderer::render_multiple(const sphere_list& in_world, const std::vec
   {
     int frame_begin = in_camera_states[setup_id].first;
     int frame_end = in_camera_states[setup_id + 1].first;
-    camera_setup setup_begin = in_camera_states[setup_id].second;
-    camera_setup setup_end = in_camera_states[setup_id + 1].second;
+    camera_config setup_begin = in_camera_states[setup_id].second;
+    camera_config setup_end = in_camera_states[setup_id + 1].second;
 
     for (int frame_id = frame_begin; frame_id < frame_end; frame_id++)
     {
@@ -94,12 +94,12 @@ void frame_renderer::render_multiple(const sphere_list& in_world, const std::vec
       std::cout << name << std::endl;
 
       float f = (float)(frame_id - frame_begin) / (float)(frame_end - frame_begin);
-      render_single(in_world, camera_setup::lerp(setup_begin, setup_end, f), frame_id);
+      render_single(in_world, camera_config::lerp(setup_begin, setup_end, f), frame_id);
     }
   }
 }
 
-void frame_renderer::render_single(const sphere_list& in_world, const camera_setup& in_camera_state, int frame_id)
+void frame_renderer::render_single(const hittable_list& in_world, const camera_config& in_camera_state, int frame_id)
 {
   cam.set_camera(in_camera_state);
   {
@@ -115,7 +115,7 @@ void frame_renderer::render_single(const sphere_list& in_world, const camera_set
   }
 }
 
-void frame_renderer::render(const sphere_list& in_world)
+void frame_renderer::render(const hittable_list& in_world)
 {
   // Build chunks of work
   std::vector<chunk> chunks;
@@ -151,7 +151,7 @@ void frame_renderer::render(const sphere_list& in_world)
   }
 }
 
-void frame_renderer::render_chunk(const sphere_list& in_world, const chunk& in_chunk)
+void frame_renderer::render_chunk(const hittable_list& in_world, const chunk& in_chunk)
 {
   std::thread::id thread_id = std::this_thread::get_id();
   char name[100];
@@ -178,7 +178,7 @@ void frame_renderer::render_chunk(const sphere_list& in_world, const chunk& in_c
   }
 }
 
-vec3 inline frame_renderer::ray_color(const ray& in_ray, const sphere_list& in_world, const vec3& in_background, uint32_t depth)
+vec3 inline frame_renderer::ray_color(const ray& in_ray, const hittable_list& in_world, const vec3& in_background, uint32_t depth)
 {
   if (depth <= 0)
   {

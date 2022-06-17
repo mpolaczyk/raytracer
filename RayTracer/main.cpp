@@ -9,6 +9,7 @@
 
 #include "camera.h"
 #include "frame_renderer.h"
+#include "material.h"
 
 #ifdef _DEBUG
 #define DX12_ENABLE_DEBUG_LAYER
@@ -92,6 +93,8 @@ int main(int, char**)
     g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
     g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
 
+  random_cache::init();
+
   // Load Fonts
   // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
   // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
@@ -111,25 +114,54 @@ int main(int, char**)
   bool show_demo_window = true;
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-  // Camera state
-  int ar[2] = { 16, 9 };
+  // Camera
+  int ar[2] = { 1, 1 };
   bool use_custom_focus_distance = false;
-  camera_setup camera;
-  camera.aspect_ratio = (float)ar[0] / (float)ar[1];
-  camera.field_of_view = 80.0f;
-  camera.aperture = 0.02f;
-  camera.dist_to_focus = 1.0f;
-  camera.look_from = vec3(0.0f, 1.0f, -1.0f);
-  camera.look_at = vec3(0.0f, 0.0f, 0.0f);
-  camera.type = 1.0f;
+  camera_config camera_setting;
+  camera_setting.aspect_ratio = (float)ar[0] / (float)ar[1];
+  camera_setting.field_of_view = 40.0f;
+  camera_setting.aperture = 0.02f;
+  camera_setting.dist_to_focus = 1.0f;
+  camera_setting.look_from = vec3(278, 278, -800);
+  camera_setting.look_at = vec3(278, 278, 0);
+  camera_setting.type = 0.0f;
 
-  // Renderer state
-  int resolution_vertical = 1080;
-  int resolution_horizontal = (int)((float)resolution_vertical * camera.aspect_ratio);
-  renderer_settings renderer = renderer_settings::mega_ultra_high_quality_preset;
-  int chunk_strategy = (int)renderer.chunks_strategy;
-  int threading_strategy = (int)renderer.threading_strategy;
+  // Renderer
+  renderer_config renderer_setting = renderer_config::ultra_high_quality_preset;
+  int resolution_vertical = 600;
+  int resolution_horizontal = (int)((float)resolution_vertical * camera_setting.aspect_ratio);
+  int chunk_strategy = (int)renderer_setting.chunks_strategy;
+  int threading_strategy = (int)renderer_setting.threading_strategy;
+  bool is_rendering = false;
 
+  // Materials
+  diffuse_material white_diffuse(white);
+  diffuse_material green_diffuse(green);
+  diffuse_material yellow_diffuse(yellow);
+  diffuse_material red_diffuse(red);
+  metal_material metal_shiny(grey, 0.0f);
+  metal_material metal_matt(grey, 0.02f);
+  dialectric_material glass(1.5f);
+  solid_texture t_sky(white * 0.4f);
+  solid_texture t_lightbulb_ultra_strong(vec3(15.0f, 15.0f, 15.0f));
+  diffuse_light_material diff_light_sky = diffuse_light_material(&t_sky);
+  diffuse_light_material diff_light_ultra_strong = diffuse_light_material(&t_lightbulb_ultra_strong);
+
+  // World
+  hittable_list world;
+  yz_rect* r1 = new yz_rect(0, 555, 0, 555, 555, &green_diffuse);
+  yz_rect* r2 = new yz_rect(0, 555, 0, 555, 0, &red_diffuse);
+  xz_rect* r3 = new xz_rect(213, 343, 127, 332, 554, &diff_light_ultra_strong);
+  xz_rect* r4 = new xz_rect(0, 555, 0, 555, 0, &white_diffuse);
+  xz_rect* r5 = new xz_rect(0, 555, 0, 555, 555, &white_diffuse);
+  xy_rect* r6 = new xy_rect(0, 555, 0, 555, 555, &white_diffuse);
+  sphere* e1 = new sphere(vec3(230.0f, 290.0f, 250.f), 120.f, &glass);
+  sphere* e3 = new sphere(vec3(270.0f, 50.0f, 210.f), 30.f, &metal_shiny);
+  sphere* e2 = new sphere(vec3(270.0f, 270.0f, 250.f), 1100.f, &diff_light_sky);
+  world.add(r1); world.add(r2); world.add(r3); world.add(r4); world.add(r5); world.add(r6);   world.add(e1); world.add(e3); world.add(e2);
+  world.build_boxes();
+
+  // Main loop
   bool done = false;
   while (!done)
   {
@@ -160,60 +192,68 @@ int main(int, char**)
     }
     
     {
-      ImGui::Begin("RayTracer");
+      ImGui::Begin("RayTracer", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
       ImGui::Separator();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
       ImGui::Separator();
       ImGui::InputInt2("Aspect ratio", ar);
-      camera.aspect_ratio = (float)ar[0] / (float)ar[1];
-      ImGui::Text("Aspect ratio = %.3f", camera.aspect_ratio);
-      ImGui::InputFloat("Field of view", &camera.field_of_view, 1.0f, 189.0f, "%.0f");
-      ImGui::InputFloat("Projection", &camera.type, 0.1f, 1.0f, "%.2f");
+      camera_setting.aspect_ratio = (float)ar[0] / (float)ar[1];
+      ImGui::Text("Aspect ratio = %.3f", camera_setting.aspect_ratio);
+      ImGui::InputFloat("Field of view", &camera_setting.field_of_view, 1.0f, 189.0f, "%.0f");
+      ImGui::InputFloat("Projection", &camera_setting.type, 0.1f, 1.0f, "%.2f");
       ImGui::Text("0 = Orthografic; 1 = Perspective");
       ImGui::Separator();
-      ImGui::InputFloat3("Look from", camera.look_from.e, "%.2f");
-      ImGui::InputFloat3("Look at", camera.look_at.e, "%.2f");
+      ImGui::InputFloat3("Look from", camera_setting.look_from.e, "%.2f");
+      ImGui::InputFloat3("Look at", camera_setting.look_at.e, "%.2f");
       ImGui::Separator();
       if (use_custom_focus_distance)
       {
-        ImGui::InputFloat("Focus distance", &camera.dist_to_focus, 0.0f, 1000.0f, "%.2f");
+        ImGui::InputFloat("Focus distance", &camera_setting.dist_to_focus, 0.0f, 1000.0f, "%.2f");
       }
       else
       {
-        camera.dist_to_focus = (camera.look_from - camera.look_at).length();
-        ImGui::Text("Focus distance = %.3f", camera.dist_to_focus);
+        camera_setting.dist_to_focus = (camera_setting.look_from - camera_setting.look_at).length();
+        ImGui::Text("Focus distance = %.3f", camera_setting.dist_to_focus);
       }
       ImGui::Checkbox("Use custom focus distance", &use_custom_focus_distance);
-      ImGui::InputFloat("Aperture", &camera.aperture, 0.1f, 1.0f, "%.2f");
+      ImGui::InputFloat("Aperture", &camera_setting.aperture, 0.1f, 1.0f, "%.2f");
 
       ImGui::Separator();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
       ImGui::Separator();
       ImGui::InputInt("Resolution v", &resolution_vertical, 1, 2160);
-      resolution_horizontal = (int)((float)resolution_vertical * camera.aspect_ratio);
+      resolution_horizontal = (int)((float)resolution_vertical * camera_setting.aspect_ratio);
       ImGui::Text("Resolution h = %d", resolution_horizontal);
       ImGui::Separator();
       ImGui::Combo("Chunk strategy", &chunk_strategy, chunk_strategy_names, IM_ARRAYSIZE(chunk_strategy_names));
-      renderer.chunks_strategy = (chunk_strategy_type)chunk_strategy;
+      renderer_setting.chunks_strategy = (chunk_strategy_type)chunk_strategy;
       if (chunk_strategy != (int)chunk_strategy_type::none)
       {
-        ImGui::InputInt("Chunks", &renderer.chunks_num);
+        ImGui::InputInt("Chunks", &renderer_setting.chunks_num);
       }
       ImGui::Separator();
       ImGui::Combo("Threading strategy", &threading_strategy, threading_strategy_names, IM_ARRAYSIZE(threading_strategy_names));
-      renderer.threading_strategy = (threading_strategy_type)threading_strategy;
+      renderer_setting.threading_strategy = (threading_strategy_type)threading_strategy;
       if (threading_strategy == (int)threading_strategy_type::thread_pool)
       {
-        ImGui::InputInt("Threads", &renderer.threads_num);
+        ImGui::InputInt("Threads", &renderer_setting.threads_num);
         ImGui::Text("0 enforces std::thread::hardware_concurrency");
       }
       ImGui::Separator();
-      ImGui::InputInt("Rays per pixel", &renderer.AA_samples_per_pixel,1,10);
+      ImGui::InputInt("Rays per pixel", &renderer_setting.AA_samples_per_pixel,1,10);
       ImGui::Separator();
-      ImGui::InputInt("Ray bounces", &renderer.diffuse_max_bounce_num, 1);
-      ImGui::InputFloat("Bounce brightness", &renderer.diffuse_bounce_brightness, 0.01f, 0.1f, "%.2f");
+      ImGui::InputInt("Ray bounces", &renderer_setting.diffuse_max_bounce_num, 1);
+      ImGui::InputFloat("Bounce brightness", &renderer_setting.diffuse_bounce_brightness, 0.01f, 0.1f, "%.2f");
+      ImGui::Separator();
+      
+      if (ImGui::Button("Render"))
+      {
+        frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_setting);
+        renderer.render_single(world, camera_setting);
+      }
 
+      ImGui::End();
     }
 
     // Rendering

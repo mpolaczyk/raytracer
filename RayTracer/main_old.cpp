@@ -55,8 +55,9 @@ float aperture = 0.02f;
 // - transition between perspective and orthographic views, done with camera alpha and glass ball as a lense
 // - different rays counts for different screen parts
 // - refreshing only those parts that changed (low ray count prepass, high ray count pass)
+// - scale all vectors until you get out of floating point precision
 
-void draw_scene_massive(sphere_list& world)
+void draw_scene_massive(hittable_list& world)
 {
   look_from = vec3(0.0f, 3.7f, 5.0f);
   look_at = vec3(0.0f, 0.0f, 2.2f);
@@ -95,7 +96,7 @@ void draw_scene_massive(sphere_list& world)
   world.add(j);
 }
 
-void draw_scene_lights(sphere_list& world)
+void draw_scene_lights(hittable_list& world)
 {
   look_from = vec3(0.0f, 0.3f, 0.0f);
   look_at = vec3(0.0f, 0.2f, -1.0f);
@@ -112,7 +113,7 @@ void draw_scene_lights(sphere_list& world)
   world.add(a); world.add(b); world.add(c); world.add(d); world.add(e); world.add(f); world.add(g); world.add(h);
 }
 
-void draw_scene_box(sphere_list& world)
+void draw_scene_box(hittable_list& world)
 {
   resolution_vertical = 600;
   look_from = vec3(278, 278, -800);
@@ -141,7 +142,7 @@ int main_old()
 {
   random_cache::init();
 
-  sphere_list world;
+  hittable_list world;
   //draw_scene_massive(world);
   //draw_scene_lights(world);
   draw_scene_box(world);
@@ -152,16 +153,16 @@ int main_old()
 
   int resolution_horizontal = (int)((float)resolution_vertical) * aspect_ratio;
 
-  std::vector<std::pair<uint32_t, camera_setup>> camera_states;
-  camera_setup state0 = camera_setup(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
-  camera_setup state1 = camera_setup(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 1.0f);
-  camera_setup state2 = camera_setup(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
+  std::vector<std::pair<uint32_t, camera_config>> camera_states;
+  camera_config state0 = camera_config(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
+  camera_config state1 = camera_config(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 1.0f);
+  camera_config state2 = camera_config(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
 
   camera_states.push_back(std::make_pair(0, state0));
   camera_states.push_back(std::make_pair(10, state1));
   camera_states.push_back(std::make_pair(20, state2));
 
-  frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_settings::ultra_high_quality_preset);
+  frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_config::ultra_high_quality_preset);
 
   if (true)
   {

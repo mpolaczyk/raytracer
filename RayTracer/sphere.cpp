@@ -45,7 +45,7 @@ bool sphere::get_bounding_box(aabb& out_box) const
   return true;
 }
 
-bool sphere_list::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+bool hittable_list::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
   hit_record temp_rec;
   bool hit_anything = false;
@@ -69,7 +69,7 @@ bool sphere_list::hit(const ray& in_ray, float t_min, float t_max, hit_record& o
   return hit_anything;
 }
 
-bool sphere_list::get_bounding_box(aabb& out_box) const
+bool hittable_list::get_bounding_box(aabb& out_box) const
 {
   if (objects.empty()) return false;
 
@@ -86,7 +86,7 @@ bool sphere_list::get_bounding_box(aabb& out_box) const
   return true;
 }
 
-void sphere_list::build_boxes()
+void hittable_list::build_boxes()
 {
   for (hittable* object : objects)
   {

@@ -14,16 +14,16 @@ struct plane
   }
 };
 
-struct camera_setup
+struct camera_config
 {
-  camera_setup() = default;
-  camera_setup(vec3 look_from, vec3 look_at, float field_of_view, float aspect_ratio, float aperture, float dist_to_focus, float type = 0.0f)
+  camera_config() = default;
+  camera_config(vec3 look_from, vec3 look_at, float field_of_view, float aspect_ratio, float aperture, float dist_to_focus, float type = 0.0f)
     : look_from(look_from), look_at(look_at), field_of_view(field_of_view), aspect_ratio(aspect_ratio), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
   { }
 
-  static camera_setup lerp(const camera_setup& a, const camera_setup& b, float f)
+  static camera_config lerp(const camera_config& a, const camera_config& b, float f)
   {
-    camera_setup answer = a;
+    camera_config answer = a;
     answer.dist_to_focus = lerp_float(a.dist_to_focus, b.dist_to_focus, f);
     answer.type = lerp_float(a.type, b.type, f);
     return answer;
@@ -42,7 +42,7 @@ class camera
 {
 public:
 
-  void set_camera(const camera_setup& in_setup)
+  void set_camera(const camera_config& in_setup)
   {
     setup = in_setup;
 
@@ -92,7 +92,7 @@ public:
   }
 
 private:
-  camera_setup setup;
+  camera_config setup;
   float lens_radius = 0.0f;
   float viewport_height = 2.0f;
   float viewport_width = 3.5f;

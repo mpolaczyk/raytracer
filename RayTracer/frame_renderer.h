@@ -25,16 +25,16 @@ static inline const char* threading_strategy_names[] =
   "Thread poll"
 };
 
-struct renderer_settings
+struct renderer_config
 {
-  static renderer_settings ten_thousand_per_pixel_preset;
-  static renderer_settings thousand_per_pixel_preset;
-  static renderer_settings super_mega_ultra_high_quality_preset;
-  static renderer_settings mega_ultra_high_quality_preset;
-  static renderer_settings ultra_high_quality_preset;
-  static renderer_settings high_quality_preset;
-  static renderer_settings medium_quality_preset;
-  static renderer_settings low_quality_preset;
+  static renderer_config ten_thousand_per_pixel_preset;
+  static renderer_config thousand_per_pixel_preset;
+  static renderer_config super_mega_ultra_high_quality_preset;
+  static renderer_config mega_ultra_high_quality_preset;
+  static renderer_config ultra_high_quality_preset;
+  static renderer_config high_quality_preset;
+  static renderer_config medium_quality_preset;
+  static renderer_config low_quality_preset;
 
   // Anti Aliasing oversampling
   int AA_samples_per_pixel = 20;            
@@ -66,22 +66,22 @@ class frame_renderer
   float viewport_width;
   float focal_length;
 
-  const renderer_settings settings;
+  const renderer_config settings;
   camera cam;
 
   bmp::bmp_image* img = nullptr;
   
 public:
-  frame_renderer(uint32_t width, uint32_t height, const renderer_settings& in_settings);
+  frame_renderer(uint32_t width, uint32_t height, const renderer_config& in_settings);
   ~frame_renderer();
 
   void set_camera(const camera& in_cam);
-  void render_multiple(const sphere_list& in_world, const std::vector<std::pair<uint32_t, camera_setup>>& in_camera_states);
-  void render_single(const sphere_list& in_world, const camera_setup& in_camera_state, int frame_id = 0);
+  void render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states);
+  void render_single(const hittable_list& in_world, const camera_config& in_camera_state, int frame_id = 0);
 
 private:
-  void render(const sphere_list& in_world);
-  void render_chunk(const sphere_list& in_world, const chunk& in_chunk);
-  vec3 ray_color(const ray& in_ray, const sphere_list& in_world, const vec3& in_background, uint32_t depth);
+  void render(const hittable_list& in_world);
+  void render_chunk(const hittable_list& in_world, const chunk& in_chunk);
+  vec3 ray_color(const ray& in_ray, const hittable_list& in_world, const vec3& in_background, uint32_t depth);
   void save(const char* file_name);
 };

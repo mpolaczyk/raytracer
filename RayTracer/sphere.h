@@ -45,10 +45,10 @@ public:
 };
 
 
-class sphere_list : public hittable
+class hittable_list : public hittable
 {
 public:
-  sphere_list() : hittable(nullptr) {}
+  hittable_list() : hittable(nullptr) {}
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
