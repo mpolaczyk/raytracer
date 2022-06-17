@@ -162,7 +162,8 @@ int main_old()
   camera_states.push_back(std::make_pair(10, state1));
   camera_states.push_back(std::make_pair(20, state2));
 
-  frame_renderer renderer = frame_renderer(resolution_horizontal, resolution_vertical, renderer_config::ultra_high_quality_preset);
+  frame_renderer renderer;
+  renderer.set_config(resolution_horizontal, resolution_vertical, renderer_config::ultra_high_quality_preset);
 
   if (true)
   {

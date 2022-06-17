@@ -68,7 +68,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll</Command>
@@ -98,20 +99,21 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx12.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx11.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -151,7 +153,7 @@
     <ClCompile Include="vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx11.h" />
     <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.h" />
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imconfig.h" />
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imgui.h" />
@@ -165,9 +167,11 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="chunk_generator.h" />
     <ClInclude Include="common.h" />
+    <ClInclude Include="dx11_helper.h" />
     <ClInclude Include="frame_renderer.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="material.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="texture.h" />

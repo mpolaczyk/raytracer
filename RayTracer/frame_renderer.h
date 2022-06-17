@@ -56,26 +56,19 @@ struct renderer_config
 
 class frame_renderer
 {
-  // Image
-  float aspect_ratio;
+public:
+  frame_renderer();
+  ~frame_renderer();
+
   uint32_t image_height;
   uint32_t image_width;
 
-  // Camera
-  float viewport_height;
-  float viewport_width;
-  float focal_length;
-
-  const renderer_config settings;
+  renderer_config settings;
   camera cam;
 
   bmp::bmp_image* img = nullptr;
-  
-public:
-  frame_renderer(uint32_t width, uint32_t height, const renderer_config& in_settings);
-  ~frame_renderer();
 
-  void set_camera(const camera& in_cam);
+  void set_config(uint32_t width, uint32_t height, const renderer_config& in_settings);
   void render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states);
   void render_single(const hittable_list& in_world, const camera_config& in_camera_state, int frame_id = 0);
 

@@ -49,7 +49,7 @@
     <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx12.cpp">
+    <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx11.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.cpp">
@@ -115,12 +115,14 @@
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx12.h">
+    <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx11.h">
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.h">
       <Filter>imgui</Filter>
     </ClInclude>
+    <ClInclude Include="dx11_helper.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Math">

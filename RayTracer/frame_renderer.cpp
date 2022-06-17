@@ -39,7 +39,9 @@ renderer_config renderer_config::ultra_high_quality_preset
 renderer_config renderer_config::high_quality_preset
 { 
   .AA_samples_per_pixel = 50,
-  .diffuse_max_bounce_num = 20
+  .diffuse_max_bounce_num = 20,
+  .chunks_num = 16,
+  .chunks_strategy = chunk_strategy_type::rectangles
 };
 renderer_config renderer_config::medium_quality_preset
 {
@@ -52,13 +54,7 @@ renderer_config renderer_config::low_quality_preset
   .diffuse_max_bounce_num = 3
 };
 
-frame_renderer::frame_renderer(uint32_t width, uint32_t height, const renderer_config& in_settings)
-  : settings(in_settings), image_width(width), image_height(height)
-{
-  img = new bmp::bmp_image(image_width, image_height);
-
-  std::cout << "Frame renderer: " << image_width << "x" << image_height << std::endl;
-}
+frame_renderer::frame_renderer() {}
 frame_renderer::~frame_renderer()
 {
   if (img != nullptr)
@@ -67,9 +63,17 @@ frame_renderer::~frame_renderer()
   }
 }
 
-void frame_renderer::set_camera(const camera& in_cam)
+void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_config& in_settings)
 {
-  cam = in_cam;
+  settings = in_settings;
+  image_width = width;
+  image_height = height;
+  if (img != nullptr)
+  {
+    delete img;
+  }
+  img = new bmp::bmp_image(image_width, image_height);
+  std::cout << "Frame renderer: " << image_width << "x" << image_height << std::endl;
 }
 
 void frame_renderer::render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states)
