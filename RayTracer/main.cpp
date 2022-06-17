@@ -234,6 +234,8 @@ int main(int, char**)
         bool ret = LoadTextureFromBuffer(renderer.img_rgb->get_buffer(), &output_texture, output_width, output_height);
         IM_ASSERT(ret);
       }
+      ImGui::Text("Last render time = %lld [ms]", renderer.benchmark_render_time / 1000);
+      ImGui::Text("Last save time = %lld [ms]", renderer.benchmark_save_time / 1000);
       ImGui::End();
 
       if (output_texture != nullptr)

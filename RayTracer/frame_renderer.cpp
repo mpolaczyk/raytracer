@@ -116,15 +116,23 @@ void frame_renderer::render_single(const hittable_list& in_world, const camera_c
 {
   cam.set_camera(in_camera_state);
   {
-    benchmark::scope_counter benchmark_render("Render");
+    benchmark::instance benchmark_render;
+    benchmark_render.start("Render");
+
     render(in_world);
+
+    benchmark_render_time = benchmark_render.stop();
   }
 
   char image_file_name[100];
   std::sprintf(image_file_name, "image_%d.bmp", frame_id);
   {
-    benchmark::scope_counter benchmark_render("Save");
+    benchmark::instance benchmark_save;
+    benchmark_save.start("Save");
+
     save(image_file_name);
+
+    benchmark_save_time = benchmark_save.stop();
   }
 }
 
