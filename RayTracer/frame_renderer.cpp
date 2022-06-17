@@ -150,7 +150,7 @@ void frame_renderer::render(const hittable_list& in_world)
   if (settings.threading_strategy == threading_strategy_type::thread_pool)
   {
     thread_pool pool;
-    for (const auto& ch : chunks)
+    for (const chunk& ch : chunks)
     {
       pool.queue_job([&]() { render_chunk(in_world, ch); });
     }

@@ -43,10 +43,11 @@ void chunk_generator::generate_rectangles(uint32_t num_x, uint32_t num_y, uint32
     {
       chunk ch;
       ch.id = n;
-      ch.size_x = image_width / num_x;
-      ch.size_y = image_height / num_y;
-      ch.x = num_x == 1 ? 0 : nx * ch.size_x;
-      ch.y = num_y == 1 ? 0 : ny * ch.size_y;
+      // Divide axis as float, find range between (n, n+1) 
+      ch.x = num_x == 1 ? 0 : (int)((float)nx * (float)image_width / (float)num_x);
+      ch.y = num_y == 1 ? 0 : (int)((float)ny * (float)image_height / (float)num_y);;
+      ch.size_x = ((int)((float)(nx + 1) * (float)image_width / (float)num_x) - ch.x);
+      ch.size_y = ((int)((float)(ny + 1) * (float)image_height / (float)num_y) - ch.y);
       out_chunks.push_back(ch);
       n += 1;
     }
