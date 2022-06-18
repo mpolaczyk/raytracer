@@ -1,10 +1,15 @@
 #pragma once
 
+#include <thread>
+#include <semaphore>
+
 #include "vec3.h"
 #include "sphere.h"
 #include "ray.h"
 #include "chunk_generator.h"
 #include "camera.h"
+#include "bmp.h"
+
 
 namespace bmp
 {
@@ -60,25 +65,51 @@ public:
   frame_renderer();
   ~frame_renderer();
 
-  uint32_t image_height;
-  uint32_t image_width;
+  // Only allowed when worker thread is not running
+  void set_config(uint32_t width, uint32_t height, const renderer_config& in_settings, const hittable_list& in_world, const camera_config& in_camera_state);
+  void render_single_async();
 
-  renderer_config settings;
-  camera cam;
+  // Allowed when worker thread is running
+  bool is_working() const { return ajs.is_working; }
+  uint64_t get_render_time() const { return ajs.benchmark_render_time; }
+  uint64_t get_save_time() const { return ajs.benchmark_save_time; }
+  uint8_t* get_img_bgr() { return ajs.img_bgr->get_buffer(); }
+  uint8_t* get_img_rgb() { return ajs.img_rgb->get_buffer(); }
 
-  bmp::bmp_image* img_bgr = nullptr;
-  bmp::bmp_image* img_rgb = nullptr;
-
-  uint64_t benchmark_render_time = 0;
-  uint64_t benchmark_save_time = 0;
-
-  void set_config(uint32_t width, uint32_t height, const renderer_config& in_settings);
-  void render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states);
-  void render_single(const hittable_list& in_world, const camera_config& in_camera_state, int frame_id = 0);
+  //void render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states);
+  //void render_single(const hittable_list& in_world, const camera_config& in_camera_state, int frame_id = 0);
 
 private:
-  void render(const hittable_list& in_world);
-  void render_chunk(const hittable_list& in_world, const chunk& in_chunk);
-  vec3 ray_color(const ray& in_ray, const hittable_list& in_world, const vec3& in_background, uint32_t depth);
+  void render();
+  void render_chunk(const chunk& in_chunk);
+  vec3 ray_color(const ray& in_ray, const vec3& in_background, uint32_t depth);
   void save(const char* file_name);
+
+  // Synchronization - fire and forget
+  // No job cancellation
+  std::thread worker_thread;
+  std::binary_semaphore worker_semaphore{ 0 };
+  void async_job();
+
+  // Data assess pattern for async job state
+  // - RW for job thread
+  // - R for main thread while processing, only through const getters
+  // - W for game thread only using set_config
+  struct 
+  {
+    bool is_working = false;
+
+    uint32_t image_height = 0;
+    uint32_t image_width = 0;
+
+    renderer_config settings;
+    camera cam;
+    hittable_list world;
+    
+    bmp::bmp_image* img_bgr = nullptr;
+    bmp::bmp_image* img_rgb = nullptr;
+
+    uint64_t benchmark_render_time = 0;
+    uint64_t benchmark_save_time = 0;
+  } ajs; 
 };

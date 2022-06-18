@@ -138,41 +138,41 @@ void draw_scene_box(hittable_list& world)
   world.add(e2);
 }
 
-int main_old()
-{
-  random_cache::init();
-
-  hittable_list world;
-  //draw_scene_massive(world);
-  //draw_scene_lights(world);
-  draw_scene_box(world);
-
-  world.build_boxes();
-
-  float dist_to_focus = (look_from - look_at).length();
-
-  int resolution_horizontal = (int)((float)resolution_vertical) * aspect_ratio;
-
-  std::vector<std::pair<uint32_t, camera_config>> camera_states;
-  camera_config state0 = camera_config(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
-  camera_config state1 = camera_config(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 1.0f);
-  camera_config state2 = camera_config(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
-
-  camera_states.push_back(std::make_pair(0, state0));
-  camera_states.push_back(std::make_pair(10, state1));
-  camera_states.push_back(std::make_pair(20, state2));
-
-  frame_renderer renderer;
-  renderer.set_config(resolution_horizontal, resolution_vertical, renderer_config::ultra_high_quality_preset);
-
-  if (true)
-  {
-    renderer.render_single(world, state0);
-  }
-  else
-  {
-    renderer.render_multiple(world, camera_states);
-  }
-
-  return 0;
-}
+//int main_old()
+//{
+//  random_cache::init();
+//
+//  hittable_list world;
+//  //draw_scene_massive(world);
+//  //draw_scene_lights(world);
+//  draw_scene_box(world);
+//
+//  world.build_boxes();
+//
+//  float dist_to_focus = (look_from - look_at).length();
+//
+//  int resolution_horizontal = (int)((float)resolution_vertical) * aspect_ratio;
+//
+//  std::vector<std::pair<uint32_t, camera_config>> camera_states;
+//  camera_config state0 = camera_config(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
+//  camera_config state1 = camera_config(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 1.0f);
+//  camera_config state2 = camera_config(look_from, look_at, field_of_view, aspect_ratio, aperture, dist_to_focus, 0.0f);
+//
+//  camera_states.push_back(std::make_pair(0, state0));
+//  camera_states.push_back(std::make_pair(10, state1));
+//  camera_states.push_back(std::make_pair(20, state2));
+//
+//  frame_renderer renderer;
+//  renderer.set_config(resolution_horizontal, resolution_vertical, renderer_config::ultra_high_quality_preset);
+//
+//  if (true)
+//  {
+//    renderer.render_single(world, state0);
+//  }
+//  else
+//  {
+//    renderer.render_multiple(world, camera_states);
+//  }
+//
+//  return 0;
+//}

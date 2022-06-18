@@ -54,125 +54,160 @@ renderer_config renderer_config::low_quality_preset
   .diffuse_max_bounce_num = 3
 };
 
-frame_renderer::frame_renderer() {}
+frame_renderer::frame_renderer()
+{
+  worker_thread = std::thread(&frame_renderer::async_job, this);
+}
 frame_renderer::~frame_renderer()
 {
-  if (img_rgb != nullptr)
-  {
-    delete img_rgb;
-  }
-  if (img_bgr != nullptr)
-  {
-    delete img_bgr;
-  }
+  worker_thread.join();
+  if (ajs.img_rgb != nullptr) delete ajs.img_rgb;
+  if (ajs.img_bgr != nullptr) delete ajs.img_bgr;
 }
 
-void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_config& in_settings)
+void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_config& in_settings, const hittable_list& in_world, const camera_config& in_camera_state)
 {
-  settings = in_settings;
-  image_width = width;
-  image_height = height;
-  if (img_rgb != nullptr)
-  {
-    delete img_rgb;
-  }
-  img_rgb = new bmp::bmp_image(image_width, image_height);
-  if (img_bgr != nullptr)
-  {
-    delete img_bgr;
-  }
-  img_bgr = new bmp::bmp_image(image_width, image_height);
-  std::cout << "Frame renderer: " << image_width << "x" << image_height << std::endl;
+  if (ajs.is_working) return;
+
+  ajs.image_width = width;
+  ajs.image_height = height;
+  ajs.settings = in_settings;
+  ajs.world = in_world;
+  ajs.cam.set_camera(in_camera_state);
+
+  if (ajs.img_rgb != nullptr) delete ajs.img_rgb;
+  ajs.img_rgb = new bmp::bmp_image(width, height);
+
+  if (ajs.img_bgr != nullptr) delete ajs.img_bgr;
+  ajs.img_bgr = new bmp::bmp_image(width, height);
+
+  std::cout << "Frame renderer: " << width << "x" << height << std::endl;
 }
 
-void frame_renderer::render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states)
+void frame_renderer::render_single_async()
 {
-  camera cam;
-  if (in_camera_states.size() < 2)
-  {
-    std::cout << "More than two camera states required" << std::endl;
-    return;
-  }
-  for (int setup_id = 0; setup_id < in_camera_states.size() - 1; setup_id++)
-  {
-    int frame_begin = in_camera_states[setup_id].first;
-    int frame_end = in_camera_states[setup_id + 1].first;
-    camera_config setup_begin = in_camera_states[setup_id].second;
-    camera_config setup_end = in_camera_states[setup_id + 1].second;
-
-    for (int frame_id = frame_begin; frame_id < frame_end; frame_id++)
-    {
-      char name[100];
-      std::sprintf(name, "setup_id=%d frame_id=%d", setup_id, frame_id);
-      std::cout << name << std::endl;
-
-      float f = (float)(frame_id - frame_begin) / (float)(frame_end - frame_begin);
-      render_single(in_world, camera_config::lerp(setup_begin, setup_end, f), frame_id);
-    }
-  }
+  if (ajs.is_working) return;
+  
+  ajs.is_working = true;
+  worker_semaphore.release();
 }
 
-void frame_renderer::render_single(const hittable_list& in_world, const camera_config& in_camera_state, int frame_id)
+//void frame_renderer::render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states)
+//{
+//  camera cam;
+//  if (in_camera_states.size() < 2)
+//  {
+//    std::cout << "More than two camera states required" << std::endl;
+//    return;
+//  }
+//  for (int setup_id = 0; setup_id < in_camera_states.size() - 1; setup_id++)
+//  {
+//    int frame_begin = in_camera_states[setup_id].first;
+//    int frame_end = in_camera_states[setup_id + 1].first;
+//    camera_config setup_begin = in_camera_states[setup_id].second;
+//    camera_config setup_end = in_camera_states[setup_id + 1].second;
+//
+//    for (int frame_id = frame_begin; frame_id < frame_end; frame_id++)
+//    {
+//      char name[100];
+//      std::sprintf(name, "setup_id=%d frame_id=%d", setup_id, frame_id);
+//      std::cout << name << std::endl;
+//
+//      float f = (float)(frame_id - frame_begin) / (float)(frame_end - frame_begin);
+//      render_single(in_world, camera_config::lerp(setup_begin, setup_end, f), frame_id);
+//    }
+//  }
+//}
+//
+//void frame_renderer::render_single(const hittable_list& in_world, const camera_config& in_camera_state, int frame_id)
+//{
+//  cam.set_camera(in_camera_state);
+//  {
+//    benchmark::instance benchmark_render;
+//    benchmark_render.start("Render");
+//
+//    render(in_world);
+//
+//    benchmark_render_time = benchmark_render.stop();
+//  }
+//
+//  char image_file_name[100];
+//  std::sprintf(image_file_name, "image_%d.bmp", frame_id);
+//  {
+//    benchmark::instance benchmark_save;
+//    benchmark_save.start("Save");
+//
+//    save(image_file_name);
+//
+//    benchmark_save_time = benchmark_save.stop();
+//  }
+//}
+
+void frame_renderer::async_job()
 {
-  cam.set_camera(in_camera_state);
+  while (true)
   {
+    worker_semaphore.acquire();
+
     benchmark::instance benchmark_render;
     benchmark_render.start("Render");
+    render();
+    ajs.benchmark_render_time = benchmark_render.stop();
 
-    render(in_world);
+    char image_file_name[100];
+    std::sprintf(image_file_name, "last_render.bmp");
 
-    benchmark_render_time = benchmark_render.stop();
-  }
-
-  char image_file_name[100];
-  std::sprintf(image_file_name, "image_%d.bmp", frame_id);
-  {
     benchmark::instance benchmark_save;
     benchmark_save.start("Save");
-
     save(image_file_name);
+    ajs.benchmark_save_time = benchmark_save.stop();
 
-    benchmark_save_time = benchmark_save.stop();
+    ajs.is_working = false;
   }
 }
 
-void frame_renderer::render(const hittable_list& in_world)
+void frame_renderer::render()
 {
   // Build chunks of work
   std::vector<chunk> chunks;
-  chunk_generator::generate_chunks(settings.chunks_strategy, settings.chunks_num, image_width, image_height, chunks);
+  chunk_generator::generate_chunks(ajs.settings.chunks_strategy, ajs.settings.chunks_num, ajs.image_width, ajs.image_height, chunks);
+
+  std::random_device rd;
+  std::mt19937 g(rd());
+  std::shuffle(chunks.begin(), chunks.end(), g);
+
   //for (const auto& ch : chunks)
   //{
   //  std::cout << "Chunk=" << ch.id << " x=" << ch.x << " y=" << ch.y << " size_x=" << ch.size_x << " size_y=" << ch.size_y << std::endl;
   //}
   
   // Process chunks on parallel
-  if (settings.threading_strategy == threading_strategy_type::none)
+  if (ajs.settings.threading_strategy == threading_strategy_type::none)
   {
     chunk ch;
     ch.id = 1;
-    ch.size_x = image_width;
-    ch.size_y = image_height;
-    render_chunk(in_world, ch);
+    ch.size_x = ajs.image_width;
+    ch.size_y = ajs.image_height;
+    render_chunk(ch);
   }
-  if (settings.threading_strategy == threading_strategy_type::thread_pool)
+  if (ajs.settings.threading_strategy == threading_strategy_type::thread_pool)
   {
     thread_pool pool;
     for (const chunk& ch : chunks)
     {
-      pool.queue_job([&]() { render_chunk(in_world, ch); });
+      pool.queue_job([&]() { render_chunk(ch); });
     }
-    pool.start(settings.threads_num > 0 ? settings.threads_num : std::thread::hardware_concurrency());
+    pool.start(ajs.settings.threads_num > 0 ? ajs.settings.threads_num : std::thread::hardware_concurrency());
     while (pool.is_busy()) { }
     pool.stop();
   }
-  else if (settings.threading_strategy == threading_strategy_type::pll_for_each)
+  else if (ajs.settings.threading_strategy == threading_strategy_type::pll_for_each)
   {
-    concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(in_world, ch); });
-  }
+    concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
+  }  
 }
 
-void frame_renderer::render_chunk(const hittable_list& in_world, const chunk& in_chunk)
+void frame_renderer::render_chunk(const chunk& in_chunk)
 {
   std::thread::id thread_id = std::this_thread::get_id();
   char name[100];
@@ -185,22 +220,22 @@ void frame_renderer::render_chunk(const hittable_list& in_world, const chunk& in
     {
       vec3 pixel_color;
       // Anti Aliasing done at the ray level, multiple rays for each pixel.
-      for (uint32_t c = 0; c < settings.AA_samples_per_pixel; c++)
+      for (uint32_t c = 0; c < ajs.settings.AA_samples_per_pixel; c++)
       {
-        float u = (float(x) + random_cache::get_float()) / (image_width - 1);
-        float v = (float(y) + random_cache::get_float()) / (image_height - 1);
-        ray r = cam.get_ray(u, v);
-        pixel_color += ray_color(r, in_world, settings.background, settings.diffuse_max_bounce_num);
+        float u = (float(x) + random_cache::get_float()) / (ajs.image_width - 1);
+        float v = (float(y) + random_cache::get_float()) / (ajs.image_height - 1);
+        ray r = ajs.cam.get_ray(u, v);
+        pixel_color += ray_color(r, ajs.settings.background, ajs.settings.diffuse_max_bounce_num);
       }
       // Save to bmp
-      bmp::bmp_pixel p = bmp::bmp_pixel(pixel_color / (float)settings.AA_samples_per_pixel);
-      img_bgr->draw_pixel(x, y, &p);
-      img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
+      bmp::bmp_pixel p = bmp::bmp_pixel(pixel_color / (float)ajs.settings.AA_samples_per_pixel);
+      ajs.img_bgr->draw_pixel(x, y, &p);
+      ajs.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
     }
   }
 }
 
-vec3 inline frame_renderer::ray_color(const ray& in_ray, const hittable_list& in_world, const vec3& in_background, uint32_t depth)
+vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_background, uint32_t depth)
 {
   if (depth <= 0)
   {
@@ -210,7 +245,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const hittable_list& in
   // NEW CODE FOR LIGHTING
   hit_record hit;
   // If the ray hits nothing, return the background color.
-  if (!in_world.hit(in_ray, 0.001f, infinity, hit))
+  if (!ajs.world.hit(in_ray, 0.001f, infinity, hit))
   {
     return in_background;
   }
@@ -224,7 +259,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const hittable_list& in
     return emitted;
   }
   
-  return emitted + attenuation * ray_color(scattered, in_world, in_background, depth - 1);
+  return emitted + attenuation * ray_color(scattered, in_background, depth - 1);
 
   // OLD CODE
   //hit_record hit;
@@ -247,5 +282,5 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const hittable_list& in
 
 void frame_renderer::save(const char* file_name)
 {
-  img_bgr->save_to_file(file_name);
+  ajs.img_bgr->save_to_file(file_name);
 }

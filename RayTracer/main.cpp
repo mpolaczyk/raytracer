@@ -171,6 +171,7 @@ int main(int, char**)
     
     {
       ImGui::Begin("RayTracer", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+      ImGui::BeginDisabled(renderer.is_working());
 
       ImGui::Separator();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
@@ -227,19 +228,27 @@ int main(int, char**)
       
       if (ImGui::Button("Render"))
       {
-        renderer.set_config(resolution_horizontal, resolution_vertical, renderer_setting);
-        renderer.render_single(world, camera_setting);
-        output_width = renderer.image_width;
-        output_height = renderer.image_height;
-        bool ret = LoadTextureFromBuffer(renderer.img_rgb->get_buffer(), &output_texture, output_width, output_height);
+        renderer.set_config(resolution_horizontal, resolution_vertical, renderer_setting, world, camera_setting);
+        renderer.render_single_async();
+        output_width = resolution_horizontal;
+        output_height = resolution_vertical;
+        bool ret = LoadTextureFromBuffer(renderer.get_img_rgb(), &output_texture, output_width, output_height);
         IM_ASSERT(ret);
       }
-      ImGui::Text("Last render time = %lld [ms]", renderer.benchmark_render_time / 1000);
-      ImGui::Text("Last save time = %lld [ms]", renderer.benchmark_save_time / 1000);
+      if (renderer.is_working())
+      {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "WORKING");
+      }
+      ImGui::Text("Last render time = %lld [ms]", renderer.get_render_time() / 1000);
+      ImGui::Text("Last save time = %lld [ms]", renderer.get_save_time() / 1000);
       ImGui::End();
+      ImGui::EndDisabled();
 
       if (output_texture != nullptr)
       {
+        bool ret = LoadTextureFromBuffer(renderer.get_img_rgb(), &output_texture, output_width, output_height);
+        IM_ASSERT(ret);
         ImGui::Begin("Output", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Image((ImTextureID)output_texture, ImVec2(output_width, output_height), ImVec2(0,1), ImVec2(1,0));
         ImGui::End();
