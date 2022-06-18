@@ -57,6 +57,8 @@ struct renderer_config
   // How work is processed
   threading_strategy_type threading_strategy = threading_strategy_type::thread_pool;
   int threads_num = 0; // Apples only to thread pool strategy, 0 enforces std::thread::hardware_concurrency()
+
+  bool allow_emissive = true;
 };
 
 class frame_renderer

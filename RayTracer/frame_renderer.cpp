@@ -242,24 +242,31 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
     return black;
   }
 
-  // NEW CODE FOR LIGHTING
   hit_record hit;
-  // If the ray hits nothing, return the background color.
-  if (!ajs.world.hit(in_ray, 0.001f, infinity, hit))
+  if (ajs.world.hit(in_ray, 0.001f, infinity, hit))
   {
-    return in_background;
+    ray scattered;
+    vec3 attenuation;
+    vec3 emitted;
+    if (ajs.settings.allow_emissive)
+    {
+      emitted = hit.mat->emitted(hit.u, hit.v, hit.p);
+    }
+    if (hit.mat->scatter(in_ray, hit, attenuation, scattered))
+    {
+      return emitted+attenuation * ray_color(scattered, in_background, depth - 1);
+    }
+    
+    if (ajs.settings.allow_emissive)
+    {
+      return emitted;
+    }
   }
-  
-  ray scattered;
-  vec3 attenuation;
-  vec3 emitted = hit.mat->emitted(hit.u, hit.v, hit.p);
-  
-  if (!hit.mat->scatter(in_ray, hit, attenuation, scattered))
+  if (ajs.settings.allow_emissive)
   {
-    return emitted;
+    return black;
   }
-  
-  return emitted + attenuation * ray_color(scattered, in_background, depth - 1);
+  return in_background; // source of light for non emissive mode
 
   // OLD CODE
   //hit_record hit;

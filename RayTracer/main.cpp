@@ -83,7 +83,6 @@ int main(int, char**)
   //IM_ASSERT(font != NULL);
 
   // Imgui state
-  bool show_demo_window = false;
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   // Camera
@@ -105,6 +104,7 @@ int main(int, char**)
   int chunk_strategy = (int)renderer_setting.chunks_strategy;
   int threading_strategy = (int)renderer_setting.threading_strategy;
   bool is_rendering = false;
+  float background_color[3] = { 0,0,0 };
   frame_renderer renderer;
 
   // Materials
@@ -164,9 +164,9 @@ int main(int, char**)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    if (show_demo_window)
+    if (1)
     {
-      ImGui::ShowDemoWindow(&show_demo_window);
+      ImGui::ShowDemoWindow();
     }
     
     {
@@ -181,7 +181,7 @@ int main(int, char**)
       ImGui::Text("Aspect ratio = %.3f", camera_setting.aspect_ratio);
       ImGui::InputFloat("Field of view", &camera_setting.field_of_view, 1.0f, 189.0f, "%.0f");
       ImGui::InputFloat("Projection", &camera_setting.type, 0.1f, 1.0f, "%.2f");
-      ImGui::Text("0 = Orthografic; 1 = Perspective");
+      ImGui::Text("0 = Perspective; 1 = Orthografic");
       ImGui::Separator();
       ImGui::InputFloat3("Look from", camera_setting.look_from.e, "%.2f");
       ImGui::InputFloat3("Look at", camera_setting.look_at.e, "%.2f");
@@ -224,6 +224,12 @@ int main(int, char**)
       ImGui::Separator();
       ImGui::InputInt("Ray bounces", &renderer_setting.diffuse_max_bounce_num, 1);
       ImGui::InputFloat("Bounce brightness", &renderer_setting.diffuse_bounce_brightness, 0.01f, 0.1f, "%.2f");
+      ImGui::Checkbox("Enable emissive materials", &renderer_setting.allow_emissive);
+      if (!renderer_setting.allow_emissive)
+      {
+        ImGui::ColorEdit3("Background", background_color, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+        renderer_setting.background = vec3(background_color[0], background_color[1], background_color[2]);
+      }
       ImGui::Separator();
       
       if (ImGui::Button("Render"))
