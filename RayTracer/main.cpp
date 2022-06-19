@@ -16,18 +16,10 @@
 
 struct app_state
 {
-  void update()
-  {
-    resolution_horizontal = (int)((float)resolution_vertical * camera_setting.aspect_ratio_w / camera_setting.aspect_ratio_h);
-    world.build_boxes();
-  }
-
   // Initial state
   camera_config camera_setting;
   renderer_config renderer_setting;
   bool use_custom_focus_distance = false;
-  int chunk_strategy = 0;
-  int threading_strategy = 0;
   int resolution_vertical = 0;
   int resolution_horizontal = 0;
   float background_color[3] = { 0,0,0 };
@@ -118,8 +110,8 @@ int main(int, char**)
   random_cache::init();
   
   app_state state;
-  state.camera_setting.aspect_ratio_w = 16.0f;
-  state.camera_setting.aspect_ratio_h = 9.0f;
+  state.camera_setting.aspect_ratio_w = 1.0f;
+  state.camera_setting.aspect_ratio_h = 1.0f;
   state.camera_setting.field_of_view = 30.0f;
   state.camera_setting.aperture = 0.02f;
   state.camera_setting.dist_to_focus = 1.0f;
@@ -127,6 +119,9 @@ int main(int, char**)
   state.camera_setting.look_at = vec3(278, 278, 0);
   state.camera_setting.type = 0.0f;
   state.renderer_setting = renderer_config::high_quality_preset;
+  state.renderer_setting.threading_strategy = threading_strategy_type::thread_pool;
+  state.renderer_setting.chunks_strategy = chunk_strategy_type::rectangles;
+  state.renderer_setting.chunks_num = 200;
   state.resolution_vertical = 400;
 
   // Materials
@@ -156,8 +151,6 @@ int main(int, char**)
   state.world.add(r5); state.world.add(r6); state.world.add(e1); state.world.add(e3); 
   state.world.add(e2);
   
-  state.update();
-
   // Imgui state
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
@@ -192,7 +185,7 @@ int main(int, char**)
       ImGui::ShowDemoWindow();
     }
 
-    state.update();
+    state.world.build_boxes();  // todo, only when world dirty
     
     drawRaytracerWindow(state);
     drawOutputWindow(state);
@@ -270,23 +263,28 @@ void drawRendererPanel(app_state& state)
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
   ImGui::Separator();
   ImGui::InputInt("Resolution v", &state.resolution_vertical, 1, 2160);
-  state.resolution_horizontal = state.resolution_horizontal;
+  state.resolution_horizontal = (int)((float)state.resolution_vertical * state.camera_setting.aspect_ratio_w / state.camera_setting.aspect_ratio_h);
   ImGui::Text("Resolution h = %d", state.resolution_horizontal);
+
   ImGui::Separator();
-  ImGui::Combo("Chunk strategy", &state.chunk_strategy, chunk_strategy_names, IM_ARRAYSIZE(chunk_strategy_names));
-  state.renderer_setting.chunks_strategy = (chunk_strategy_type)state.chunk_strategy;
-  if (state.chunk_strategy != (int)chunk_strategy_type::none)
+  int chunk_strategy = (int)state.renderer_setting.chunks_strategy;
+  ImGui::Combo("Chunk strategy", &chunk_strategy, chunk_strategy_names, IM_ARRAYSIZE(chunk_strategy_names));
+  state.renderer_setting.chunks_strategy = (chunk_strategy_type)chunk_strategy;
+  if (state.renderer_setting.chunks_strategy != chunk_strategy_type::none)
   {
     ImGui::InputInt("Chunks", &state.renderer_setting.chunks_num);
   }
+
   ImGui::Separator();
-  ImGui::Combo("Threading strategy", &state.threading_strategy, threading_strategy_names, IM_ARRAYSIZE(threading_strategy_names));
-  state.renderer_setting.threading_strategy = (threading_strategy_type)state.threading_strategy;
-  if (state.threading_strategy == (int)threading_strategy_type::thread_pool)
+  int threading_strategy = (int)state.renderer_setting.threading_strategy;
+  ImGui::Combo("Threading strategy", &threading_strategy, threading_strategy_names, IM_ARRAYSIZE(threading_strategy_names));
+  state.renderer_setting.threading_strategy = (threading_strategy_type)threading_strategy;
+  if (state.renderer_setting.threading_strategy == threading_strategy_type::thread_pool)
   {
     ImGui::InputInt("Threads", &state.renderer_setting.threads_num);
     ImGui::Text("0 enforces std::thread::hardware_concurrency");
   }
+
   ImGui::Separator();
   ImGui::InputInt("Rays per pixel", &state.renderer_setting.AA_samples_per_pixel, 1, 10);
   ImGui::Separator();
