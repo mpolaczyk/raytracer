@@ -64,7 +64,7 @@ namespace dx11
     if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = NULL; }
   }
 
-  bool LoadTextureFromBuffer(unsigned char* buffer, ID3D11ShaderResourceView** out_srv, int width, int height)
+  bool LoadTextureFromBuffer(unsigned char* buffer, int width, int height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture)
   {
     if (buffer == nullptr) return false;
 
@@ -76,17 +76,17 @@ namespace dx11
     desc.ArraySize = 1;
     desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     desc.SampleDesc.Count = 1;
-    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.Usage = D3D11_USAGE_DYNAMIC;
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    desc.CPUAccessFlags = 0;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    D3D11_SUBRESOURCE_DATA subResource;
-    subResource.pSysMem = buffer;
-    subResource.SysMemPitch = desc.Width * 4;
-    subResource.SysMemSlicePitch = 0;
+    D3D11_SUBRESOURCE_DATA* subResource = new D3D11_SUBRESOURCE_DATA();
+    subResource->pSysMem = buffer;
+    subResource->SysMemPitch = desc.Width * 4;
+    subResource->SysMemSlicePitch = 0;
 
     ID3D11Texture2D* pTexture = nullptr;
-    if (SUCCEEDED(g_pd3dDevice->CreateTexture2D(&desc, &subResource, &pTexture)) && pTexture)
+    if (SUCCEEDED(g_pd3dDevice->CreateTexture2D(&desc, subResource, &pTexture)) && pTexture)
     {
       D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
       ZeroMemory(&srvDesc, sizeof(srvDesc));
@@ -96,6 +96,7 @@ namespace dx11
       srvDesc.Texture2D.MostDetailedMip = 0;
       if (SUCCEEDED(g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, out_srv)))
       {
+        *out_texture = pTexture;
         pTexture->Release();
         return true;
       }
@@ -103,7 +104,24 @@ namespace dx11
     return false;
   }
 
-  bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int& out_width, int& out_height)
+  bool UpdateTextureBuffer(unsigned char* buffer, int width, int height, ID3D11Texture2D* in_texture)
+  {
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+    int rowspan = width * 4; // 4 bytes per px
+    g_pd3dDeviceContext->Map(in_texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    BYTE* mappedData = reinterpret_cast<BYTE*>(mappedResource.pData);
+    for (UINT i = 0; i < height; ++i)
+    {
+      memcpy(mappedData, buffer, rowspan);
+      mappedData += mappedResource.RowPitch;
+      buffer += rowspan;
+    }
+    g_pd3dDeviceContext->Unmap(in_texture, 0);
+    return true;
+  }
+
+  bool LoadTextureFromFile(const char* filename, int& out_width, int& out_height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture)
   {
     int image_width = 0;
     int image_height = 0;
@@ -112,7 +130,7 @@ namespace dx11
     {
       out_width = image_width;
       out_height = image_height;
-      bool answer = LoadTextureFromBuffer(image_data, out_srv, image_width, image_height);
+      bool answer = LoadTextureFromBuffer(image_data, image_width, image_height, out_srv, out_texture);
       stbi_image_free(image_data);
       return answer;
     }

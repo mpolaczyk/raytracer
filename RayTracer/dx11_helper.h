@@ -14,6 +14,7 @@ namespace dx11
   void CreateRenderTarget();
   void CleanupRenderTarget();
   LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-  bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int& out_width, int& out_height);
-  bool LoadTextureFromBuffer(unsigned char* buffer, ID3D11ShaderResourceView** out_srv, int width, int height);
+  bool UpdateTextureBuffer(unsigned char* buffer, int width, int height, ID3D11Texture2D* in_texture);
+  bool LoadTextureFromBuffer(unsigned char* buffer, int width, int height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture);
+  bool LoadTextureFromFile(const char* filename, int& out_width, int& out_height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture);
 }

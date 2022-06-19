@@ -28,7 +28,8 @@ struct app_state
   // Runtime state
   int output_width = 0;
   int output_height = 0;
-  ID3D11ShaderResourceView* output_texture = nullptr;
+  ID3D11ShaderResourceView* output_srv = nullptr;
+  ID3D11Texture2D* output_texture = nullptr;
   bool is_rendering = false;
   frame_renderer renderer;
 };
@@ -112,7 +113,7 @@ int main(int, char**)
   app_state state;
   state.camera_setting.aspect_ratio_w = 1.0f;
   state.camera_setting.aspect_ratio_h = 1.0f;
-  state.camera_setting.field_of_view = 30.0f;
+  state.camera_setting.field_of_view = 35.0f;
   state.camera_setting.aperture = 0.02f;
   state.camera_setting.dist_to_focus = 1.0f;
   state.camera_setting.look_from = vec3(278, 278, -800);
@@ -132,7 +133,7 @@ int main(int, char**)
   metal_material metal_shiny(grey, 0.0f);
   metal_material metal_matt(grey, 0.02f);
   dialectric_material glass(1.5f);
-  solid_texture t_sky(white * 0.4f);
+  solid_texture t_sky(white);
   solid_texture t_lightbulb_ultra_strong(vec3(15.0f, 15.0f, 15.0f));
   diffuse_light_material diff_light_sky = diffuse_light_material(&t_sky);
   diffuse_light_material diff_light_ultra_strong = diffuse_light_material(&t_lightbulb_ultra_strong);
@@ -144,8 +145,8 @@ int main(int, char**)
   xz_rect* r4 = new xz_rect(0, 555, 0, 555, 0, &white_diffuse);
   xz_rect* r5 = new xz_rect(0, 555, 0, 555, 555, &white_diffuse);
   xy_rect* r6 = new xy_rect(0, 555, 0, 555, 555, &white_diffuse);
-  sphere* e1 = new sphere(vec3(230.0f, 290.0f, 250.f), 120.f, &glass);
-  sphere* e3 = new sphere(vec3(270.0f, 50.0f, 210.f), 30.f, &metal_shiny);
+  sphere* e1 = new sphere(vec3(270.0f, 290.0f, 250.f), 120.f, &glass);
+  sphere* e3 = new sphere(vec3(240.0f, 70.0f, 260.f), 50.f, &metal_shiny);
   sphere* e2 = new sphere(vec3(270.0f, 270.0f, 250.f), 1100.f, &diff_light_sky);
   state.world.add(r1); state.world.add(r2); state.world.add(r3); state.world.add(r4); 
   state.world.add(r5); state.world.add(r6); state.world.add(e1); state.world.add(e3); 
@@ -304,7 +305,7 @@ void drawRendererPanel(app_state& state)
     state.renderer.render_single_async();
     state.output_width = state.resolution_horizontal;
     state.output_height = state.resolution_vertical;
-    bool ret = dx11::LoadTextureFromBuffer(state.renderer.get_img_rgb(), &state.output_texture, state.output_width, state.output_height);
+    bool ret = dx11::LoadTextureFromBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
     IM_ASSERT(ret);
   }
   if (state.renderer.is_working())
@@ -322,10 +323,9 @@ void drawOutputWindow(app_state& state)
 {
   if (state.output_texture != nullptr)
   {
-    bool ret = dx11::LoadTextureFromBuffer(state.renderer.get_img_rgb(), &state.output_texture, state.output_width, state.output_height);
-    IM_ASSERT(ret);
+    dx11::UpdateTextureBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, state.output_texture);
     ImGui::Begin("Output", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-    ImGui::Image((ImTextureID)state.output_texture, ImVec2(state.output_width, state.output_height), ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image((ImTextureID)state.output_srv, ImVec2(state.output_width, state.output_height), ImVec2(0, 1), ImVec2(1, 0));
     ImGui::End();
   }
 }
