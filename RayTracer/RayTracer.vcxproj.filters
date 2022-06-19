@@ -55,6 +55,9 @@
     <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
+    <ClCompile Include="dx11_helper.cpp">
+      <Filter>dx11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -121,8 +124,12 @@
     <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="dx11_helper.h" />
-    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="dx11_helper.h">
+      <Filter>dx11</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>dx11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Math">
@@ -133,6 +140,9 @@
     </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{f5bcb8ed-7e79-47a2-8101-c72f6f11618b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dx11">
+      <UniqueIdentifier>{6634c2ce-df53-41da-b630-a8150de3856e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

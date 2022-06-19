@@ -17,8 +17,8 @@ struct plane
 struct camera_config
 {
   camera_config() = default;
-  camera_config(vec3 look_from, vec3 look_at, float field_of_view, float aspect_ratio, float aperture, float dist_to_focus, float type = 0.0f)
-    : look_from(look_from), look_at(look_at), field_of_view(field_of_view), aspect_ratio(aspect_ratio), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
+  camera_config(vec3 look_from, vec3 look_at, float field_of_view, float aspect_ratio_w, int aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
+    : look_from(look_from), look_at(look_at), field_of_view(field_of_view), aspect_ratio_w(aspect_ratio_w), aspect_ratio_h(aspect_ratio_h), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
   { }
 
   static camera_config lerp(const camera_config& a, const camera_config& b, float f)
@@ -32,7 +32,8 @@ struct camera_config
   vec3 look_from;
   vec3 look_at;
   float field_of_view = 90.0f;
-  float aspect_ratio = 1.77777779f;
+  float aspect_ratio_h = 9.0f;
+  float aspect_ratio_w = 16.0f;
   float aperture = 0.0f;       // defocus blur
   float dist_to_focus = 1.0f;  // distance from camera to the focus object
   float type = 0.0f;           // 0.0f perspective camera, 1.0f orthographic camera
@@ -49,7 +50,7 @@ public:
     float theta = degrees_to_radians(setup.field_of_view);
     float h = tan(theta / 2.0f);
     viewport_height = 2.0f * h;                       // viewport size at the distance 1
-    viewport_width = setup.aspect_ratio * viewport_height;
+    viewport_width = setup.aspect_ratio_w / setup.aspect_ratio_h * viewport_height;
 
     const vec3 view_up(0.0f, 1.0f, 0.0f);
     w = unit_vector(setup.look_from - setup.look_at);   

@@ -6,30 +6,79 @@
 #include <d3d11.h>
 #include <tchar.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 #include "camera.h"
 #include "frame_renderer.h"
 #include "material.h"
 #include "bmp.h"
+#include "dx11_helper.h"
 
-// Data
-static ID3D11Device* g_pd3dDevice = NULL;
-static ID3D11DeviceContext* g_pd3dDeviceContext = NULL;
-static IDXGISwapChain* g_pSwapChain = NULL;
-static ID3D11RenderTargetView* g_mainRenderTargetView = NULL;
 
-// Forward declarations of helper functions
-bool CreateDeviceD3D(HWND hWnd);
-void CleanupDeviceD3D();
-void CreateRenderTarget();
-void CleanupRenderTarget();
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int& out_width, int& out_height);
-bool LoadTextureFromBuffer(unsigned char* buffer, ID3D11ShaderResourceView** out_srv, int width, int height);
 
-// Main code
+struct app_state
+{
+  void update()
+  {
+    resolution_horizontal = (int)((float)resolution_vertical * camera_setting.aspect_ratio_w / camera_setting.aspect_ratio_h);
+    world.build_boxes();
+  }
+
+  // Initial state
+  camera_config camera_setting;
+  renderer_config renderer_setting;
+  bool use_custom_focus_distance = false;
+  int chunk_strategy = 0;
+  int threading_strategy = 0;
+  int resolution_vertical = 0;
+  int resolution_horizontal = 0;
+  float background_color[3] = { 0,0,0 };
+  hittable_list world;
+
+  // Runtime state
+  int output_width = 0;
+  int output_height = 0;
+  ID3D11ShaderResourceView* output_texture = nullptr;
+  bool is_rendering = false;
+  frame_renderer renderer;
+};
+
+
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+// Win32 message handler
+LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+  if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    return true;
+
+  switch (msg)
+  {
+  case WM_SIZE:
+    if (dx11::g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
+    {
+      dx11::CleanupRenderTarget();
+      dx11::g_pSwapChain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
+      dx11::CreateRenderTarget();
+    }
+    return 0;
+  case WM_SYSCOMMAND:
+    if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+      return 0;
+    break;
+  case WM_DESTROY:
+    ::PostQuitMessage(0);
+    return 0;
+  }
+  return ::DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+
+void drawCameraPanel(app_state& state);
+void drawRendererPanel(app_state& state);
+void drawRaytracerWindow(app_state& state);
+void drawOutputWindow(app_state& state);
+void drawSceneEditorWindow(app_state& state);
+
 int main(int, char**)
 {
   // Create application window
@@ -39,9 +88,9 @@ int main(int, char**)
   HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("RayTracer"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
-  if (!CreateDeviceD3D(hwnd))
+  if (!dx11::CreateDeviceD3D(hwnd))
   {
-    CleanupDeviceD3D();
+    dx11::CleanupDeviceD3D();
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
     return 1;
   }
@@ -63,49 +112,22 @@ int main(int, char**)
 
   // Setup Platform/Renderer backends
   ImGui_ImplWin32_Init(hwnd);
-  ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
+  ImGui_ImplDX11_Init(dx11::g_pd3dDevice, dx11::g_pd3dDeviceContext);
 
+  // Raytracer init
   random_cache::init();
-
-  // Load Fonts
-  // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-  // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-  // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-  // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-  // - Read 'docs/FONTS.md' for more instructions and details.
-  // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-  //io.Fonts->AddFontDefault();
-  //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-  //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-  //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-  //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-  //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-  //IM_ASSERT(font != NULL);
-
-  // Imgui state
-  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-  // Camera
-  int ar[2] = { 1, 1 };
-  bool use_custom_focus_distance = false;
-  camera_config camera_setting;
-  camera_setting.aspect_ratio = (float)ar[0] / (float)ar[1];
-  camera_setting.field_of_view = 30.0f;
-  camera_setting.aperture = 0.02f;
-  camera_setting.dist_to_focus = 1.0f;
-  camera_setting.look_from = vec3(278, 278, -800);
-  camera_setting.look_at = vec3(278, 278, 0);
-  camera_setting.type = 0.0f;
-
-  // Renderer
-  renderer_config renderer_setting = renderer_config::high_quality_preset;
-  int resolution_vertical = 400;
-  int resolution_horizontal = (int)((float)resolution_vertical * camera_setting.aspect_ratio);
-  int chunk_strategy = (int)renderer_setting.chunks_strategy;
-  int threading_strategy = (int)renderer_setting.threading_strategy;
-  bool is_rendering = false;
-  float background_color[3] = { 0,0,0 };
-  frame_renderer renderer;
+  
+  app_state state;
+  state.camera_setting.aspect_ratio_w = 16.0f;
+  state.camera_setting.aspect_ratio_h = 9.0f;
+  state.camera_setting.field_of_view = 30.0f;
+  state.camera_setting.aperture = 0.02f;
+  state.camera_setting.dist_to_focus = 1.0f;
+  state.camera_setting.look_from = vec3(278, 278, -800);
+  state.camera_setting.look_at = vec3(278, 278, 0);
+  state.camera_setting.type = 0.0f;
+  state.renderer_setting = renderer_config::high_quality_preset;
+  state.resolution_vertical = 400;
 
   // Materials
   diffuse_material white_diffuse(white);
@@ -119,9 +141,8 @@ int main(int, char**)
   solid_texture t_lightbulb_ultra_strong(vec3(15.0f, 15.0f, 15.0f));
   diffuse_light_material diff_light_sky = diffuse_light_material(&t_sky);
   diffuse_light_material diff_light_ultra_strong = diffuse_light_material(&t_lightbulb_ultra_strong);
-
+  
   // World
-  hittable_list world;
   yz_rect* r1 = new yz_rect(0, 555, 0, 555, 555, &green_diffuse);
   yz_rect* r2 = new yz_rect(0, 555, 0, 555, 0, &red_diffuse);
   xz_rect* r3 = new xz_rect(213, 343, 127, 332, 554, &diff_light_ultra_strong);
@@ -131,13 +152,15 @@ int main(int, char**)
   sphere* e1 = new sphere(vec3(230.0f, 290.0f, 250.f), 120.f, &glass);
   sphere* e3 = new sphere(vec3(270.0f, 50.0f, 210.f), 30.f, &metal_shiny);
   sphere* e2 = new sphere(vec3(270.0f, 270.0f, 250.f), 1100.f, &diff_light_sky);
-  world.add(r1); world.add(r2); world.add(r3); world.add(r4); world.add(r5); world.add(r6);   world.add(e1); world.add(e3); world.add(e2);
-  world.build_boxes();
+  state.world.add(r1); state.world.add(r2); state.world.add(r3); state.world.add(r4); 
+  state.world.add(r5); state.world.add(r6); state.world.add(e1); state.world.add(e3); 
+  state.world.add(e2);
+  
+  state.update();
 
-  // Output window 
-  int output_width = 0;
-  int output_height = 0;
-  ID3D11ShaderResourceView* output_texture = nullptr;
+  // Imgui state
+  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
 
   // Main loop
   bool done = false;
@@ -164,112 +187,24 @@ int main(int, char**)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    if (1)
+    if (0)
     {
       ImGui::ShowDemoWindow();
     }
+
+    state.update();
     
-    {
-      ImGui::Begin("RayTracer", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-      ImGui::BeginDisabled(renderer.is_working());
-
-      ImGui::Separator();
-      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
-      ImGui::Separator();
-      ImGui::InputInt2("Aspect ratio", ar);
-      camera_setting.aspect_ratio = (float)ar[0] / (float)ar[1];
-      ImGui::Text("Aspect ratio = %.3f", camera_setting.aspect_ratio);
-      ImGui::InputFloat("Field of view", &camera_setting.field_of_view, 1.0f, 189.0f, "%.0f");
-      ImGui::InputFloat("Projection", &camera_setting.type, 0.1f, 1.0f, "%.2f");
-      ImGui::Text("0 = Perspective; 1 = Orthografic");
-      ImGui::Separator();
-      ImGui::InputFloat3("Look from", camera_setting.look_from.e, "%.2f");
-      ImGui::InputFloat3("Look at", camera_setting.look_at.e, "%.2f");
-      ImGui::Separator();
-      if (use_custom_focus_distance)
-      {
-        ImGui::InputFloat("Focus distance", &camera_setting.dist_to_focus, 0.0f, 1000.0f, "%.2f");
-      }
-      else
-      {
-        camera_setting.dist_to_focus = (camera_setting.look_from - camera_setting.look_at).length();
-        ImGui::Text("Focus distance = %.3f", camera_setting.dist_to_focus);
-      }
-      ImGui::Checkbox("Use custom focus distance", &use_custom_focus_distance);
-      ImGui::InputFloat("Aperture", &camera_setting.aperture, 0.1f, 1.0f, "%.2f");
-
-      ImGui::Separator();
-      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
-      ImGui::Separator();
-      ImGui::InputInt("Resolution v", &resolution_vertical, 1, 2160);
-      resolution_horizontal = (int)((float)resolution_vertical * camera_setting.aspect_ratio);
-      ImGui::Text("Resolution h = %d", resolution_horizontal);
-      ImGui::Separator();
-      ImGui::Combo("Chunk strategy", &chunk_strategy, chunk_strategy_names, IM_ARRAYSIZE(chunk_strategy_names));
-      renderer_setting.chunks_strategy = (chunk_strategy_type)chunk_strategy;
-      if (chunk_strategy != (int)chunk_strategy_type::none)
-      {
-        ImGui::InputInt("Chunks", &renderer_setting.chunks_num);
-      }
-      ImGui::Separator();
-      ImGui::Combo("Threading strategy", &threading_strategy, threading_strategy_names, IM_ARRAYSIZE(threading_strategy_names));
-      renderer_setting.threading_strategy = (threading_strategy_type)threading_strategy;
-      if (threading_strategy == (int)threading_strategy_type::thread_pool)
-      {
-        ImGui::InputInt("Threads", &renderer_setting.threads_num);
-        ImGui::Text("0 enforces std::thread::hardware_concurrency");
-      }
-      ImGui::Separator();
-      ImGui::InputInt("Rays per pixel", &renderer_setting.AA_samples_per_pixel,1,10);
-      ImGui::Separator();
-      ImGui::InputInt("Ray bounces", &renderer_setting.diffuse_max_bounce_num, 1);
-      ImGui::InputFloat("Bounce brightness", &renderer_setting.diffuse_bounce_brightness, 0.01f, 0.1f, "%.2f");
-      ImGui::Checkbox("Enable emissive materials", &renderer_setting.allow_emissive);
-      if (!renderer_setting.allow_emissive)
-      {
-        ImGui::ColorEdit3("Background", background_color, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-        renderer_setting.background = vec3(background_color[0], background_color[1], background_color[2]);
-      }
-      ImGui::Separator();
-      
-      if (ImGui::Button("Render"))
-      {
-        renderer.set_config(resolution_horizontal, resolution_vertical, renderer_setting, world, camera_setting);
-        renderer.render_single_async();
-        output_width = resolution_horizontal;
-        output_height = resolution_vertical;
-        bool ret = LoadTextureFromBuffer(renderer.get_img_rgb(), &output_texture, output_width, output_height);
-        IM_ASSERT(ret);
-      }
-      if (renderer.is_working())
-      {
-        ImGui::SameLine();
-        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "WORKING");
-      }
-      ImGui::Text("Last render time = %lld [ms]", renderer.get_render_time() / 1000);
-      ImGui::Text("Last save time = %lld [ms]", renderer.get_save_time() / 1000);
-      ImGui::End();
-      ImGui::EndDisabled();
-
-      if (output_texture != nullptr)
-      {
-        bool ret = LoadTextureFromBuffer(renderer.get_img_rgb(), &output_texture, output_width, output_height);
-        IM_ASSERT(ret);
-        ImGui::Begin("Output", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Image((ImTextureID)output_texture, ImVec2(output_width, output_height), ImVec2(0,1), ImVec2(1,0));
-        ImGui::End();
-      }
-
-    }
+    drawRaytracerWindow(state);
+    drawOutputWindow(state);
+    drawSceneEditorWindow(state);
 
     // Rendering
     ImGui::Render();
-    const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-    g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
-    g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
+    dx11::g_pd3dDeviceContext->OMSetRenderTargets(1, &dx11::g_mainRenderTargetView, NULL);
+    dx11::g_pd3dDeviceContext->ClearRenderTargetView(dx11::g_mainRenderTargetView, clear_color_with_alpha);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-    g_pSwapChain->Present(1, 0); // Present with vsync
+    dx11::g_pSwapChain->Present(1, 0); // Present with vsync
     //g_pSwapChain->Present(0, 0); // Present without vsync
   }
 
@@ -278,152 +213,157 @@ int main(int, char**)
   ImGui_ImplWin32_Shutdown();
   ImGui::DestroyContext();
 
-  CleanupDeviceD3D();
+  dx11::CleanupDeviceD3D();
   ::DestroyWindow(hwnd);
   ::UnregisterClass(wc.lpszClassName, wc.hInstance);
 
   return 0;
 }
 
-
-bool LoadTextureFromBuffer(unsigned char* buffer, ID3D11ShaderResourceView** out_srv, int width, int height)
+void drawRaytracerWindow(app_state& state)
 {
-  if (buffer == nullptr) return false;
+  ImGui::Begin("RayTracer", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+  drawCameraPanel(state);
+  drawRendererPanel(state);
+  ImGui::End();
+}
 
-  D3D11_TEXTURE2D_DESC desc;
-  ZeroMemory(&desc, sizeof(desc));
-  desc.Width = width;
-  desc.Height = height;
-  desc.MipLevels = 1;
-  desc.ArraySize = 1;
-  desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  desc.SampleDesc.Count = 1;
-  desc.Usage = D3D11_USAGE_DEFAULT;
-  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  desc.CPUAccessFlags = 0;
+void drawCameraPanel(app_state& state)
+{
+  ImGui::BeginDisabled(state.renderer.is_working());
 
-  D3D11_SUBRESOURCE_DATA subResource;
-  subResource.pSysMem = buffer;
-  subResource.SysMemPitch = desc.Width * 4;
-  subResource.SysMemSlicePitch = 0;
-
-  ID3D11Texture2D* pTexture = nullptr;
-  if (SUCCEEDED(g_pd3dDevice->CreateTexture2D(&desc, &subResource, &pTexture)) && pTexture)
+  ImGui::Separator();
+  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
+  ImGui::Separator();
+  int ar[2] = { state.camera_setting.aspect_ratio_w, state.camera_setting.aspect_ratio_h };
+  ImGui::InputInt2("Aspect ratio", ar);
+  state.camera_setting.aspect_ratio_w = ar[0];
+  state.camera_setting.aspect_ratio_h = ar[1];
+  ImGui::Text("Aspect ratio = %.3f", state.camera_setting.aspect_ratio_w / state.camera_setting.aspect_ratio_h);
+  ImGui::InputFloat("Field of view", &state.camera_setting.field_of_view, 1.0f, 189.0f, "%.0f");
+  ImGui::InputFloat("Projection", &state.camera_setting.type, 0.1f, 1.0f, "%.2f");
+  ImGui::Text("0 = Perspective; 1 = Orthografic");
+  ImGui::Separator();
+  ImGui::InputFloat3("Look from", state.camera_setting.look_from.e, "%.2f");
+  ImGui::InputFloat3("Look at", state.camera_setting.look_at.e, "%.2f");
+  ImGui::Separator();
+  if (state.use_custom_focus_distance)
   {
-    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-    ZeroMemory(&srvDesc, sizeof(srvDesc));
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MipLevels = desc.MipLevels;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    if (SUCCEEDED(g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, out_srv)))
+    ImGui::InputFloat("Focus distance", &state.camera_setting.dist_to_focus, 0.0f, 1000.0f, "%.2f");
+  }
+  else
+  {
+    state.camera_setting.dist_to_focus = (state.camera_setting.look_from - state.camera_setting.look_at).length();
+    ImGui::Text("Focus distance = %.3f", state.camera_setting.dist_to_focus);
+  }
+  ImGui::Checkbox("Use custom focus distance", &state.use_custom_focus_distance);
+  ImGui::InputFloat("Aperture", &state.camera_setting.aperture, 0.1f, 1.0f, "%.2f");
+
+  ImGui::EndDisabled();
+}
+
+void drawRendererPanel(app_state& state)
+{
+  ImGui::BeginDisabled(state.renderer.is_working());
+
+  ImGui::Separator();
+  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
+  ImGui::Separator();
+  ImGui::InputInt("Resolution v", &state.resolution_vertical, 1, 2160);
+  state.resolution_horizontal = state.resolution_horizontal;
+  ImGui::Text("Resolution h = %d", state.resolution_horizontal);
+  ImGui::Separator();
+  ImGui::Combo("Chunk strategy", &state.chunk_strategy, chunk_strategy_names, IM_ARRAYSIZE(chunk_strategy_names));
+  state.renderer_setting.chunks_strategy = (chunk_strategy_type)state.chunk_strategy;
+  if (state.chunk_strategy != (int)chunk_strategy_type::none)
+  {
+    ImGui::InputInt("Chunks", &state.renderer_setting.chunks_num);
+  }
+  ImGui::Separator();
+  ImGui::Combo("Threading strategy", &state.threading_strategy, threading_strategy_names, IM_ARRAYSIZE(threading_strategy_names));
+  state.renderer_setting.threading_strategy = (threading_strategy_type)state.threading_strategy;
+  if (state.threading_strategy == (int)threading_strategy_type::thread_pool)
+  {
+    ImGui::InputInt("Threads", &state.renderer_setting.threads_num);
+    ImGui::Text("0 enforces std::thread::hardware_concurrency");
+  }
+  ImGui::Separator();
+  ImGui::InputInt("Rays per pixel", &state.renderer_setting.AA_samples_per_pixel, 1, 10);
+  ImGui::Separator();
+  ImGui::InputInt("Ray bounces", &state.renderer_setting.diffuse_max_bounce_num, 1);
+  ImGui::InputFloat("Bounce brightness", &state.renderer_setting.diffuse_bounce_brightness, 0.01f, 0.1f, "%.2f");
+  ImGui::Checkbox("Enable emissive materials", &state.renderer_setting.allow_emissive);
+  if (!state.renderer_setting.allow_emissive)
+  {
+    ImGui::ColorEdit3("Background", state.background_color, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+    state.renderer_setting.background = vec3(state.background_color[0], state.background_color[1], state.background_color[2]);
+  }
+  ImGui::Separator();
+
+  if (ImGui::Button("Render"))
+  {
+    state.renderer.set_config(state.resolution_horizontal, state.resolution_vertical, state.renderer_setting, state.world, state.camera_setting);
+    state.renderer.render_single_async();
+    state.output_width = state.resolution_horizontal;
+    state.output_height = state.resolution_vertical;
+    bool ret = dx11::LoadTextureFromBuffer(state.renderer.get_img_rgb(), &state.output_texture, state.output_width, state.output_height);
+    IM_ASSERT(ret);
+  }
+  if (state.renderer.is_working())
+  {
+    ImGui::SameLine();
+    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "WORKING");
+  }
+  ImGui::Text("Last render time = %lld [ms]", state.renderer.get_render_time() / 1000);
+  ImGui::Text("Last save time = %lld [ms]", state.renderer.get_save_time() / 1000);
+
+  ImGui::EndDisabled();
+}
+
+void drawOutputWindow(app_state& state)
+{
+  if (state.output_texture != nullptr)
+  {
+    bool ret = dx11::LoadTextureFromBuffer(state.renderer.get_img_rgb(), &state.output_texture, state.output_width, state.output_height);
+    IM_ASSERT(ret);
+    ImGui::Begin("Output", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::Image((ImTextureID)state.output_texture, ImVec2(state.output_width, state.output_height), ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::End();
+  }
+}
+
+void drawSceneEditorWindow(app_state& state)
+{
+  ImGui::Begin("Scene editor", nullptr);
+
+  static int selected = -1;
+  if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+  {
+    for (int n = 0; n < state.world.objects.size(); n++)
     {
-      pTexture->Release();
-      return true;
+      char buf[32];
+      sprintf(buf, "Object %d", n);
+      if (ImGui::Selectable(buf, selected == n))
+      {
+        selected = n;
+      }
+    }
+    ImGui::EndListBox();
+
+    if (selected >= 0 && selected < state.world.objects.size())
+    {
+      ImGui::Text("Selected");
+      ImGui::Separator();
+      hittable* selected_obj = state.world.objects[selected];
+      hittable_type type = selected_obj->type;
+      if (type == hittable_type::sphere)
+      {
+        ImGui::Text("Sphere");
+        sphere* s = (sphere*)selected_obj;
+        ImGui::InputFloat3("Origin", s->origin.e);
+        ImGui::InputFloat("Radius", &s->radius);
+      }
     }
   }
-  return false;
+  ImGui::End();
 }
-
-bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int& out_width, int& out_height)
-{
-  int image_width = 0;
-  int image_height = 0;
-  unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
-  if (image_data != NULL)
-  {
-    out_width = image_width;
-    out_height = image_height;
-    bool answer = LoadTextureFromBuffer(image_data, out_srv, image_width, image_height);
-    stbi_image_free(image_data);
-    return answer;
-  }
-  return true;
-}
-
-
-
-
-
-
-bool CreateDeviceD3D(HWND hWnd)
-{
-  // Setup swap chain
-  DXGI_SWAP_CHAIN_DESC sd;
-  ZeroMemory(&sd, sizeof(sd));
-  sd.BufferCount = 2;
-  sd.BufferDesc.Width = 0;
-  sd.BufferDesc.Height = 0;
-  sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  sd.BufferDesc.RefreshRate.Numerator = 60;
-  sd.BufferDesc.RefreshRate.Denominator = 1;
-  sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-  sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  sd.OutputWindow = hWnd;
-  sd.SampleDesc.Count = 1;
-  sd.SampleDesc.Quality = 0;
-  sd.Windowed = TRUE;
-  sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
-  UINT createDeviceFlags = 0;
-  //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-  D3D_FEATURE_LEVEL featureLevel;
-  const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
-  if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext) != S_OK)
-    return false;
-
-  CreateRenderTarget();
-  return true;
-}
-
-void CleanupDeviceD3D()
-{
-  CleanupRenderTarget();
-  if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = NULL; }
-  if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = NULL; }
-  if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = NULL; }
-}
-
-void CreateRenderTarget()
-{
-  ID3D11Texture2D* pBackBuffer;
-  g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-  g_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_mainRenderTargetView);
-  pBackBuffer->Release();
-}
-
-void CleanupRenderTarget()
-{
-  if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = NULL; }
-}
-
-// Forward declare message handler from imgui_impl_win32.cpp
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-// Win32 message handler
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-  if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-    return true;
-
-  switch (msg)
-  {
-  case WM_SIZE:
-    if (g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
-    {
-      CleanupRenderTarget();
-      g_pSwapChain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
-      CreateRenderTarget();
-    }
-    return 0;
-  case WM_SYSCOMMAND:
-    if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
-      return 0;
-    break;
-  case WM_DESTROY:
-    ::PostQuitMessage(0);
-    return 0;
-  }
-  return ::DefWindowProc(hWnd, msg, wParam, lParam);
-}
-
