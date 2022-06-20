@@ -420,34 +420,6 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
 
     selected_obj->draw_edit_panel();
 
-    //hittable_type type = selected_obj->type;
-    //if (type == hittable_type::sphere)
-    //{
-    //  sphere* s = (sphere*)selected_obj;
-    //  ImGui::InputFloat3("Origin", s->origin.e);
-    //  ImGui::InputFloat("Radius", &s->radius);
-    //}
-    //else if (type == hittable_type::xy_rect)
-    //{
-    //  xy_rect* r = (xy_rect*)selected_obj;
-    //  ImGui::InputFloat2("x0 y0", r->x0y0);
-    //  ImGui::InputFloat2("x1 y1", r->x1y1);
-    //  ImGui::InputFloat("z", &r->z);
-    //}
-    //else if (type == hittable_type::xz_rect)
-    //{
-    //  xz_rect* r = (xz_rect*)selected_obj;
-    //  ImGui::InputFloat2("x0 z0", r->x0z0);
-    //  ImGui::InputFloat2("x1 z1", r->x1z1);
-    //  ImGui::InputFloat("y", &r->y);
-    //}
-    //else if (type == hittable_type::yz_rect)
-    //{
-    //  yz_rect* r = (yz_rect*)selected_obj;
-    //  ImGui::InputFloat2("y0 z0", r->y0z0);
-    //  ImGui::InputFloat2("y1 z1", r->y1z1);
-    //  ImGui::InputFloat("x", &r->x);
-    //}
     ImGui::Separator();
   }
   

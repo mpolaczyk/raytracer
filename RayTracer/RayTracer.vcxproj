@@ -143,8 +143,7 @@
     <ClCompile Include="dx11_helper.cpp" />
     <ClCompile Include="frame_renderer.cpp" />
     <ClCompile Include="hittables_ext.cpp" />
-    <ClCompile Include="main_old.cpp" />
-    <ClCompile Include="sphere.cpp" />
+    <ClCompile Include="hittables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="material.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -171,7 +170,7 @@
     <ClInclude Include="common.h" />
     <ClInclude Include="dx11_helper.h" />
     <ClInclude Include="frame_renderer.h" />
-    <ClInclude Include="sphere.h" />
+    <ClInclude Include="hittables.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stdafx.h" />

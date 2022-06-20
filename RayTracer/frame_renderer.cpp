@@ -7,7 +7,7 @@
 
 #include "bmp.h"
 #include "thread_pool.h"
-#include "sphere.h"
+#include "hittables.h"
 #include "material.h"
 
 // Designated initializers c++20 https://en.cppreference.com/w/cpp/language/aggregate_initialization

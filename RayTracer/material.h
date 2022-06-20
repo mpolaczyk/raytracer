@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ray.h"
-#include "sphere.h"
+#include "hittables.h"
 #include "texture.h"
 
 class material

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "sphere.h"
+#include "hittables.h"
 #include "aabb.h"
 
 void hittable_list::build_boxes()

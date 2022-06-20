@@ -6,7 +6,7 @@
     <ClCompile Include="aabb.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="sphere.cpp">
+    <ClCompile Include="hittables.cpp">
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="vec3.cpp">
@@ -33,7 +33,6 @@
     <ClCompile Include="bmp.cpp">
       <Filter>Processing</Filter>
     </ClCompile>
-    <ClCompile Include="main_old.cpp" />
     <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -73,7 +72,7 @@
     <ClInclude Include="ray.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="sphere.h">
+    <ClInclude Include="hittables.h">
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="texture.h">

@@ -4,7 +4,7 @@
 #include <semaphore>
 
 #include "vec3.h"
-#include "sphere.h"
+#include "hittables.h"
 #include "ray.h"
 #include "chunk_generator.h"
 #include "camera.h"
