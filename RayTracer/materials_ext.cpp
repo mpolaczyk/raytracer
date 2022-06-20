@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "material.h"
+#include "materials.h"
 
 #include <iosfwd>
 

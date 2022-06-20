@@ -4,7 +4,7 @@
 
 #include "ray.h"
 #include "hittables.h"
-#include "texture.h"
+#include "textures.h"
 
 
 enum class material_type  // No RTTI, simple type detection

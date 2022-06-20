@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "hittables.h"
-#include "material.h"
+#include "materials.h"
 
 #include <iosfwd>
 

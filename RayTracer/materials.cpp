@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "material.h"
+#include "materials.h"
 #include "common.h"
 
 bool material::scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const

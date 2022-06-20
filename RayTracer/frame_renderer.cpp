@@ -8,7 +8,7 @@
 #include "bmp.h"
 #include "thread_pool.h"
 #include "hittables.h"
-#include "material.h"
+#include "materials.h"
 
 // Designated initializers c++20 https://en.cppreference.com/w/cpp/language/aggregate_initialization
 renderer_config renderer_config::ten_thousand_per_pixel_preset
