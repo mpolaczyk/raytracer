@@ -60,6 +60,9 @@ struct renderer_config
 
   bool allow_emissive = true;
   bool shuffle_chunks = true;
+
+  bool pixel_time_coloring = false;
+  float pixel_time_coloring_scale = 0.01f;
 };
 
 class frame_renderer

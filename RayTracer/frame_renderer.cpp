@@ -221,8 +221,13 @@ void frame_renderer::render_chunk(const chunk& in_chunk)
   {
     for (uint32_t x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
     {
-      vec3 pixel_color;
+      benchmark::instance timer;
+      if (ajs.settings.pixel_time_coloring)
+      {
+        timer.start("RayColor", false);
+      }
       // Anti Aliasing done at the ray level, multiple rays for each pixel.
+      vec3 pixel_color;
       for (uint32_t c = 0; c < ajs.settings.AA_samples_per_pixel; c++)
       {
         float u = (float(x) + random_cache::get_float()) / (ajs.image_width - 1);
@@ -231,7 +236,16 @@ void frame_renderer::render_chunk(const chunk& in_chunk)
         pixel_color += ray_color(r, ajs.settings.background, ajs.settings.diffuse_max_bounce_num);
       }
       // Save to bmp
-      bmp::bmp_pixel p = bmp::bmp_pixel(pixel_color / (float)ajs.settings.AA_samples_per_pixel);
+      bmp::bmp_pixel p;
+      if (ajs.settings.pixel_time_coloring)
+      {
+        uint64_t t = timer.stop();
+        p = bmp::bmp_pixel(t / (float)ajs.settings.AA_samples_per_pixel * ajs.settings.pixel_time_coloring_scale);
+      }
+      else
+      {
+        p = bmp::bmp_pixel(pixel_color / (float)ajs.settings.AA_samples_per_pixel);
+      }
       ajs.img_bgr->draw_pixel(x, y, &p);
       ajs.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
     }
