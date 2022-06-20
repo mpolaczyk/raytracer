@@ -13,26 +13,78 @@
 #include "dx11_helper.h"
 
 
-
+/* 
+   app_state - root structure for the application
+   - accessible from multiple panels/widgets
+   - holds resources
+   - persistent (in future)
+*/
 struct app_state
 {
   // Initial state
   camera_config camera_setting;
   renderer_config renderer_setting;
-  bool use_custom_focus_distance = false;
+  hittable_list world;
   int resolution_vertical = 0;
   int resolution_horizontal = 0;
   float background_color[3] = { 0,0,0 };
-  hittable_list world;
 
   // Runtime state
   int output_width = 0;
   int output_height = 0;
   ID3D11ShaderResourceView* output_srv = nullptr;
   ID3D11Texture2D* output_texture = nullptr;
-  bool is_rendering = false;
   frame_renderer renderer;
+  material* default_material = nullptr;
 };
+
+/*
+ *_model - for each panel/window
+ - not part of app state
+ - owned by UI
+ - required to maintain panel/window state between frames
+ - not needed to be shared between multiple panels/widgets
+ - not persistent
+*/
+struct camera_panel_model
+{
+  bool use_custom_focus_distance = false;
+};
+
+struct renderer_panel_model
+{
+
+};
+
+struct raytracer_window_model
+{
+  camera_panel_model cp_model;
+  renderer_panel_model rp_model;
+};
+
+struct output_window_model
+{
+  float zoom = 1.0f;
+};
+
+struct new_object_panel_model
+{
+  int selected_type = 0;
+  hittable* hittable = nullptr;
+};
+
+struct scene_editor_window_model
+{
+  int selected_id = -1;
+  new_object_panel_model nop_model;
+};
+
+void draw_camera_panel(camera_panel_model& model, app_state& state);
+void draw_renderer_panel(renderer_panel_model& model, app_state& state);
+void draw_raytracer_window(raytracer_window_model& model, app_state& state);
+void draw_output_window(output_window_model& model, app_state& state);
+void draw_scene_editor_window(scene_editor_window_model& model, app_state& state);
+void draw_new_object_panel(new_object_panel_model& model, app_state& state);
 
 
 // Forward declare message handler from imgui_impl_win32.cpp
@@ -64,13 +116,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   }
   return ::DefWindowProc(hWnd, msg, wParam, lParam);
 }
-
-
-void drawCameraPanel(app_state& state);
-void drawRendererPanel(app_state& state);
-void drawRaytracerWindow(app_state& state);
-void drawOutputWindow(app_state& state);
-void drawSceneEditorWindow(app_state& state);
 
 int main(int, char**)
 {
@@ -119,7 +164,7 @@ int main(int, char**)
   state.camera_setting.look_from = vec3(278, 278, -800);
   state.camera_setting.look_at = vec3(278, 278, 0);
   state.camera_setting.type = 0.0f;
-  state.renderer_setting = renderer_config::high_quality_preset;
+  state.renderer_setting = renderer_config::medium_quality_preset;
   state.renderer_setting.threading_strategy = threading_strategy_type::thread_pool;
   state.renderer_setting.chunks_strategy = chunk_strategy_type::rectangles;
   state.renderer_setting.chunks_num = 200;
@@ -137,7 +182,8 @@ int main(int, char**)
   solid_texture t_lightbulb_ultra_strong(vec3(15.0f, 15.0f, 15.0f));
   diffuse_light_material diff_light_sky = diffuse_light_material(&t_sky);
   diffuse_light_material diff_light_ultra_strong = diffuse_light_material(&t_lightbulb_ultra_strong);
-  
+  state.default_material = &metal_shiny;
+
   // World
   yz_rect* r1 = new yz_rect(0, 555, 0, 555, 555, &green_diffuse);
   yz_rect* r2 = new yz_rect(0, 555, 0, 555, 0, &red_diffuse);
@@ -155,6 +201,10 @@ int main(int, char**)
   // Imgui state
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+
+  raytracer_window_model rw_model;
+  output_window_model ow_model;
+  scene_editor_window_model sew_model;
 
   // Main loop
   bool done = false;
@@ -188,9 +238,9 @@ int main(int, char**)
 
     state.world.build_boxes();  // todo, only when world dirty
     
-    drawRaytracerWindow(state);
-    drawOutputWindow(state);
-    drawSceneEditorWindow(state);
+    draw_raytracer_window(rw_model, state);
+    draw_output_window(ow_model, state);
+    draw_scene_editor_window(sew_model, state);
 
     // Rendering
     ImGui::Render();
@@ -214,15 +264,15 @@ int main(int, char**)
   return 0;
 }
 
-void drawRaytracerWindow(app_state& state)
+void draw_raytracer_window(raytracer_window_model& model, app_state& state)
 {
-  ImGui::Begin("RayTracer", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-  drawCameraPanel(state);
-  drawRendererPanel(state);
+  ImGui::Begin("RAYTRACER", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+  draw_camera_panel(model.cp_model, state);
+  draw_renderer_panel(model.rp_model, state);
   ImGui::End();
 }
 
-void drawCameraPanel(app_state& state)
+void draw_camera_panel(camera_panel_model& model, app_state& state)
 {
   ImGui::BeginDisabled(state.renderer.is_working());
 
@@ -241,7 +291,7 @@ void drawCameraPanel(app_state& state)
   ImGui::InputFloat3("Look from", state.camera_setting.look_from.e, "%.2f");
   ImGui::InputFloat3("Look at", state.camera_setting.look_at.e, "%.2f");
   ImGui::Separator();
-  if (state.use_custom_focus_distance)
+  if (model.use_custom_focus_distance)
   {
     ImGui::InputFloat("Focus distance", &state.camera_setting.dist_to_focus, 0.0f, 1000.0f, "%.2f");
   }
@@ -250,13 +300,13 @@ void drawCameraPanel(app_state& state)
     state.camera_setting.dist_to_focus = (state.camera_setting.look_from - state.camera_setting.look_at).length();
     ImGui::Text("Focus distance = %.3f", state.camera_setting.dist_to_focus);
   }
-  ImGui::Checkbox("Use custom focus distance", &state.use_custom_focus_distance);
+  ImGui::Checkbox("Use custom focus distance", &model.use_custom_focus_distance);
   ImGui::InputFloat("Aperture", &state.camera_setting.aperture, 0.1f, 1.0f, "%.2f");
 
   ImGui::EndDisabled();
 }
 
-void drawRendererPanel(app_state& state)
+void draw_renderer_panel(renderer_panel_model& model, app_state& state)
 {
   ImGui::BeginDisabled(state.renderer.is_working());
 
@@ -319,49 +369,141 @@ void drawRendererPanel(app_state& state)
   ImGui::EndDisabled();
 }
 
-void drawOutputWindow(app_state& state)
+void draw_output_window(output_window_model& model, app_state& state)
 {
   if (state.output_texture != nullptr)
   {
     dx11::UpdateTextureBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, state.output_texture);
     ImGui::Begin("Output", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-    ImGui::Image((ImTextureID)state.output_srv, ImVec2(state.output_width, state.output_height), ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
+    ImGui::Image((ImTextureID)state.output_srv, ImVec2(state.output_width * model.zoom, state.output_height * model.zoom), ImVec2(0, 1), ImVec2(1, 0));
     ImGui::End();
   }
 }
 
-void drawSceneEditorWindow(app_state& state)
+void draw_scene_editor_window(scene_editor_window_model& model, app_state& state)
 {
-  ImGui::Begin("Scene editor", nullptr);
+  ImGui::Begin("SCENE", nullptr);
+  ImGui::Separator();
+  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "OBJECTS");
+  ImGui::Separator();
 
-  static int selected = -1;
-  if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+  draw_new_object_panel(model.nop_model, state);
+
+  int num_objects = state.world.objects.size();
+  if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, min(20, num_objects+1) * ImGui::GetTextLineHeightWithSpacing())))
   {
-    for (int n = 0; n < state.world.objects.size(); n++)
+    for (int n = 0; n < num_objects; n++)
     {
-      char buf[32];
-      sprintf(buf, "Object %d", n);
-      if (ImGui::Selectable(buf, selected == n))
+      hittable* obj = state.world.objects[n];
+      std::string obj_name;
+      obj->get_name(obj_name);
+      if (ImGui::Selectable(obj_name.c_str(), model.selected_id == n))
       {
-        selected = n;
+        model.selected_id = n;
       }
     }
     ImGui::EndListBox();
-
-    if (selected >= 0 && selected < state.world.objects.size())
-    {
-      ImGui::Text("Selected");
-      ImGui::Separator();
-      hittable* selected_obj = state.world.objects[selected];
-      hittable_type type = selected_obj->type;
-      if (type == hittable_type::sphere)
-      {
-        ImGui::Text("Sphere");
-        sphere* s = (sphere*)selected_obj;
-        ImGui::InputFloat3("Origin", s->origin.e);
-        ImGui::InputFloat("Radius", &s->radius);
-      }
-    }
   }
+
+  if (model.selected_id >= 0 && model.selected_id < num_objects)
+  {
+    ImGui::Separator();
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SELECTED");
+    ImGui::Separator();
+
+    hittable* selected_obj = state.world.objects[model.selected_id];
+
+    std::string selected_obj_name;
+    selected_obj->get_name(selected_obj_name);
+    ImGui::Text(selected_obj_name.c_str());
+
+    selected_obj->draw_edit_panel();
+
+    //hittable_type type = selected_obj->type;
+    //if (type == hittable_type::sphere)
+    //{
+    //  sphere* s = (sphere*)selected_obj;
+    //  ImGui::InputFloat3("Origin", s->origin.e);
+    //  ImGui::InputFloat("Radius", &s->radius);
+    //}
+    //else if (type == hittable_type::xy_rect)
+    //{
+    //  xy_rect* r = (xy_rect*)selected_obj;
+    //  ImGui::InputFloat2("x0 y0", r->x0y0);
+    //  ImGui::InputFloat2("x1 y1", r->x1y1);
+    //  ImGui::InputFloat("z", &r->z);
+    //}
+    //else if (type == hittable_type::xz_rect)
+    //{
+    //  xz_rect* r = (xz_rect*)selected_obj;
+    //  ImGui::InputFloat2("x0 z0", r->x0z0);
+    //  ImGui::InputFloat2("x1 z1", r->x1z1);
+    //  ImGui::InputFloat("y", &r->y);
+    //}
+    //else if (type == hittable_type::yz_rect)
+    //{
+    //  yz_rect* r = (yz_rect*)selected_obj;
+    //  ImGui::InputFloat2("y0 z0", r->y0z0);
+    //  ImGui::InputFloat2("y1 z1", r->y1z1);
+    //  ImGui::InputFloat("x", &r->x);
+    //}
+    ImGui::Separator();
+  }
+  
   ImGui::End();
+}
+
+void draw_new_object_panel(new_object_panel_model& model, app_state& state)
+{
+  if (ImGui::Button("Add new object"))
+  {
+    ImGui::OpenPopup("New object?");
+  }
+  ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+  if (ImGui::BeginPopupModal("New object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+  {
+    ImGui::Combo("Object type", &model.selected_type, hittable_type_names, IM_ARRAYSIZE(hittable_type_names));
+    
+    if (model.hittable != nullptr && (int)model.hittable->type != model.selected_type)
+    {
+      delete model.hittable; // Object type changed, destroy the old one
+      model.hittable = nullptr;
+    }
+    if (model.hittable == nullptr)
+    {
+      // New object
+      if (model.selected_type == (int)hittable_type::hittable) { model.hittable = new hittable(); }
+      else if (model.selected_type == (int)hittable_type::hittable_list) { model.hittable = new hittable_list(); }
+      else if (model.selected_type == (int)hittable_type::sphere) {  model.hittable = new sphere(); }
+      else if (model.selected_type == (int)hittable_type::xy_rect) { model.hittable = new xy_rect(); }
+      else if (model.selected_type == (int)hittable_type::xz_rect) { model.hittable = new xz_rect(); }
+      else if (model.selected_type == (int)hittable_type::yz_rect) { model.hittable = new yz_rect(); }
+    }
+    if (model.hittable != nullptr)
+    {
+      model.hittable->draw_edit_panel();
+    }
+
+    if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
+    {
+      state.world.add(model.hittable);
+      model.hittable = nullptr;
+      ImGui::CloseCurrentPopup();
+    }
+    ImGui::SetItemDefaultFocus();
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel", ImVec2(120, 0))) 
+    { 
+      if (model.hittable) 
+      { 
+        delete model.hittable; 
+        model.hittable = nullptr;
+      }
+      ImGui::CloseCurrentPopup();
+    }
+    ImGui::EndPopup();
+
+  }
 }

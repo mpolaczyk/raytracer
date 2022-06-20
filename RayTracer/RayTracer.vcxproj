@@ -142,6 +142,7 @@
     <ClCompile Include="common.cpp" />
     <ClCompile Include="dx11_helper.cpp" />
     <ClCompile Include="frame_renderer.cpp" />
+    <ClCompile Include="hittables_ext.cpp" />
     <ClCompile Include="main_old.cpp" />
     <ClCompile Include="sphere.cpp" />
     <ClCompile Include="main.cpp" />

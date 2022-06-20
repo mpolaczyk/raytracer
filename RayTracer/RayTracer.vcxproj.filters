@@ -58,6 +58,9 @@
     <ClCompile Include="dx11_helper.cpp">
       <Filter>dx11</Filter>
     </ClCompile>
+    <ClCompile Include="hittables_ext.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

@@ -3,6 +3,14 @@
 #include "sphere.h"
 #include "aabb.h"
 
+void hittable_list::build_boxes()
+{
+  for (hittable* object : objects)
+  {
+    object->get_bounding_box(object->bounding_box);
+  }
+}
+
 bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
   vec3 oc = in_ray.origin - origin;
@@ -39,12 +47,6 @@ bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hi
   return true;
 }
 
-bool sphere::get_bounding_box(aabb& out_box) const
-{
-  out_box = aabb(origin - radius, origin + radius);
-  return true;
-}
-
 bool hittable_list::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
   hit_record temp_rec;
@@ -69,6 +71,61 @@ bool hittable_list::hit(const ray& in_ray, float t_min, float t_max, hit_record&
   return hit_anything;
 }
 
+bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+{
+  float t = (z - in_ray.origin.z) / in_ray.direction.z;
+  if (t < t_min || t > t_max) { return false; }
+  float x = in_ray.origin.x + t * in_ray.direction.x;
+  float y = in_ray.origin.y + t * in_ray.direction.y;
+  if (x < x0 || x > x1 || y < y0 || y > y1) { return false; }
+  out_hit.u = (x - x0) / (x1 - x0);
+  out_hit.v = (y - y0) / (y1 - y0);
+  out_hit.t = t;
+  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 0.0f, 1.0f), out_hit.normal);
+  out_hit.mat = mat;
+  out_hit.p = in_ray.at(t);
+  return true;
+}
+
+bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+{
+  float t = (y - in_ray.origin.y) / in_ray.direction.y;
+  if (t < t_min || t > t_max) { return false; }
+  float x = in_ray.origin.x + t * in_ray.direction.x;
+  float z = in_ray.origin.z + t * in_ray.direction.z;
+  if (x < x0 || x > x1 || z < z0 || z > z1) { return false; }
+  out_hit.u = (x - x0) / (x1 - x0);
+  out_hit.v = (z - z0) / (z1 - z0);
+  out_hit.t = t;
+  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 1.0f, 0.0f), out_hit.normal);
+  out_hit.mat = mat;
+  out_hit.p = in_ray.at(t);
+  return true;
+}
+
+bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+{
+  float t = (x - in_ray.origin.x) / in_ray.direction.x;
+  if (t < t_min || t > t_max) { return false; }
+  float y = in_ray.origin.y + t * in_ray.direction.y;
+  float z = in_ray.origin.z + t * in_ray.direction.z;
+  if (y < y0 || y > y1 || z < z0 || z > z1) { return false; }
+  out_hit.u = (y - y0) / (y1 - y0);
+  out_hit.v = (z - z0) / (z1 - z0);
+  out_hit.t = t;
+  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(1.0f, 0.0f, 0.0f), out_hit.normal);
+  out_hit.mat = mat;
+  out_hit.p = in_ray.at(t);
+  return true;
+}
+
+
+bool sphere::get_bounding_box(aabb& out_box) const
+{
+  out_box = aabb(origin - radius, origin + radius);
+  return true;
+}
+
 bool hittable_list::get_bounding_box(aabb& out_box) const
 {
   if (objects.empty()) return false;
@@ -86,51 +143,11 @@ bool hittable_list::get_bounding_box(aabb& out_box) const
   return true;
 }
 
-void hittable_list::build_boxes()
-{
-  for (hittable* object : objects)
-  {
-    object->get_bounding_box(object->bounding_box);
-  }
-}
-
-bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
-{
-  float t = (k - in_ray.origin.z) / in_ray.direction.z;
-  if (t < t_min || t > t_max) { return false; }
-  float x = in_ray.origin.x + t * in_ray.direction.x;
-  float y = in_ray.origin.y + t * in_ray.direction.y;
-  if (x < x0 || x > x1 || y < y0 || y > y1) { return false; }
-  out_hit.u = (x - x0) / (x1 - x0);
-  out_hit.v = (y - y0) / (y1 - y0);
-  out_hit.t = t;
-  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 0.0f, 1.0f), out_hit.normal);
-  out_hit.mat = mat;
-  out_hit.p = in_ray.at(t);
-  return true;
-}
-
 bool xy_rect::get_bounding_box(aabb& out_box) const
 {
   // The bounding box must have non-zero width in each dimension, so pad the Z
   // dimension a small amount.
-  out_box = aabb(vec3(x0, y0, k - 0.0001f), vec3(x1, y1, k + 0.0001f));
-  return true;
-}
-
-bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
-{
-  float t = (k - in_ray.origin.y) / in_ray.direction.y;
-  if (t < t_min || t > t_max) { return false; }
-  float x = in_ray.origin.x + t * in_ray.direction.x;
-  float z = in_ray.origin.z + t * in_ray.direction.z;
-  if (x < x0 || x > x1 || z < z0 || z > z1) { return false; }
-  out_hit.u = (x - x0) / (x1 - x0);
-  out_hit.v = (z - z0) / (z1 - z0);
-  out_hit.t = t;
-  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 1.0f, 0.0f), out_hit.normal);
-  out_hit.mat = mat;
-  out_hit.p = in_ray.at(t);
+  out_box = aabb(vec3(x0, y0, z - 0.0001f), vec3(x1, y1, z + 0.0001f));
   return true;
 }
 
@@ -138,23 +155,7 @@ bool xz_rect::get_bounding_box(aabb& out_box) const
 {
   // The bounding box must have non-zero width in each dimension, so pad the Y
   // dimension a small amount.
-  out_box = aabb(vec3(x0, k - 0.0001, z0), vec3(x1, k + 0.0001, z1));
-  return true;
-}
-
-bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
-{
-  float t = (k - in_ray.origin.x) / in_ray.direction.x;
-  if (t < t_min || t > t_max) { return false; }
-  float y = in_ray.origin.y + t * in_ray.direction.y;
-  float z = in_ray.origin.z + t * in_ray.direction.z;
-  if (y < y0 || y > y1 || z < z0 || z > z1) { return false; }
-  out_hit.u = (y - y0) / (y1 - y0);
-  out_hit.v = (z - z0) / (z1 - z0);
-  out_hit.t = t;
-  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(1.0f, 0.0f, 0.0f), out_hit.normal);
-  out_hit.mat = mat;
-  out_hit.p = in_ray.at(t);
+  out_box = aabb(vec3(x0, y - 0.0001, z0), vec3(x1, y + 0.0001, z1));
   return true;
 }
 
@@ -162,6 +163,6 @@ bool yz_rect::get_bounding_box(aabb& out_box) const
 {
   // The bounding box must have non-zero width in each dimension, so pad the X
   // dimension a small amount.
-  out_box = aabb(vec3(k - 0.0001, y0, z0), vec3(k + 0.0001, y1, z1));
+  out_box = aabb(vec3(x - 0.0001, y0, z0), vec3(x + 0.0001, y1, z1));
   return true;
 }
