@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "hittables.h"
+#include "material.h"
 
 #include <iosfwd>
 
@@ -62,6 +63,15 @@ void sphere::draw_edit_panel()
 {
   ImGui::InputFloat3("Origin", origin.e, "%f.2");
   ImGui::InputFloat("Radius", &radius, 1);
+  if (mat != nullptr) 
+  { 
+    std::string mat_name;
+    mat->get_name(mat_name);
+    ImGui::Text("Material");
+    ImGui::SameLine();
+    ImGui::Text(mat_name.c_str());
+    mat->draw_edit_panel(); 
+  }
 }
 
 void xy_rect::draw_edit_panel()
@@ -69,6 +79,15 @@ void xy_rect::draw_edit_panel()
   ImGui::InputFloat2("x0 y0", x0y0);
   ImGui::InputFloat2("x1 y1", x1y1);
   ImGui::InputFloat("z", &z);
+  if (mat != nullptr)
+  {
+    std::string mat_name;
+    mat->get_name(mat_name);
+    ImGui::Text("Material");
+    ImGui::SameLine();
+    ImGui::Text(mat_name.c_str());
+    mat->draw_edit_panel();
+  }
 }
 
 void xz_rect::draw_edit_panel()
@@ -76,6 +95,15 @@ void xz_rect::draw_edit_panel()
   ImGui::InputFloat2("x0 z0", x0z0);
   ImGui::InputFloat2("x1 z1", x1z1);
   ImGui::InputFloat("y", &y);
+  if (mat != nullptr)
+  {
+    std::string mat_name;
+    mat->get_name(mat_name);
+    ImGui::Text("Material");
+    ImGui::SameLine();
+    ImGui::Text(mat_name.c_str());
+    mat->draw_edit_panel();
+  }
 }
 
 void yz_rect::draw_edit_panel()
@@ -83,4 +111,13 @@ void yz_rect::draw_edit_panel()
   ImGui::InputFloat2("y0 z0", y0z0);
   ImGui::InputFloat2("y1 z1", y1z1);
   ImGui::InputFloat("x", &x);
+  if (mat != nullptr)
+  {
+    std::string mat_name;
+    mat->get_name(mat_name);
+    ImGui::Text("Material");
+    ImGui::SameLine();
+    ImGui::Text(mat_name.c_str());
+    mat->draw_edit_panel();
+  }
 }

@@ -172,9 +172,12 @@ void frame_renderer::render()
   std::vector<chunk> chunks;
   chunk_generator::generate_chunks(ajs.settings.chunks_strategy, ajs.settings.chunks_num, ajs.image_width, ajs.image_height, chunks);
 
-  std::random_device rd;
-  std::mt19937 g(rd());
-  std::shuffle(chunks.begin(), chunks.end(), g);
+  if (ajs.settings.shuffle_chunks)
+  {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(chunks.begin(), chunks.end(), g);
+  }
 
   //for (const auto& ch : chunks)
   //{

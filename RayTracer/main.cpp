@@ -65,6 +65,7 @@ struct raytracer_window_model
 struct output_window_model
 {
   float zoom = 1.0f;
+  bool real_time_update = true;
 };
 
 struct new_object_panel_model
@@ -231,7 +232,7 @@ int main(int, char**)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    if (0)
+    if (1)
     {
       ImGui::ShowDemoWindow();
     }
@@ -267,6 +268,10 @@ int main(int, char**)
 void draw_raytracer_window(raytracer_window_model& model, app_state& state)
 {
   ImGui::Begin("RAYTRACER", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+  ImGuiIO& io = ImGui::GetIO();
+  ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
   draw_camera_panel(model.cp_model, state);
   draw_renderer_panel(model.rp_model, state);
   ImGui::End();
@@ -325,6 +330,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   {
     ImGui::InputInt("Chunks", &state.renderer_setting.chunks_num);
   }
+  ImGui::Checkbox("Shuffle chunks", &state.renderer_setting.shuffle_chunks);
 
   ImGui::Separator();
   int threading_strategy = (int)state.renderer_setting.threading_strategy;
@@ -373,8 +379,12 @@ void draw_output_window(output_window_model& model, app_state& state)
 {
   if (state.output_texture != nullptr)
   {
-    dx11::UpdateTextureBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, state.output_texture);
-    ImGui::Begin("Output", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::Checkbox("Real-time update", &model.real_time_update);
+    if (!(!model.real_time_update && state.renderer.is_working()))
+    {
+      dx11::UpdateTextureBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, state.output_texture);
+    }
     ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
     ImGui::Image((ImTextureID)state.output_srv, ImVec2(state.output_width * model.zoom, state.output_height * model.zoom), ImVec2(0, 1), ImVec2(1, 0));
     ImGui::End();

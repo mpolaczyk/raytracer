@@ -59,6 +59,7 @@ struct renderer_config
   int threads_num = 0; // Apples only to thread pool strategy, 0 enforces std::thread::hardware_concurrency()
 
   bool allow_emissive = true;
+  bool shuffle_chunks = true;
 };
 
 class frame_renderer

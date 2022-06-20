@@ -30,9 +30,6 @@
     <ClCompile Include="common.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="bmp.cpp">
-      <Filter>Processing</Filter>
-    </ClCompile>
     <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -55,10 +52,16 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="dx11_helper.cpp">
-      <Filter>dx11</Filter>
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="bmp.cpp">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="materials_ext.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="hittables_ext.cpp">
-      <Filter>Math</Filter>
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -99,9 +102,6 @@
     <ClInclude Include="common.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="bmp.h">
-      <Filter>Processing</Filter>
-    </ClInclude>
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imconfig.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -127,10 +127,13 @@
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="dx11_helper.h">
-      <Filter>dx11</Filter>
+      <Filter>gfx</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
-      <Filter>dx11</Filter>
+      <Filter>gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="bmp.h">
+      <Filter>gfx</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -143,8 +146,11 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{f5bcb8ed-7e79-47a2-8101-c72f6f11618b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="dx11">
+    <Filter Include="gfx">
       <UniqueIdentifier>{6634c2ce-df53-41da-b630-a8150de3856e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{aa90aa1e-0c9a-4fbc-9b5f-b7af4c45a09f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
