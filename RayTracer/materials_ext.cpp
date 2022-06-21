@@ -42,7 +42,7 @@ std::vector<std::string> materials_collection::get_material_names()
 void material::get_name(std::string& out_name) const
 {
   std::ostringstream oss;
-  oss << material_type_names[(int)type] << " " << friendly_name;
+  oss << material_type_names[(int)type] << "; " << friendly_name;
   out_name = oss.str();
 }
 
@@ -51,7 +51,7 @@ void diffuse_material::get_name(std::string& out_name) const
   std::string base_name;
   material::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << " " << albedo.x << " " << albedo.x << " " << albedo.x;
+  oss << base_name << "; " << albedo.x << " " << albedo.x << " " << albedo.x;
   out_name = oss.str();
 }
 
@@ -65,7 +65,7 @@ void metal_material::get_name(std::string& out_name) const
   std::string base_name;
   material::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << " " << albedo.x << " " << albedo.x << " " << albedo.x << " " << fuzz;
+  oss << base_name << "; " << albedo.x << " " << albedo.x << " " << albedo.x << "; " << fuzz;
   out_name = oss.str();
 }
 
@@ -74,7 +74,7 @@ void dialectric_material::get_name(std::string& out_name) const
   std::string base_name;
   material::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << " " << index_of_refraction;
+  oss << base_name << "; " << index_of_refraction;
   out_name = oss.str();
 }
 

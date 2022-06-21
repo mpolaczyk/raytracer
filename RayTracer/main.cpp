@@ -201,7 +201,7 @@ int main(int, char**)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    if (1)
+    if (0)
     {
       ImGui::ShowDemoWindow();
     }

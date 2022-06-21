@@ -14,7 +14,7 @@ void hittable::get_name(std::string& out_name) const
   if (mat != nullptr)
   {
     std::ostringstream oss;
-    oss << base_name << " " << mat->friendly_name;
+    oss << base_name << "; " << mat->friendly_name;
     out_name = oss.str();
   }
   else
@@ -34,7 +34,7 @@ void sphere::get_name(std::string& out_name) const
   std::string base_name;
   hittable::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << " " << radius;
+  oss << base_name << "; " << radius;
   out_name = oss.str();
 }
 
@@ -43,7 +43,7 @@ void xy_rect::get_name(std::string& out_name) const
   std::string base_name;
   hittable::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << " " << x0 << " " << y0 << " " << x1 << " " << y1;
+  oss << base_name << "; " << x0 << " " << y0 << "; " << x1 << " " << y1;
   out_name = oss.str();
 }
 
@@ -52,7 +52,7 @@ void xz_rect::get_name(std::string& out_name) const
   std::string base_name;
   hittable::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << " " << x0 << " " << z0 << " " << x1 << " " << z1;
+  oss << base_name << "; " << x0 << " " << z0 << "; " << x1 << " " << z1;
   out_name = oss.str();
 }
 
@@ -61,9 +61,10 @@ void yz_rect::get_name(std::string& out_name) const
   std::string base_name;
   hittable::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << " " << y0 << " " << z0 << " " << y1 << " " << z1;
+  oss << base_name << "; " << y0 << " " << z0 << "; " << y1 << " " << z1;
   out_name = oss.str();
 }
+
 
 void hittable::draw_edit_panel()
 {
