@@ -6,12 +6,9 @@
 #include <d3d11.h>
 #include <tchar.h>
 
-#include "camera.h"
-#include "frame_renderer.h"
-#include "materials.h"
-#include "bmp.h"
-#include "dx11_helper.h"
 #include "app.h"
+#include "dx11_helper.h"
+#include "materials.h"
 
 
 
@@ -99,29 +96,74 @@ int main(int, char**)
   state.resolution_vertical = 400;
 
   // Materials
-  diffuse_material white_diffuse(white);
-  diffuse_material green_diffuse(green);
-  diffuse_material yellow_diffuse(yellow);
-  diffuse_material red_diffuse(red);
-  metal_material metal_shiny(grey, 0.0f);
-  metal_material metal_matt(grey, 0.02f);
-  dialectric_material glass(1.5f);
-  solid_texture t_sky(white);
-  solid_texture t_lightbulb_ultra_strong(vec3(15.0f, 15.0f, 15.0f));
-  diffuse_light_material diff_light_sky = diffuse_light_material(&t_sky);
-  diffuse_light_material diff_light_ultra_strong = diffuse_light_material(&t_lightbulb_ultra_strong);
-  state.default_material = &metal_shiny;
+  diffuse_material* diffuse_white  = new diffuse_material(c_white, "white");
+  diffuse_material* diffuse_black  = new diffuse_material(c_black, "black");
+  diffuse_material* diffuse_red    = new diffuse_material(c_red, "red");
+  diffuse_material* diffuse_green  = new diffuse_material(c_green, "green");
+  diffuse_material* diffuse_yellow = new diffuse_material(c_yellow, "yellow");
+  diffuse_material* diffuse_blue   = new diffuse_material(c_blue, "blue");
+  state.materials.add(diffuse_white);
+  state.materials.add(diffuse_black);
+  state.materials.add(diffuse_red);
+  state.materials.add(diffuse_green);
+  state.materials.add(diffuse_yellow);
+  state.materials.add(diffuse_blue);
+
+  metal_material* metal_shiny  = new metal_material(c_grey, 0.0f, "metal shiny");
+  metal_material* metal_matt   = new metal_material(c_grey, 0.02f, "metal matt");
+  metal_material* metal_copper = new metal_material(c_copper, 0.04f, "copper");
+  metal_material* metal_steel  = new metal_material(c_steel, 0.04f, "steel");
+  metal_material* metal_silver = new metal_material(c_silver, 0.04f, "silver");
+  metal_material* metal_gold   = new metal_material(c_gold, 0.04f, "gold");
+  state.materials.add(metal_shiny);
+  state.materials.add(metal_matt);
+  state.materials.add(metal_copper);
+  state.materials.add(metal_steel);
+  state.materials.add(metal_silver);
+  state.materials.add(metal_gold);
+
+  dialectric_material* dialectric_water      = new dialectric_material(1.33f, "water");
+  dialectric_material* dialectric_glass      = new dialectric_material(1.5f, "glass");
+  dialectric_material* dialectric_sapphire   = new dialectric_material(1.77f, "sapphire");
+  dialectric_material* dialectric_diamond    = new dialectric_material(2.4f, "diamond");
+  dialectric_material* dialectric_moissanite = new dialectric_material(2.65f, "moissanite");  // https://en.wikipedia.org/wiki/Silicon_carbide
+  state.materials.add(dialectric_water);
+  state.materials.add(dialectric_glass);
+  state.materials.add(dialectric_sapphire);
+  state.materials.add(dialectric_diamond);
+  state.materials.add(dialectric_moissanite);
+
+  solid_texture*    t_white         = new solid_texture(c_white);
+  solid_texture*    t_grey          = new solid_texture(c_grey);
+  checker_texture*  t_checker       = new checker_texture(t_white, t_grey);
+  texture_material* texture_default = new texture_material(t_checker, "default");
+  state.materials.add(texture_default);
+
+  solid_texture* t_light         = new solid_texture(vec3(1.0f, 1.0f, 1.0f));
+  solid_texture* t_light_strong  = new solid_texture(vec3(4.0f, 4.0f, 4.0f));
+  solid_texture* t_light_strong2 = new solid_texture(vec3(7.0f, 7.0f, 7.0f));
+  solid_texture* t_light_strong3 = new solid_texture(vec3(15.0f, 15.0f, 15.0f));
+  diffuse_light_material* diff_light         = new diffuse_light_material(t_light, "light");
+  diffuse_light_material* diff_light_strong  = new diffuse_light_material(t_light_strong, "light strong");
+  diffuse_light_material* diff_light_strong2 = new diffuse_light_material(t_light_strong2, "light strong2");
+  diffuse_light_material* diff_light_strong3 = new diffuse_light_material(t_light_strong3, "light strong3");
+  state.materials.add(diff_light);
+  state.materials.add(diff_light_strong);
+  state.materials.add(diff_light_strong2);
+  state.materials.add(diff_light_strong3);
+
+  state.default_material = texture_default;
 
   // World
-  yz_rect* r1 = new yz_rect(0, 555, 0, 555, 555, &green_diffuse);
-  yz_rect* r2 = new yz_rect(0, 555, 0, 555, 0, &red_diffuse);
-  xz_rect* r3 = new xz_rect(213, 343, 127, 332, 554, &diff_light_ultra_strong);
-  xz_rect* r4 = new xz_rect(0, 555, 0, 555, 0, &white_diffuse);
-  xz_rect* r5 = new xz_rect(0, 555, 0, 555, 555, &white_diffuse);
-  xy_rect* r6 = new xy_rect(0, 555, 0, 555, 555, &white_diffuse);
-  sphere* e1 = new sphere(vec3(270.0f, 290.0f, 250.f), 120.f, &glass);
-  sphere* e3 = new sphere(vec3(240.0f, 70.0f, 260.f), 50.f, &metal_shiny);
-  sphere* e2 = new sphere(vec3(270.0f, 270.0f, 250.f), 1100.f, &diff_light_sky);
+  yz_rect* r1 = new yz_rect(0, 555, 0, 555, 555, diffuse_green);
+  yz_rect* r2 = new yz_rect(0, 555, 0, 555, 0, diffuse_red);
+  xz_rect* r3 = new xz_rect(213, 343, 127, 332, 554, diff_light_strong3);
+  xz_rect* r4 = new xz_rect(0, 555, 0, 555, 0, diffuse_white);
+  xz_rect* r5 = new xz_rect(0, 555, 0, 555, 555, diffuse_white);
+  xy_rect* r6 = new xy_rect(0, 555, 0, 555, 555, diffuse_white);
+  sphere* e1 = new sphere(vec3(270.0f, 290.0f, 250.f), 120.f, dialectric_glass);
+  sphere* e3 = new sphere(vec3(240.0f, 70.0f, 260.f), 50.f, metal_shiny);
+  sphere* e2 = new sphere(vec3(270.0f, 270.0f, 250.f), 1100.f, diff_light);
   state.world.add(r1); state.world.add(r2); state.world.add(r3); state.world.add(r4); 
   state.world.add(r5); state.world.add(r6); state.world.add(e1); state.world.add(e3); 
   state.world.add(e2);

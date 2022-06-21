@@ -52,6 +52,8 @@ public:
   material* mat = nullptr;
   aabb bounding_box;
   hittable_type type = hittable_type::hittable;
+
+  static hittable* spawn_by_type(hittable_type type);
 };
 
 
@@ -82,8 +84,8 @@ public:
   virtual void get_name(std::string& out_name) const override;
   virtual void draw_edit_panel() override;
 
-  void clear() { objects.clear(); }
   void add(hittable* object) { objects.push_back(object); }
+  void remove(int object_id) { delete objects[object_id]; objects.erase(objects.begin() + object_id); }
   void build_boxes();
 
 public:

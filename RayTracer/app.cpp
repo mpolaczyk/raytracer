@@ -146,6 +146,8 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
   ImGui::Separator();
 
   draw_new_object_panel(model.nop_model, state);
+  ImGui::SameLine();
+  draw_delete_object_panel(model.d_model, state);
 
   int num_objects = state.world.objects.size();
   if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, min(20, num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
@@ -158,6 +160,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
       if (ImGui::Selectable(obj_name.c_str(), model.selected_id == n))
       {
         model.selected_id = n;
+        model.d_model.selected_id = n;
       }
     }
     ImGui::EndListBox();
@@ -170,11 +173,6 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
     ImGui::Separator();
 
     hittable* selected_obj = state.world.objects[model.selected_id];
-
-    std::string selected_obj_name;
-    selected_obj->get_name(selected_obj_name);
-    ImGui::Text(selected_obj_name.c_str());
-
     selected_obj->draw_edit_panel();
 
     ImGui::Separator();
@@ -185,7 +183,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
 
 void draw_new_object_panel(new_object_panel_model& model, app_state& state)
 {
-  if (ImGui::Button("Add new object"))
+  if (ImGui::Button("Add new"))
   {
     ImGui::OpenPopup("New object?");
   }
@@ -194,6 +192,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_state& state)
   if (ImGui::BeginPopupModal("New object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
   {
     ImGui::Combo("Object type", &model.selected_type, hittable_type_names, IM_ARRAYSIZE(hittable_type_names));
+    ImGui::Separator();
 
     if (model.hittable != nullptr && (int)model.hittable->type != model.selected_type)
     {
@@ -203,20 +202,43 @@ void draw_new_object_panel(new_object_panel_model& model, app_state& state)
     if (model.hittable == nullptr)
     {
       // New object
-      if (model.selected_type == (int)hittable_type::hittable) { model.hittable = new hittable(); }
-      else if (model.selected_type == (int)hittable_type::hittable_list) { model.hittable = new hittable_list(); }
-      else if (model.selected_type == (int)hittable_type::sphere) { model.hittable = new sphere(); }
-      else if (model.selected_type == (int)hittable_type::xy_rect) { model.hittable = new xy_rect(); }
-      else if (model.selected_type == (int)hittable_type::xz_rect) { model.hittable = new xz_rect(); }
-      else if (model.selected_type == (int)hittable_type::yz_rect) { model.hittable = new yz_rect(); }
+      model.hittable = hittable::spawn_by_type((hittable_type)model.selected_type);
     }
     if (model.hittable != nullptr)
     {
       model.hittable->draw_edit_panel();
+      
+      std::vector<std::string> material_names = state.materials.get_material_names();
+
+      if (material_names.size() > 0)
+      {
+        if (ImGui::BeginCombo("Material", material_names[0].c_str()))
+        {
+          for (int i = 0; i < material_names.size(); ++i)
+          {
+            const bool isSelected = (model.selected_material_id == i);
+            if (ImGui::Selectable(material_names[i].c_str(), isSelected))
+            {
+              model.selected_material_id = i;
+            }
+            if (isSelected)
+            {
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+          ImGui::EndCombo();
+        }
+      }
+      else
+      {
+        ImGui::Text("No materials to choose from");
+      }
+
     }
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
     {
+      model.hittable->mat = state.materials.get_material(model.selected_material_id);
       state.world.add(model.hittable);
       model.hittable = nullptr;
       ImGui::CloseCurrentPopup();
@@ -233,6 +255,41 @@ void draw_new_object_panel(new_object_panel_model& model, app_state& state)
       ImGui::CloseCurrentPopup();
     }
     ImGui::EndPopup();
+  }
+}
 
+void draw_delete_object_panel(delete_object_panel_model& model, app_state& state)
+{
+  if (ImGui::Button("Delete selected"))
+  {
+    ImGui::OpenPopup("Delete object?");
+  }
+  ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+  if (ImGui::BeginPopupModal("Delete object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+  {
+    hittable* selected_obj = state.world.objects[model.selected_id];
+    if (selected_obj != nullptr)
+    {
+      ImGui::BeginDisabled(true);
+      std::string name;
+      selected_obj->get_name(name);
+      ImGui::Text(name.c_str());
+      selected_obj->draw_edit_panel();
+      ImGui::EndDisabled();
+
+      if (ImGui::Button("Delete", ImVec2(120, 0)))
+      {
+        state.world.remove(model.selected_id);
+        ImGui::CloseCurrentPopup();
+      }
+      ImGui::SetItemDefaultFocus();
+      ImGui::SameLine();
+      if (ImGui::Button("Cancel", ImVec2(120, 0)))
+      {
+        ImGui::CloseCurrentPopup();
+      }
+    }
+    ImGui::EndPopup();
   }
 }

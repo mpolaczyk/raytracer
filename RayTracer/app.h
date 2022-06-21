@@ -3,7 +3,7 @@
 #include "camera.h"
 #include "frame_renderer.h"
 #include "hittables.h"
-
+#include "materials.h"
 /*
    app_state - root structure for the application
    - accessible from multiple panels/widgets
@@ -19,6 +19,7 @@ struct app_state
   int resolution_vertical = 0;
   int resolution_horizontal = 0;
   float background_color[3] = { 0,0,0 };
+  materials_collection materials;
 
   // Runtime state
   int output_width = 0;
@@ -63,13 +64,21 @@ struct new_object_panel_model
 {
   int selected_type = 0;
   hittable* hittable = nullptr;
+  int selected_material_id = 0;
+};
+
+struct delete_object_panel_model
+{
+  int selected_id = 0;
 };
 
 struct scene_editor_window_model
 {
   int selected_id = -1;
   new_object_panel_model nop_model;
+  delete_object_panel_model d_model;
 };
+
 
 void draw_camera_panel(camera_panel_model& model, app_state& state);
 void draw_renderer_panel(renderer_panel_model& model, app_state& state);
@@ -77,3 +86,4 @@ void draw_raytracer_window(raytracer_window_model& model, app_state& state);
 void draw_output_window(output_window_model& model, app_state& state);
 void draw_scene_editor_window(scene_editor_window_model& model, app_state& state);
 void draw_new_object_panel(new_object_panel_model& model, app_state& state);
+void draw_delete_object_panel(delete_object_panel_model& model, app_state& state);

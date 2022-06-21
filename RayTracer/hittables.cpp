@@ -3,6 +3,16 @@
 #include "hittables.h"
 #include "aabb.h"
 
+hittable* hittable::spawn_by_type(hittable_type type)
+{
+  if (type == hittable_type::hittable) { return new hittable(); }
+  else if (type == hittable_type::hittable_list) { return new hittable_list(); }
+  else if (type == hittable_type::sphere) { return new sphere(); }
+  else if (type == hittable_type::xy_rect) { return new xy_rect(); }
+  else if (type == hittable_type::xz_rect) { return new xz_rect(); }
+  else if (type == hittable_type::yz_rect) { return new yz_rect(); }
+}
+
 void hittable_list::build_boxes()
 {
   for (hittable* object : objects)

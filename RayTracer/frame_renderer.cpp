@@ -256,7 +256,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
 {
   if (depth <= 0)
   {
-    return black;
+    return c_black;
   }
 
   hit_record hit;
@@ -281,7 +281,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
   }
   if (ajs.settings.allow_emissive)
   {
-    return black;
+    return c_black;
   }
   return in_background; // source of light for non emissive mode
 

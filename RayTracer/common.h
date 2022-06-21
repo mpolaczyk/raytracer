@@ -5,14 +5,18 @@
 
 #include "vec3.h"
 
-const vec3 white = vec3(0.73f, .73f, .73f);
-const vec3 grey = vec3(0.6f, 0.6f, 0.6f);
-const vec3 black = vec3(0.0f, 0.0f, 0.0f);
-const vec3 red = vec3(0.65f, 0.05f, 0.05f);
-const vec3 green = vec3(.12f, .45f, .15f);
-const vec3 blue = vec3(0.0f, 0.0f, 1.0f);
-const vec3 white_blue = vec3(0.5f, 0.7f, 1.0f);
-const vec3 yellow = vec3(1.0f, 1.0f, 0.0f);
+const vec3 c_white = vec3(0.73f, .73f, .73f);
+const vec3 c_grey = vec3(0.6f, 0.6f, 0.6f);
+const vec3 c_black = vec3(0.0f, 0.0f, 0.0f);
+const vec3 c_red = vec3(0.65f, 0.05f, 0.05f);
+const vec3 c_green = vec3(.12f, .45f, .15f);
+const vec3 c_blue = vec3(0.0f, 0.0f, 1.0f);
+const vec3 c_white_blue = vec3(0.5f, 0.7f, 1.0f);
+const vec3 c_yellow = vec3(1.0f, 1.0f, 0.0f);
+const vec3 c_copper = vec3(0.72f, 0.45f, 0.2f);
+const vec3 c_steel = vec3(0.44f, 0.47f, 0.49f);
+const vec3 c_silver = vec3(0.32f, 0.34f, 0.34f);
+const vec3 c_gold = vec3(1.f, 0.84f, 0.f);
 
 const float infinity = std::numeric_limits<float>::infinity();
 const float pi = 3.1415926535897932385f;
