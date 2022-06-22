@@ -48,6 +48,8 @@ public:
   virtual bool get_bounding_box(aabb& out_box) const { return false; };
   virtual void get_name(std::string& out_name) const;
   virtual void draw_edit_panel();
+  virtual void set_origin(const vec3& value) {};
+  virtual void set_extent(float value) {};
 
   material* mat = nullptr;
   aabb bounding_box;
@@ -67,6 +69,8 @@ public:
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name) const override;
   virtual void draw_edit_panel() override;
+  virtual void set_origin(const vec3& value) override { origin = value; };
+  virtual void set_extent(float value) { radius = value; };
 
 public:
   vec3 origin = { 0,0,0 };
@@ -83,6 +87,8 @@ public:
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name) const override;
   virtual void draw_edit_panel() override;
+  virtual void set_origin(const vec3& value) override { };
+  virtual void set_extent(float value) { };
 
   void add(hittable* object) { objects.push_back(object); }
   void remove(int object_id) { delete objects[object_id]; objects.erase(objects.begin() + object_id); }
@@ -105,6 +111,8 @@ public:
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name) const override;
   virtual void draw_edit_panel() override;
+  virtual void set_origin(const vec3& value) override { x0 = value.x; y0 = value.y; };
+  virtual void set_extent(float value) { x1 = x0 + value; y1 = y0 + value; };
 
 public:
   union
@@ -132,6 +140,8 @@ public:
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name) const override;
   virtual void draw_edit_panel() override;
+  virtual void set_origin(const vec3& value) override { x0 = value.x; z0 = value.z; };
+  virtual void set_extent(float value) { x1 = x0 + value; z1 = z0 + value; };
 
 public:
   union
@@ -159,6 +169,8 @@ public:
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name) const override;
   virtual void draw_edit_panel() override;
+  virtual void set_origin(const vec3& value) override { y0 = value.y; z0 = value.z; };
+  virtual void set_extent(float value) { y1 = y0 + value; z1 = z0 + value; };
 
 public:
   union

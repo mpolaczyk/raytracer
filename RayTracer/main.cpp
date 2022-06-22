@@ -201,17 +201,18 @@ int main(int, char**)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    if (0)
-    {
-      ImGui::ShowDemoWindow();
-    }
-
-    state.world.build_boxes();  // todo, only when world dirty
-    
+    // Draw UI
+    if (0) { ImGui::ShowDemoWindow(); }
     draw_raytracer_window(rw_model, state);
     draw_output_window(ow_model, state);
     draw_scene_editor_window(sew_model, state);
 
+    // World collisions update, TODO only when dirty
+    state.world.build_boxes();
+
+    // Find center of the scene
+    update_default_spawn_position(state);
+    
     // Rendering
     ImGui::Render();
     dx11::g_pd3dDeviceContext->OMSetRenderTargets(1, &dx11::g_mainRenderTargetView, NULL);

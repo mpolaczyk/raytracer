@@ -19,7 +19,7 @@ void materials_collection::remove(int instance_id)
 
 material* materials_collection::get_material(int index)
 {
-  if (index > 0 && index < instances.size())
+  if (index >= 0 && index < instances.size())
   {
     return instances[index];
   }

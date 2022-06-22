@@ -203,6 +203,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_state& state)
     {
       // New object
       model.hittable = hittable::spawn_by_type((hittable_type)model.selected_type);
+      model.hittable->set_origin(state.center_of_scene);
     }
     if (model.hittable != nullptr)
     {
@@ -212,7 +213,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_state& state)
 
       if (material_names.size() > 0)
       {
-        if (ImGui::BeginCombo("Material", material_names[0].c_str()))
+        if (ImGui::BeginCombo("Material", material_names[model.selected_material_id].c_str()))
         {
           for (int i = 0; i < material_names.size(); ++i)
           {
@@ -291,5 +292,25 @@ void draw_delete_object_panel(delete_object_panel_model& model, app_state& state
       }
     }
     ImGui::EndPopup();
+  }
+}
+
+void update_default_spawn_position(app_state& state)
+{
+  vec3 look_from = state.camera_setting.look_from;
+  vec3 look_at = state.camera_setting.look_at;
+  float dist_to_focus = state.camera_setting.dist_to_focus;
+  // Ray to the look at position to find non colliding spawn point
+  ray center_of_scene_ray(look_from, look_at - look_from);
+  hit_record center_of_scene_hit;
+  if (state.world.hit(center_of_scene_ray, 0.01f, dist_to_focus, center_of_scene_hit))
+  {
+    state.center_of_scene = center_of_scene_hit.p;
+    state.distance_to_center_of_scene = (center_of_scene_hit.p - look_from).length();
+  }
+  else
+  {
+    state.center_of_scene = look_at;
+    state.distance_to_center_of_scene = (look_at - look_from).length();
   }
 }

@@ -40,22 +40,7 @@ float field_of_view = 80.0f;
 float aspect_ratio = 16.0f / 9.0f;
 float aperture = 0.02f;
 
-// Scene ideas:
-// - light bend by a sphere, focus in a spot
-// - light bend by a prism (to implement: index of refraction depends on the wave length(color))
-// - green light focused by sphere is mixed with red light focused by a sphere, both produce yellow
-// - light reflected of a diffuse object seen on a different object
-// - reflections of an object that is not on the screen
-// - reflections of all above in a bigger mirror
-// - global illumination
-// - glass growing and focusing light in a point
-// - glass pendulum throwing a light beam at objects
-// - off screen source of light
-// - changing glass ir, camera alpha, metal fuzz etc.
-// - transition between perspective and orthographic views, done with camera alpha and glass ball as a lense
-// - different rays counts for different screen parts
-// - refreshing only those parts that changed (low ray count prepass, high ray count pass)
-// - scale all vectors until you get out of floating point precision
+
 
 void draw_scene_massive(hittable_list& world)
 {

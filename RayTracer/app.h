@@ -4,6 +4,7 @@
 #include "frame_renderer.h"
 #include "hittables.h"
 #include "materials.h"
+
 /*
    app_state - root structure for the application
    - accessible from multiple panels/widgets
@@ -28,6 +29,8 @@ struct app_state
   class ID3D11Texture2D* output_texture = nullptr;
   frame_renderer renderer;
   material* default_material = nullptr;
+  vec3 center_of_scene;
+  float distance_to_center_of_scene = 0.0f;
 };
 
 /*
@@ -79,7 +82,6 @@ struct scene_editor_window_model
   delete_object_panel_model d_model;
 };
 
-
 void draw_camera_panel(camera_panel_model& model, app_state& state);
 void draw_renderer_panel(renderer_panel_model& model, app_state& state);
 void draw_raytracer_window(raytracer_window_model& model, app_state& state);
@@ -87,3 +89,5 @@ void draw_output_window(output_window_model& model, app_state& state);
 void draw_scene_editor_window(scene_editor_window_model& model, app_state& state);
 void draw_new_object_panel(new_object_panel_model& model, app_state& state);
 void draw_delete_object_panel(delete_object_panel_model& model, app_state& state);
+
+void update_default_spawn_position(app_state& state);

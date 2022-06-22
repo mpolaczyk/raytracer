@@ -159,4 +159,7 @@
       <UniqueIdentifier>{aa90aa1e-0c9a-4fbc-9b5f-b7af4c45a09f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Notes.txt" />
+  </ItemGroup>
 </Project>
