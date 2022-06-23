@@ -157,7 +157,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
     {
       hittable* obj = state.world.objects[n];
       std::string obj_name;
-      obj->get_name(obj_name);
+      obj->get_name(obj_name, false);
       if (ImGui::Selectable(obj_name.c_str(), model.selected_id == n))
       {
         model.m_model.selected_material_name_index = -1;
@@ -288,9 +288,6 @@ void draw_delete_object_panel(delete_object_panel_model& model, app_state& state
     if (selected_obj != nullptr)
     {
       ImGui::BeginDisabled(true);
-      std::string name;
-      selected_obj->get_name(name);
-      ImGui::Text(name.c_str());
       selected_obj->draw_edit_panel();
       ImGui::EndDisabled();
 

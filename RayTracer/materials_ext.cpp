@@ -57,7 +57,7 @@ std::vector<std::string> material_instances::get_material_names() const
   for (auto& pair : registry)
   {
     std::string name;
-    pair.second->get_name(name);
+    pair.second->get_name(name, false);
     names.push_back(name);
   }
   return names;
@@ -90,46 +90,67 @@ int material_instances::get_index_by_id(const std::string& id) const
 }
 
 
-void material::get_name(std::string& out_name) const
+void material::get_name(std::string& out_name, bool with_params) const
 {
   std::ostringstream oss;
   oss << "/" << material_class_names[(int)type] << "/" << id;
   out_name = oss.str();
 }
 
-void diffuse_material::get_name(std::string& out_name) const
+void diffuse_material::get_name(std::string& out_name, bool with_params) const
 {
   std::string base_name;
   material::get_name(base_name);
-  std::ostringstream oss;
-  oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")";
-  out_name = oss.str();
+  if (with_params)
+  {
+    std::ostringstream oss;
+    oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")";
+    out_name = oss.str();
+  }
+  else
+  {
+    out_name = base_name;
+  }
 }
 
-void texture_material::get_name(std::string& out_name) const
+void texture_material::get_name(std::string& out_name, bool with_params) const
 {
   material::get_name(out_name);
 }
 
-void metal_material::get_name(std::string& out_name) const
+void metal_material::get_name(std::string& out_name, bool with_params) const
 {
   std::string base_name;
   material::get_name(base_name);
-  std::ostringstream oss;
-  oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")," << fuzz;
-  out_name = oss.str();
+  if (with_params)
+  {
+    std::ostringstream oss;
+    oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")," << fuzz;
+    out_name = oss.str();
+  }
+  else
+  {
+    out_name = base_name;
+  }
 }
 
-void dialectric_material::get_name(std::string& out_name) const
+void dialectric_material::get_name(std::string& out_name, bool with_params) const
 {
   std::string base_name;
   material::get_name(base_name);
-  std::ostringstream oss;
-  oss << base_name << "/" << index_of_refraction;
-  out_name = oss.str();
+  if (with_params)
+  {
+    std::ostringstream oss;
+    oss << base_name << "/" << index_of_refraction;
+    out_name = oss.str();
+  }
+  else
+  {
+    out_name = base_name;
+  }
 }
 
-void diffuse_light_material::get_name(std::string& out_name) const
+void diffuse_light_material::get_name(std::string& out_name, bool with_params) const
 {
   material::get_name(out_name);
 }

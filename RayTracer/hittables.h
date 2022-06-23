@@ -47,7 +47,7 @@ public:
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const { return false; };
   virtual bool get_bounding_box(aabb& out_box) const { return false; };
-  virtual void get_name(std::string& out_name) const;
+  virtual void get_name(std::string& out_name, bool with_params=true) const;
   virtual void draw_edit_panel();
   virtual void set_origin(const vec3& value) {};
   virtual void set_extent(float value) {};
@@ -69,7 +69,7 @@ public:
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
-  virtual void get_name(std::string& out_name) const override;
+  virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { origin = value; };
   virtual void set_extent(float value) { radius = value; };
@@ -87,7 +87,7 @@ public:
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
-  virtual void get_name(std::string& out_name) const override;
+  virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { };
   virtual void set_extent(float value) { };
@@ -112,7 +112,7 @@ public:
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
-  virtual void get_name(std::string& out_name) const override;
+  virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { x0 = value.x; y0 = value.y; };
   virtual void set_extent(float value) { x1 = x0 + value; y1 = y0 + value; };
@@ -141,7 +141,7 @@ public:
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
-  virtual void get_name(std::string& out_name) const override;
+  virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { x0 = value.x; z0 = value.z; };
   virtual void set_extent(float value) { x1 = x0 + value; z1 = z0 + value; };
@@ -170,7 +170,7 @@ public:
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
-  virtual void get_name(std::string& out_name) const override;
+  virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { y0 = value.y; z0 = value.z; };
   virtual void set_extent(float value) { y1 = y0 + value; z1 = z0 + value; };

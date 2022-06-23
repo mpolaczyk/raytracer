@@ -51,7 +51,7 @@ public:
   material(std::string&& id, material_class type) : id(std::move(id)), type(type) { }
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const;
   virtual vec3 emitted(float u, float v, const vec3& p) const;
-  virtual void get_name(std::string& out_name) const;
+  virtual void get_name(std::string& out_name, bool with_params=true) const;
   virtual void draw_edit_panel();
 
   material_class type = material_class::none;
@@ -66,7 +66,7 @@ public:
   diffuse_material(std::string&& id, const vec3& albedo) : albedo(albedo), material(std::move(id), material_class::diffuse) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
-  virtual void get_name(std::string& out_name) const;
+  virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
 
   vec3 albedo;
@@ -80,7 +80,7 @@ public:
   texture_material(std::string&& id, texture* texture) : texture(texture), material(std::move(id), material_class::texture) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
-  virtual void get_name(std::string& out_name) const;
+  virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
 
   texture* texture = nullptr;
@@ -94,7 +94,7 @@ public:
   metal_material(std::string&& id, const vec3& albedo, float fuzz) : albedo(albedo), fuzz(fuzz), material(std::move(id), material_class::metal) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
-  virtual void get_name(std::string& out_name) const;
+  virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
 
   vec3 albedo;
@@ -109,7 +109,7 @@ public:
   dialectric_material(std::string&& id, float index_of_refraction) : index_of_refraction(index_of_refraction), material(std::move(id), material_class::dialectric) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
-  virtual void get_name(std::string& out_name) const;
+  virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
 
   float index_of_refraction = 1.5f;
@@ -124,7 +124,7 @@ public:
 
   virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual vec3 emitted(float u, float v, const vec3& p) const override;
-  virtual void get_name(std::string& out_name) const;
+  virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
 
 public:
