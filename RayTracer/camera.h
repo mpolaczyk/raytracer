@@ -17,7 +17,7 @@ struct plane
 struct camera_config
 {
   camera_config() = default;
-  camera_config(vec3 look_from, vec3 look_at, float field_of_view, float aspect_ratio_w, int aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
+  camera_config(vec3 look_from, vec3 look_at, float field_of_view, float aspect_ratio_w, float aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
     : look_from(look_from), look_at(look_at), field_of_view(field_of_view), aspect_ratio_w(aspect_ratio_w), aspect_ratio_h(aspect_ratio_h), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
   { }
 

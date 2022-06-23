@@ -5,44 +5,95 @@
 #include "materials.h"
 #include "imgui.h"
 
-
-void materials_collection::add(material* instance)
+bool material_instances::is_id_in_use(const std::string& id) const
 {
-  instances.push_back(instance);
+  if (id.size() == 0) return true;
+  auto obj = registry.find(id);
+  return obj != registry.end();
 }
 
-void materials_collection::remove(int instance_id)
+bool material_instances::try_add(material* instance)
 {
-  delete instances[instance_id];
-  instances.erase(instances.begin() + instance_id);
+  if (instance == nullptr) return false;
+  if (instance->id.size() == 0) return false;
+  auto obj = registry.find(instance->id);
+  if (obj != registry.end()) return false;
+  registry.insert(std::pair<std::string, material*>(instance->id, instance));
 }
 
-material* materials_collection::get_material(int index)
+void material_instances::remove(const std::string& id)
 {
-  if (index >= 0 && index < instances.size())
+  auto obj = registry.find(id);
+  if (obj != registry.end())
   {
-    return instances[index];
+    delete obj->second;
+  }
+  registry.erase(id);
+}
+
+material* material_instances::get_material(const std::string& id) const
+{
+  auto obj = registry.find(id);
+  if (obj != registry.end())
+  {
+    return obj->second;
   }
   return nullptr;
 }
 
-std::vector<std::string> materials_collection::get_material_names()
+std::vector<std::string> material_instances::get_material_ids() const
 {
   std::vector<std::string> names;
-  for (material* instance : instances)
+  for (auto& pair : registry)
+  {
+    names.push_back(pair.first);
+  }
+  return names;
+}
+
+std::vector<std::string> material_instances::get_material_names() const
+{
+  std::vector<std::string> names;
+  for (auto& pair : registry)
   {
     std::string name;
-    instance->get_name(name);
+    pair.second->get_name(name);
     names.push_back(name);
   }
   return names;
+}
+
+int material_instances::get_index_by_name(const std::string& name) const
+{
+  std::vector<std::string> names = get_material_names();
+  for (int i = 0; i < names.size();i++)
+  {
+    if (names[i] == name)
+    {
+      return i;
+    }
+  }
+  return -1;
+}
+
+int material_instances::get_index_by_id(const std::string& id) const
+{
+  std::vector<std::string> ids = get_material_ids();
+  for (int i = 0; i < ids.size(); i++)
+  {
+    if (ids[i] == id)
+    {
+      return i;
+    }
+  }
+  return -1;
 }
 
 
 void material::get_name(std::string& out_name) const
 {
   std::ostringstream oss;
-  oss << material_type_names[(int)type] << "; " << friendly_name;
+  oss << "/" << material_class_names[(int)type] << "/" << id;
   out_name = oss.str();
 }
 
@@ -51,7 +102,7 @@ void diffuse_material::get_name(std::string& out_name) const
   std::string base_name;
   material::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << "; " << albedo.x << " " << albedo.x << " " << albedo.x;
+  oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")";
   out_name = oss.str();
 }
 
@@ -65,7 +116,7 @@ void metal_material::get_name(std::string& out_name) const
   std::string base_name;
   material::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << "; " << albedo.x << " " << albedo.x << " " << albedo.x << "; " << fuzz;
+  oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")," << fuzz;
   out_name = oss.str();
 }
 
@@ -74,7 +125,7 @@ void dialectric_material::get_name(std::string& out_name) const
   std::string base_name;
   material::get_name(base_name);
   std::ostringstream oss;
-  oss << base_name << "; " << index_of_refraction;
+  oss << base_name << "/" << index_of_refraction;
   out_name = oss.str();
 }
 
@@ -93,9 +144,9 @@ void material::draw_edit_panel()
   ImGui::SameLine();
   ImGui::Text(mat_name.c_str());
 
-  char* x = &*friendly_name.begin();
-  ImGui::InputText("Friendly name", x, 100);
-  friendly_name = x;
+  //char* x = &*id.begin();
+  //ImGui::InputText("Friendly name", x, 100);
+  //id = x;
 }
 
 void diffuse_material::draw_edit_panel()

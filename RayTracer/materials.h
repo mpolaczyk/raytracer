@@ -5,9 +5,10 @@
 #include "ray.h"
 #include "hittables.h"
 #include "textures.h"
+#include <map>
 
 
-enum class material_type  // No RTTI, simple type detection
+enum class material_class  // No RTTI, simple type detection
 {
   none = 0,
   diffuse,
@@ -16,7 +17,7 @@ enum class material_type  // No RTTI, simple type detection
   dialectric,
   diffuse_light
 };
-static inline const char* material_type_names[] =
+static inline const char* material_class_names[] =
 {
   "None",
   "Diffuse",
@@ -26,39 +27,43 @@ static inline const char* material_type_names[] =
   "Diffuse light"
 };
 
-class materials_collection
+class material_instances
 {
 public:
-  void add(material* instance);
-  void remove(int instance_id);
-  material* get_material(int index);
-  std::vector<std::string> get_material_names();
+  bool is_id_in_use(const std::string& id) const;
+  bool try_add(material* instance);
+  void remove(const std::string& id);
+  material* get_material(const std::string& id) const;
+  std::vector<std::string> get_material_ids() const;
+  std::vector<std::string> get_material_names() const;
+  int get_index_by_name(const std::string& name) const;
+  int get_index_by_id(const std::string& id) const;
 
 private:
-  std::vector<material*> instances;
+  std::map<std::string, material*> registry;
 };
 
 class material
 {
 public:
   material() {}
-  material(material_type type) : type(type) { }
-  material(material_type type, std::string&& friendly_name) : type(type), friendly_name(friendly_name) { }
+  material(material_class type) : type(type) { }
+  material(std::string&& id, material_class type) : id(std::move(id)), type(type) { }
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const;
   virtual vec3 emitted(float u, float v, const vec3& p) const;
   virtual void get_name(std::string& out_name) const;
   virtual void draw_edit_panel();
 
-  material_type type = material_type::none;
-  std::string friendly_name;
+  material_class type = material_class::none;
+  std::string id;
 };
 
 
 class diffuse_material : public material
 {
 public:
-  diffuse_material() : material(material_type::diffuse) {}
-  diffuse_material(const vec3& albedo, std::string&& friendly_name) : albedo(albedo), material(material_type::diffuse, std::move(friendly_name)) {}
+  diffuse_material() : material(material_class::diffuse) {}
+  diffuse_material(std::string&& id, const vec3& albedo) : albedo(albedo), material(std::move(id), material_class::diffuse) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual void get_name(std::string& out_name) const;
@@ -71,8 +76,8 @@ public:
 class texture_material : public material
 {
 public:
-  texture_material() : material(material_type::texture) {}
-  texture_material(texture* texture, std::string&& friendly_name) : texture(texture), material(material_type::texture, std::move(friendly_name)) {}
+  texture_material() : material(material_class::texture) {}
+  texture_material(std::string&& id, texture* texture) : texture(texture), material(std::move(id), material_class::texture) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual void get_name(std::string& out_name) const;
@@ -85,8 +90,8 @@ public:
 class metal_material : public material
 {
 public:
-  metal_material() : material(material_type::metal) {}
-  metal_material(const vec3& albedo, float fuzz, std::string&& friendly_name) : albedo(albedo), fuzz(fuzz), material(material_type::metal, std::move(friendly_name)) {}
+  metal_material() : material(material_class::metal) {}
+  metal_material(std::string&& id, const vec3& albedo, float fuzz) : albedo(albedo), fuzz(fuzz), material(std::move(id), material_class::metal) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual void get_name(std::string& out_name) const;
@@ -100,8 +105,8 @@ public:
 class dialectric_material : public material
 {
 public:
-  dialectric_material() : material(material_type::dialectric) {}
-  dialectric_material(float index_of_refraction, std::string&& friendly_name) : index_of_refraction(index_of_refraction), material(material_type::dialectric, std::move(friendly_name)) {}
+  dialectric_material() : material(material_class::dialectric) {}
+  dialectric_material(std::string&& id, float index_of_refraction) : index_of_refraction(index_of_refraction), material(std::move(id), material_class::dialectric) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual void get_name(std::string& out_name) const;
@@ -114,8 +119,8 @@ public:
 class diffuse_light_material : public material
 {
 public:
-  diffuse_light_material() : material(material_type::diffuse_light) {}
-  diffuse_light_material(texture* texture, std::string&& friendly_name) : texture(texture), material(material_type::diffuse_light, std::move(friendly_name)) {}
+  diffuse_light_material() : material(material_class::diffuse_light) {}
+  diffuse_light_material(std::string&& id, texture* texture) : texture(texture), material(std::move(id), material_class::diffuse_light) {}
 
   virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual vec3 emitted(float u, float v, const vec3& p) const override;

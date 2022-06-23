@@ -19,11 +19,11 @@ static inline const char* chunk_strategy_names[] =
 
 struct chunk
 {
-  uint32_t id = 0;
-  uint32_t x = 0;
-  uint32_t y = 0;
-  uint32_t size_x = 0;
-  uint32_t size_y = 0;
+  int id = 0;
+  int x = 0;
+  int y = 0;
+  int size_x = 0;
+  int size_y = 0;
 };
 
 struct chunk_generator

@@ -213,13 +213,15 @@ void frame_renderer::render()
 void frame_renderer::render_chunk(const chunk& in_chunk)
 {
   std::thread::id thread_id = std::this_thread::get_id();
-  char name[100];
-  std::sprintf(name, "Thread=%d Chunk=%d", thread_id, in_chunk.id);
+
+  std::ostringstream oss;
+  oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
+  const char* name = oss.str().c_str();
   benchmark::scope_counter benchmark_render_chunk(name, false);
 
-  for (uint32_t y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
+  for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
   {
-    for (uint32_t x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
+    for (int x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
     {
       benchmark::instance timer;
       if (ajs.settings.pixel_time_coloring)
@@ -228,7 +230,7 @@ void frame_renderer::render_chunk(const chunk& in_chunk)
       }
       // Anti Aliasing done at the ray level, multiple rays for each pixel.
       vec3 pixel_color;
-      for (uint32_t c = 0; c < ajs.settings.AA_samples_per_pixel; c++)
+      for (int c = 0; c < ajs.settings.AA_samples_per_pixel; c++)
       {
         float u = (float(x) + random_cache::get_float()) / (ajs.image_width - 1);
         float v = (float(y) + random_cache::get_float()) / (ajs.image_height - 1);
@@ -267,9 +269,9 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
     vec3 emitted;
     if (ajs.settings.allow_emissive)
     {
-      emitted = hit.mat->emitted(hit.u, hit.v, hit.p);
+      emitted = hit.material_ptr->emitted(hit.u, hit.v, hit.p);
     }
-    if (hit.mat->scatter(in_ray, hit, attenuation, scattered))
+    if (hit.material_ptr->scatter(in_ray, hit, attenuation, scattered))
     {
       return emitted+attenuation * ray_color(scattered, in_background, depth - 1);
     }

@@ -2,6 +2,7 @@
 
 #include "hittables.h"
 #include "aabb.h"
+#include "materials.h"
 
 hittable* hittable::spawn_by_type(hittable_type type)
 {
@@ -17,7 +18,19 @@ void hittable_list::build_boxes()
 {
   for (hittable* object : objects)
   {
+    assert(object != nullptr);
     object->get_bounding_box(object->bounding_box);
+  }
+}
+
+void hittable_list::update_materials(material_instances* materials)
+{
+  assert(materials != nullptr);
+  for (hittable* obj : objects)
+  {
+    material* mat_ptr = materials->get_material(obj->material_id);
+    assert(mat_ptr != nullptr);
+    obj->material_ptr = mat_ptr;
   }
 }
 
@@ -48,7 +61,7 @@ bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hi
 
   out_hit.t = root;
   out_hit.p = in_ray.at(out_hit.t);
-  out_hit.mat = mat;
+  out_hit.material_ptr = material_ptr;
 
   // Normal always against the ray
   vec3 outward_normal = (out_hit.p - origin) / radius;
@@ -92,7 +105,7 @@ bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.v = (y - y0) / (y1 - y0);
   out_hit.t = t;
   out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 0.0f, 1.0f), out_hit.normal);
-  out_hit.mat = mat;
+  out_hit.material_ptr = material_ptr;
   out_hit.p = in_ray.at(t);
   return true;
 }
@@ -108,7 +121,7 @@ bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.v = (z - z0) / (z1 - z0);
   out_hit.t = t;
   out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 1.0f, 0.0f), out_hit.normal);
-  out_hit.mat = mat;
+  out_hit.material_ptr = material_ptr;
   out_hit.p = in_ray.at(t);
   return true;
 }
@@ -124,7 +137,7 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.v = (z - z0) / (z1 - z0);
   out_hit.t = t;
   out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(1.0f, 0.0f, 0.0f), out_hit.normal);
-  out_hit.mat = mat;
+  out_hit.material_ptr = material_ptr;
   out_hit.p = in_ray.at(t);
   return true;
 }
@@ -165,7 +178,7 @@ bool xz_rect::get_bounding_box(aabb& out_box) const
 {
   // The bounding box must have non-zero width in each dimension, so pad the Y
   // dimension a small amount.
-  out_box = aabb(vec3(x0, y - 0.0001, z0), vec3(x1, y + 0.0001, z1));
+  out_box = aabb(vec3(x0, y - 0.0001f, z0), vec3(x1, y + 0.0001f, z1));
   return true;
 }
 
@@ -173,6 +186,6 @@ bool yz_rect::get_bounding_box(aabb& out_box) const
 {
   // The bounding box must have non-zero width in each dimension, so pad the X
   // dimension a small amount.
-  out_box = aabb(vec3(x - 0.0001, y0, z0), vec3(x + 0.0001, y1, z1));
+  out_box = aabb(vec3(x - 0.0001f, y0, z0), vec3(x + 0.0001f, y1, z1));
   return true;
 }

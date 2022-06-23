@@ -96,78 +96,79 @@ int main(int, char**)
   state.resolution_vertical = 400;
 
   // Materials
-  diffuse_material* diffuse_white  = new diffuse_material(c_white, "white");
-  diffuse_material* diffuse_black  = new diffuse_material(c_black, "black");
-  diffuse_material* diffuse_red    = new diffuse_material(c_red, "red");
-  diffuse_material* diffuse_green  = new diffuse_material(c_green, "green");
-  diffuse_material* diffuse_yellow = new diffuse_material(c_yellow, "yellow");
-  diffuse_material* diffuse_blue   = new diffuse_material(c_blue, "blue");
-  state.materials.add(diffuse_white);
-  state.materials.add(diffuse_black);
-  state.materials.add(diffuse_red);
-  state.materials.add(diffuse_green);
-  state.materials.add(diffuse_yellow);
-  state.materials.add(diffuse_blue);
+  diffuse_material* diffuse_white  = new diffuse_material("white", c_white);
+  diffuse_material* diffuse_black  = new diffuse_material("black", c_black);
+  diffuse_material* diffuse_red    = new diffuse_material("red", c_red);
+  diffuse_material* diffuse_green  = new diffuse_material("green", c_green);
+  diffuse_material* diffuse_yellow = new diffuse_material("yellow", c_yellow);
+  diffuse_material* diffuse_blue   = new diffuse_material("blue", c_blue);
+  state.materials.try_add(diffuse_white);
+  state.materials.try_add(diffuse_black);
+  state.materials.try_add(diffuse_red);
+  state.materials.try_add(diffuse_green);
+  state.materials.try_add(diffuse_yellow);
+  state.materials.try_add(diffuse_blue);
 
-  metal_material* metal_shiny  = new metal_material(c_grey, 0.0f, "metal shiny");
-  metal_material* metal_matt   = new metal_material(c_grey, 0.02f, "metal matt");
-  metal_material* metal_copper = new metal_material(c_copper, 0.04f, "copper");
-  metal_material* metal_steel  = new metal_material(c_steel, 0.04f, "steel");
-  metal_material* metal_silver = new metal_material(c_silver, 0.04f, "silver");
-  metal_material* metal_gold   = new metal_material(c_gold, 0.04f, "gold");
-  state.materials.add(metal_shiny);
-  state.materials.add(metal_matt);
-  state.materials.add(metal_copper);
-  state.materials.add(metal_steel);
-  state.materials.add(metal_silver);
-  state.materials.add(metal_gold);
+  metal_material* metal_shiny  = new metal_material("metal_shiny", c_grey, 0.0f);
+  metal_material* metal_matt   = new metal_material("metal_matt", c_grey, 0.02f);
+  metal_material* metal_copper = new metal_material("copper", c_copper, 0.04f);
+  metal_material* metal_steel  = new metal_material("steel", c_steel, 0.04f);
+  metal_material* metal_silver = new metal_material("silver", c_silver, 0.04f);
+  metal_material* metal_gold   = new metal_material("gold", c_gold, 0.04f);
+  state.materials.try_add(metal_shiny);
+  state.materials.try_add(metal_matt);
+  state.materials.try_add(metal_copper);
+  state.materials.try_add(metal_steel);
+  state.materials.try_add(metal_silver);
+  state.materials.try_add(metal_gold);
 
-  dialectric_material* dialectric_water      = new dialectric_material(1.33f, "water");
-  dialectric_material* dialectric_glass      = new dialectric_material(1.5f, "glass");
-  dialectric_material* dialectric_sapphire   = new dialectric_material(1.77f, "sapphire");
-  dialectric_material* dialectric_diamond    = new dialectric_material(2.4f, "diamond");
-  dialectric_material* dialectric_moissanite = new dialectric_material(2.65f, "moissanite");  // https://en.wikipedia.org/wiki/Silicon_carbide
-  state.materials.add(dialectric_water);
-  state.materials.add(dialectric_glass);
-  state.materials.add(dialectric_sapphire);
-  state.materials.add(dialectric_diamond);
-  state.materials.add(dialectric_moissanite);
+  dialectric_material* dialectric_water      = new dialectric_material("water", 1.33f);
+  dialectric_material* dialectric_glass      = new dialectric_material("glass", 1.5f);
+  dialectric_material* dialectric_sapphire   = new dialectric_material("sapphire", 1.77f);
+  dialectric_material* dialectric_diamond    = new dialectric_material("diamond", 2.4f);
+  dialectric_material* dialectric_moissanite = new dialectric_material("moissanite", 2.65f);  // https://en.wikipedia.org/wiki/Silicon_carbide
+  state.materials.try_add(dialectric_water);
+  state.materials.try_add(dialectric_glass);
+  state.materials.try_add(dialectric_sapphire);
+  state.materials.try_add(dialectric_diamond);
+  state.materials.try_add(dialectric_moissanite);
 
   solid_texture*    t_white         = new solid_texture(c_white);
   solid_texture*    t_grey          = new solid_texture(c_grey);
   checker_texture*  t_checker       = new checker_texture(t_white, t_grey);
-  texture_material* texture_default = new texture_material(t_checker, "default");
-  state.materials.add(texture_default);
+  texture_material* texture_default = new texture_material("default", t_checker);
+  state.materials.try_add(texture_default);
 
   solid_texture* t_light         = new solid_texture(vec3(1.0f, 1.0f, 1.0f));
   solid_texture* t_light_strong  = new solid_texture(vec3(4.0f, 4.0f, 4.0f));
   solid_texture* t_light_strong2 = new solid_texture(vec3(7.0f, 7.0f, 7.0f));
   solid_texture* t_light_strong3 = new solid_texture(vec3(15.0f, 15.0f, 15.0f));
-  diffuse_light_material* diff_light         = new diffuse_light_material(t_light, "light");
-  diffuse_light_material* diff_light_strong  = new diffuse_light_material(t_light_strong, "light strong");
-  diffuse_light_material* diff_light_strong2 = new diffuse_light_material(t_light_strong2, "light strong2");
-  diffuse_light_material* diff_light_strong3 = new diffuse_light_material(t_light_strong3, "light strong3");
-  state.materials.add(diff_light);
-  state.materials.add(diff_light_strong);
-  state.materials.add(diff_light_strong2);
-  state.materials.add(diff_light_strong3);
+  diffuse_light_material* diff_light         = new diffuse_light_material("light", t_light);
+  diffuse_light_material* diff_light_strong  = new diffuse_light_material("light_strong", t_light_strong);
+  diffuse_light_material* diff_light_strong2 = new diffuse_light_material("light_strong2", t_light_strong2);
+  diffuse_light_material* diff_light_strong3 = new diffuse_light_material("light_strong3", t_light_strong3);
+  state.materials.try_add(diff_light);
+  state.materials.try_add(diff_light_strong);
+  state.materials.try_add(diff_light_strong2);
+  state.materials.try_add(diff_light_strong3);
 
   state.default_material = texture_default;
 
   // World
-  yz_rect* r1 = new yz_rect(0, 555, 0, 555, 555, diffuse_green);
-  yz_rect* r2 = new yz_rect(0, 555, 0, 555, 0, diffuse_red);
-  xz_rect* r3 = new xz_rect(213, 343, 127, 332, 554, diff_light_strong3);
-  xz_rect* r4 = new xz_rect(0, 555, 0, 555, 0, diffuse_white);
-  xz_rect* r5 = new xz_rect(0, 555, 0, 555, 555, diffuse_white);
-  xy_rect* r6 = new xy_rect(0, 555, 0, 555, 555, diffuse_white);
-  sphere* e1 = new sphere(vec3(270.0f, 290.0f, 250.f), 120.f, dialectric_glass);
-  sphere* e3 = new sphere(vec3(240.0f, 70.0f, 260.f), 50.f, metal_shiny);
-  sphere* e2 = new sphere(vec3(270.0f, 270.0f, 250.f), 1100.f, diff_light);
+  yz_rect* r1 = new yz_rect("green", 0, 555, 0, 555, 555);
+  yz_rect* r2 = new yz_rect("red", 0, 555, 0, 555, 0);
+  xz_rect* r3 = new xz_rect("light_strong3", 213, 343, 127, 332, 554);
+  xz_rect* r4 = new xz_rect("white", 0, 555, 0, 555, 0);
+  xz_rect* r5 = new xz_rect("white", 0, 555, 0, 555, 555);
+  xy_rect* r6 = new xy_rect("white", 0, 555, 0, 555, 555);
+  sphere* e1 = new sphere("glass", vec3(270.0f, 290.0f, 250.f), 120.f);
+  sphere* e3 = new sphere("metal_shiny", vec3(240.0f, 70.0f, 260.f), 50.f);
+  sphere* e2 = new sphere("light", vec3(270.0f, 270.0f, 250.f), 1100.f);
   state.world.add(r1); state.world.add(r2); state.world.add(r3); state.world.add(r4); 
   state.world.add(r5); state.world.add(r6); state.world.add(e1); state.world.add(e3); 
-  state.world.add(e2);
+  state.world.add(e2); 
   
+
   // Imgui state
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
@@ -209,6 +210,7 @@ int main(int, char**)
 
     // World collisions update, TODO only when dirty
     state.world.build_boxes();
+    state.world.update_materials(&state.materials);
 
     // Find center of the scene
     update_default_spawn_position(state);

@@ -25,8 +25,8 @@ void draw_camera_panel(camera_panel_model& model, app_state& state)
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
   ImGui::Separator();
-  int ar[2] = { state.camera_setting.aspect_ratio_w, state.camera_setting.aspect_ratio_h };
-  ImGui::InputInt2("Aspect ratio", ar);
+  float ar[2] = { state.camera_setting.aspect_ratio_w, state.camera_setting.aspect_ratio_h };
+  ImGui::InputFloat2("Aspect ratio", ar);
   state.camera_setting.aspect_ratio_w = ar[0];
   state.camera_setting.aspect_ratio_h = ar[1];
   ImGui::Text("Aspect ratio = %.3f", state.camera_setting.aspect_ratio_w / state.camera_setting.aspect_ratio_h);
@@ -141,6 +141,7 @@ void draw_output_window(output_window_model& model, app_state& state)
 void draw_scene_editor_window(scene_editor_window_model& model, app_state& state)
 {
   ImGui::Begin("SCENE", nullptr);
+  ImGui::BeginDisabled(state.renderer.is_working());
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "OBJECTS");
   ImGui::Separator();
@@ -149,7 +150,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
   ImGui::SameLine();
   draw_delete_object_panel(model.d_model, state);
 
-  int num_objects = state.world.objects.size();
+  int num_objects = (int)state.world.objects.size();
   if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, min(20, num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
   {
     for (int n = 0; n < num_objects; n++)
@@ -159,6 +160,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
       obj->get_name(obj_name);
       if (ImGui::Selectable(obj_name.c_str(), model.selected_id == n))
       {
+        model.m_model.selected_material_name_index = -1;
         model.selected_id = n;
         model.d_model.selected_id = n;
       }
@@ -175,9 +177,17 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
     hittable* selected_obj = state.world.objects[model.selected_id];
     selected_obj->draw_edit_panel();
 
+    material_selection_combo_model m_model;
+    if (model.m_model.selected_material_name_index == -1)
+    {
+      m_model.selected_material_name_index = state.materials.get_index_by_id(selected_obj->material_id);
+    }
+    draw_material_selection_combo(m_model, state);
+    selected_obj->material_id = state.materials.get_material_ids()[m_model.selected_material_name_index];
+
     ImGui::Separator();
   }
-
+  ImGui::EndDisabled();
   ImGui::End();
 }
 
@@ -205,41 +215,17 @@ void draw_new_object_panel(new_object_panel_model& model, app_state& state)
       model.hittable = hittable::spawn_by_type((hittable_type)model.selected_type);
       model.hittable->set_origin(state.center_of_scene);
     }
+
     if (model.hittable != nullptr)
     {
       model.hittable->draw_edit_panel();
-      
-      std::vector<std::string> material_names = state.materials.get_material_names();
 
-      if (material_names.size() > 0)
-      {
-        if (ImGui::BeginCombo("Material", material_names[model.selected_material_id].c_str()))
-        {
-          for (int i = 0; i < material_names.size(); ++i)
-          {
-            const bool isSelected = (model.selected_material_id == i);
-            if (ImGui::Selectable(material_names[i].c_str(), isSelected))
-            {
-              model.selected_material_id = i;
-            }
-            if (isSelected)
-            {
-              ImGui::SetItemDefaultFocus();
-            }
-          }
-          ImGui::EndCombo();
-        }
-      }
-      else
-      {
-        ImGui::Text("No materials to choose from");
-      }
-
+      draw_material_selection_combo(model.m_model, state);
     }
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
     {
-      model.hittable->mat = state.materials.get_material(model.selected_material_id);
+      model.hittable->material_id = state.materials.get_material_ids()[model.m_model.selected_material_name_index];
       state.world.add(model.hittable);
       model.hittable = nullptr;
       ImGui::CloseCurrentPopup();
@@ -256,6 +242,35 @@ void draw_new_object_panel(new_object_panel_model& model, app_state& state)
       ImGui::CloseCurrentPopup();
     }
     ImGui::EndPopup();
+  }
+}
+
+void draw_material_selection_combo(material_selection_combo_model& model, app_state& state)
+{
+  std::vector<std::string> material_names = state.materials.get_material_names();
+  if (material_names.size() > 0)
+  {
+    ImGui::Separator();
+    if (ImGui::BeginCombo("Material", material_names[model.selected_material_name_index].c_str()))
+    {
+      for (int i = 0; i < material_names.size(); ++i)
+      {
+        const bool isSelected = (model.selected_material_name_index == i);
+        if (ImGui::Selectable(material_names[i].c_str(), isSelected))
+        {
+          model.selected_material_name_index = i;
+        }
+        if (isSelected)
+        {
+          ImGui::SetItemDefaultFocus();
+        }
+      }
+      ImGui::EndCombo();
+    }
+  }
+  else
+  {
+    ImGui::Text("No materials to choose from");
   }
 }
 
