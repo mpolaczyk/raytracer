@@ -75,6 +75,8 @@ public:
     struct { float x, y, z, padding; };
     __m128 R128;
   };
+
+  uint32_t get_type_hash() const;
 };
 
 inline std::ostream& operator<<(std::ostream& out, const vec3& v) { return out << '[' << v.x << ',' << v.y << ',' << v.z << ']'; }

@@ -46,9 +46,9 @@ vec3 refract(const vec3& v, const vec3& n, float etai_over_etat)
 float reflectance(float cosine, float ref_idx)
 {
   // Use Schlick's approximation for reflectance.
-  float r0 = (1 - ref_idx) / (1 + ref_idx);
+  float r0 = (1.0f - ref_idx) / (1.0f + ref_idx);
   r0 = r0 * r0;
-  return r0 + (1 - r0) * pow((1 - cosine), 5);
+  return r0 + (1.0f - r0) * pow((1.0f - cosine), 5.0f);
 }
 
 bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal)

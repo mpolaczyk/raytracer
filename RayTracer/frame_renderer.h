@@ -63,6 +63,17 @@ struct renderer_config
 
   bool pixel_time_coloring = false;
   float pixel_time_coloring_scale = 0.01f;
+
+  bool reuse_buffer = true;
+
+  inline uint32_t get_type_hash() const
+  {
+    uint32_t a = hash_combine(AA_samples_per_pixel, diffuse_max_bounce_num, ::get_type_hash(diffuse_bounce_brightness), background.get_type_hash());
+    uint32_t b = hash_combine(chunks_num, (int)chunks_strategy, (int)threading_strategy, threads_num);
+    uint32_t c = hash_combine(::get_type_hash(allow_emissive), ::get_type_hash(shuffle_chunks), ::get_type_hash(pixel_time_coloring), ::get_type_hash(pixel_time_coloring_scale));
+    uint32_t d = ::get_type_hash(reuse_buffer);
+    return hash_combine(a, b, c, d);
+  }
 };
 
 class frame_renderer
@@ -74,6 +85,9 @@ public:
   // Only allowed when worker thread is not running
   void set_config(uint32_t width, uint32_t height, const renderer_config& in_settings, const hittable_list& in_world, const camera_config& in_camera_state);
   void render_single_async();
+  bool is_world_dirty(const hittable_list& in_world);
+  bool is_renderer_setting_dirty(const renderer_config& in_settings);
+  bool is_camera_setting_dirty(const camera_config& in_camera_state);
 
   // Allowed when worker thread is running
   bool is_working() const { return ajs.is_working; }

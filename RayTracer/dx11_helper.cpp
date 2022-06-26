@@ -111,7 +111,7 @@ namespace dx11
     int rowspan = width * 4; // 4 bytes per px
     g_pd3dDeviceContext->Map(in_texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     BYTE* mappedData = reinterpret_cast<BYTE*>(mappedResource.pData);
-    for (UINT i = 0; i < height; ++i)
+    for (int i = 0; i < height; ++i)
     {
       memcpy(mappedData, buffer, rowspan);
       mappedData += mappedResource.RowPitch;

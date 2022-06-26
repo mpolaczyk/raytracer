@@ -69,17 +69,35 @@ void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_
 {
   if (ajs.is_working) return;
 
+  bool force_recreate_buffers = ajs.image_width != width || ajs.image_height != height;
+
+  // Copy all objects on purpose
+  // - allows original scene to be edited while this one is rendering
+  // - allows to detect if existing is dirty
   ajs.image_width = width;
   ajs.image_height = height;
   ajs.settings = in_settings;
-  ajs.world = in_world;
+  ajs.world = *in_world.clone();
   ajs.cam.set_camera(in_camera_state);
 
-  if (ajs.img_rgb != nullptr) delete ajs.img_rgb;
-  ajs.img_rgb = new bmp::bmp_image(width, height);
+  // Delete buffers 
+  if (ajs.img_rgb != nullptr)
+  {
+    if (force_recreate_buffers || !ajs.settings.reuse_buffer)
+    {
+      delete ajs.img_rgb;
+      delete ajs.img_bgr;
+      ajs.img_rgb = nullptr;
+      ajs.img_bgr = nullptr;
+    }
+  }
 
-  if (ajs.img_bgr != nullptr) delete ajs.img_bgr;
-  ajs.img_bgr = new bmp::bmp_image(width, height);
+  // Create new buffers if they are missing
+  if (ajs.img_rgb == nullptr)
+  {
+    ajs.img_rgb = new bmp::bmp_image(width, height);
+    ajs.img_bgr = new bmp::bmp_image(width, height);
+  }
 
   std::cout << "Frame renderer: " << width << "x" << height << std::endl;
 }
@@ -142,6 +160,21 @@ void frame_renderer::render_single_async()
 //    benchmark_save_time = benchmark_save.stop();
 //  }
 //}
+
+bool frame_renderer::is_world_dirty(const hittable_list& in_world)
+{
+  return ajs.world.get_type_hash() != in_world.get_type_hash();
+}
+
+bool frame_renderer::is_renderer_setting_dirty(const renderer_config& in_settings)
+{
+  return ajs.settings.get_type_hash() != in_settings.get_type_hash();
+}
+
+bool frame_renderer::is_camera_setting_dirty(const camera_config& in_camera_state)
+{
+  return ajs.cam.get_type_hash() != in_camera_state.get_type_hash();
+}
 
 void frame_renderer::async_job()
 {

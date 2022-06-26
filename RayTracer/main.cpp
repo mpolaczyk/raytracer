@@ -208,12 +208,49 @@ int main(int, char**)
     draw_output_window(ow_model, state);
     draw_scene_editor_window(sew_model, state);
 
-    // World collisions update, TODO only when dirty
-    state.world.build_boxes();
-    state.world.update_materials(&state.materials);
+    // Check if rendering is needed and do it 
+    if (!state.renderer.is_working() && (rw_model.rp_model.render_pressed || ow_model.auto_refresh))
+    {
+      if (state.output_width != state.resolution_horizontal || state.output_height != state.resolution_vertical)
+      {
+        state.output_force_recreate = true;
+      }
 
-    // Find center of the scene
-    update_default_spawn_position(state);
+      bool do_render = rw_model.rp_model.render_pressed 
+        || state.output_force_recreate
+        || state.renderer.is_world_dirty(state.world)
+        || state.renderer.is_renderer_setting_dirty(state.renderer_setting)
+        || state.renderer.is_camera_setting_dirty(state.camera_setting);
+
+      if (do_render)
+      {
+        state.world.build_boxes();
+        state.world.update_materials(&state.materials);
+
+        update_default_spawn_position(state);
+
+        state.output_width = state.resolution_horizontal;
+        state.output_height = state.resolution_vertical;
+
+        state.renderer.set_config(state.resolution_horizontal, state.resolution_vertical, state.renderer_setting, state.world, state.camera_setting);
+        state.renderer.render_single_async();
+
+        if (state.output_force_recreate)
+        {
+          bool ret = dx11::LoadTextureFromBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
+          IM_ASSERT(ret);
+          state.output_force_recreate = false;
+        }
+
+        rw_model.rp_model.render_pressed = false;
+      }
+    }
+
+    // Update the output panel while rendering
+    if (state.renderer.is_working())
+    {
+      dx11::UpdateTextureBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, state.output_texture);
+    }
     
     // Rendering
     ImGui::Render();

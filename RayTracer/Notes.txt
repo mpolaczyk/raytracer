@@ -28,3 +28,8 @@ Scene ideas:
  - refreshing only those parts that changed (low ray count prepass, high ray count pass)
  - scale all vectors until you get out of floating point precision
  - grid of square glass tiles surface/texture behind it, lots of caustics
+
+
+ Problems with imgui (immediate UI paradigm):
+ - Input widget setting new value every character instead of when pressed enter or focus left
+ - 

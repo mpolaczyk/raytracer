@@ -4,7 +4,6 @@
 #include "app.h"
 #include "chunk_generator.h"
 #include "frame_renderer.h"
-#include "dx11_helper.h"
 
 void draw_raytracer_window(raytracer_window_model& model, app_state& state)
 {
@@ -20,7 +19,7 @@ void draw_raytracer_window(raytracer_window_model& model, app_state& state)
 
 void draw_camera_panel(camera_panel_model& model, app_state& state)
 {
-  ImGui::BeginDisabled(state.renderer.is_working());
+  //ImGui::BeginDisabled(state.renderer.is_working());
 
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
@@ -49,12 +48,12 @@ void draw_camera_panel(camera_panel_model& model, app_state& state)
   ImGui::Checkbox("Use custom focus distance", &model.use_custom_focus_distance);
   ImGui::InputFloat("Aperture", &state.camera_setting.aperture, 0.1f, 1.0f, "%.2f");
 
-  ImGui::EndDisabled();
+  //ImGui::EndDisabled();
 }
 
 void draw_renderer_panel(renderer_panel_model& model, app_state& state)
 {
-  ImGui::BeginDisabled(state.renderer.is_working());
+  //ImGui::BeginDisabled(state.renderer.is_working());
 
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
@@ -102,14 +101,10 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   }
   ImGui::Separator();
 
+  ImGui::Checkbox("Reuse buffers", &state.renderer_setting.reuse_buffer);
   if (ImGui::Button("Render"))
   {
-    state.renderer.set_config(state.resolution_horizontal, state.resolution_vertical, state.renderer_setting, state.world, state.camera_setting);
-    state.renderer.render_single_async();
-    state.output_width = state.resolution_horizontal;
-    state.output_height = state.resolution_vertical;
-    bool ret = dx11::LoadTextureFromBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
-    IM_ASSERT(ret);
+    model.render_pressed = true;
   }
   if (state.renderer.is_working())
   {
@@ -119,7 +114,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   ImGui::Text("Last render time = %lld [ms]", state.renderer.get_render_time() / 1000);
   ImGui::Text("Last save time = %lld [ms]", state.renderer.get_save_time() / 1000);
 
-  ImGui::EndDisabled();
+  //ImGui::EndDisabled();
 }
 
 void draw_output_window(output_window_model& model, app_state& state)
@@ -127,13 +122,9 @@ void draw_output_window(output_window_model& model, app_state& state)
   if (state.output_texture != nullptr)
   {
     ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-    ImGui::Checkbox("Real-time update", &model.real_time_update);
-    if (!(!model.real_time_update && state.renderer.is_working()))
-    {
-      dx11::UpdateTextureBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, state.output_texture);
-    }
     ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
     ImGui::Image((ImTextureID)state.output_srv, ImVec2(state.output_width * model.zoom, state.output_height * model.zoom), ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Checkbox("Auto refresh", &model.auto_refresh);
     ImGui::End();
   }
 }
@@ -141,7 +132,6 @@ void draw_output_window(output_window_model& model, app_state& state)
 void draw_scene_editor_window(scene_editor_window_model& model, app_state& state)
 {
   ImGui::Begin("SCENE", nullptr);
-  ImGui::BeginDisabled(state.renderer.is_working());
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "OBJECTS");
   ImGui::Separator();
@@ -187,7 +177,6 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
 
     ImGui::Separator();
   }
-  ImGui::EndDisabled();
   ImGui::End();
 }
 
@@ -309,6 +298,7 @@ void draw_delete_object_panel(delete_object_panel_model& model, app_state& state
 
 void update_default_spawn_position(app_state& state)
 {
+  // Find center of the scene, new objects scan be spawned there
   vec3 look_from = state.camera_setting.look_from;
   vec3 look_at = state.camera_setting.look_at;
   float dist_to_focus = state.camera_setting.dist_to_focus;

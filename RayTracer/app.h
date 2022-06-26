@@ -19,7 +19,7 @@ struct app_state
   hittable_list world;
   int resolution_vertical = 0;
   int resolution_horizontal = 0;
-  float background_color[3] = { 0,0,0 };
+  float background_color[3] = { 1.0f,1.0f,1.0f };
   material_instances materials;
 
   // Runtime state
@@ -27,6 +27,7 @@ struct app_state
   int output_height = 0;
   struct ID3D11ShaderResourceView* output_srv = nullptr;
   struct ID3D11Texture2D* output_texture = nullptr;
+  bool output_force_recreate = true;
   frame_renderer renderer;
   material* default_material = nullptr;
   vec3 center_of_scene;
@@ -48,7 +49,7 @@ struct camera_panel_model
 
 struct renderer_panel_model
 {
-
+  bool render_pressed = false;
 };
 
 struct raytracer_window_model
@@ -60,7 +61,7 @@ struct raytracer_window_model
 struct output_window_model
 {
   float zoom = 1.0f;
-  bool real_time_update = true;
+  bool auto_refresh = false;
 };
 
 struct material_selection_combo_model

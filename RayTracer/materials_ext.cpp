@@ -19,6 +19,7 @@ bool material_instances::try_add(material* instance)
   auto obj = registry.find(instance->id);
   if (obj != registry.end()) return false;
   registry.insert(std::pair<std::string, material*>(instance->id, instance));
+  return true;
 }
 
 void material_instances::remove(const std::string& id)

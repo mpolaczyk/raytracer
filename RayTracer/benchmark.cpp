@@ -11,7 +11,7 @@ namespace benchmark
     verbose = in_verbose;
     start_point = high_resolution_clock::now();
 #ifdef USE_PIX
-    PIXBeginEvent(PIX_COLOR(155, 1127, 0), in_name);
+    PIXBeginEvent(PIX_COLOR(155, 112, 0), in_name);
 #endif
 #endif
   }

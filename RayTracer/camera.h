@@ -29,6 +29,13 @@ struct camera_config
     return answer;
   }
 
+  inline uint32_t get_type_hash() const
+  {
+    uint32_t a = hash_combine(look_from.get_type_hash(), look_at.get_type_hash(), ::get_type_hash(field_of_view), ::get_type_hash(aspect_ratio_h));
+    uint32_t b = hash_combine(::get_type_hash(aspect_ratio_w), ::get_type_hash(aperture), ::get_type_hash(dist_to_focus), ::get_type_hash(type));
+    return ::hash_combine(a, b);
+  }
+
   vec3 look_from;
   vec3 look_at;
   float field_of_view = 90.0f;
@@ -90,6 +97,11 @@ public:
       vec3 fpf = fpo - w * setup.dist_to_focus;     // point on the plane crossing frustum, forward camera
       return ray(cpo - offset, unit_vector(fpf - cpo + offset)); 
     }
+  }
+
+  inline uint32_t get_type_hash()
+  {
+    return setup.get_type_hash();
   }
 
 private:

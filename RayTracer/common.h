@@ -68,3 +68,99 @@ namespace random_cache
   float get_float();
   vec3 get_vec3();
 }
+
+inline uint32_t hash_combine(uint32_t A, uint32_t C)
+{
+  uint32_t B = 0x9e3779b9;
+  A += B;
+
+  A -= B; A -= C; A ^= (C >> 13);
+  B -= C; B -= A; B ^= (A << 8);
+  C -= A; C -= B; C ^= (B >> 13);
+  A -= B; A -= C; A ^= (C >> 12);
+  B -= C; B -= A; B ^= (A << 16);
+  C -= A; C -= B; C ^= (B >> 5);
+  A -= B; A -= C; A ^= (C >> 3);
+  B -= C; B -= A; B ^= (A << 10);
+  C -= A; C -= B; C ^= (B >> 15);
+
+  return C;
+}
+
+inline uint32_t hash_combine(uint32_t A, uint32_t B, uint32_t C, uint32_t D = 0)
+{
+  return hash_combine(hash_combine(A, B), hash_combine(C, D));
+}
+
+inline uint32_t pointer_hash(const void* ptr, uint32_t C = 0)
+{
+  uint32_t ptr_int = reinterpret_cast<size_t>(ptr);
+
+  return hash_combine(ptr_int, C);
+}
+
+
+//inline uint32_t get_type_hash(const uint8_t A)
+//{
+//  return A;
+//}
+//
+//inline uint32_t get_type_hash(const int8_t A)
+//{
+//  return A;
+//}
+//
+//inline uint32_t get_type_hash(const uint16_t A)
+//{
+//  return A;
+//}
+//
+//inline uint32_t get_type_hash(const int16_t A)
+//{
+//  return A;
+//}
+//
+//inline uint32_t get_type_hash(const int32_t A)
+//{
+//  return A;
+//}
+//
+//inline uint32_t get_type_hash(const uint32_t A)
+//{
+//  return A;
+//}
+
+inline uint32_t get_type_hash(const uint64_t A)
+{
+  return (uint32_t)A + ((uint32_t)(A >> 32) * 23);
+}
+
+inline uint32_t get_type_hash(const int64_t A)
+{
+  return (uint32_t)A + ((uint32_t)(A >> 32) * 23);
+}
+
+inline uint32_t get_type_hash(float Value)
+{
+  return *(uint32_t*)&Value;
+}
+
+inline uint32_t get_type_hash(double Value)
+{
+  return get_type_hash(*(uint64_t*)&Value);
+}
+
+inline uint32_t get_type_hash(const void* A)
+{
+  return pointer_hash(A);
+}
+
+inline uint32_t get_type_hash(void* A)
+{
+  return pointer_hash(A);
+}
+
+inline uint32_t get_type_hash(bool Value)
+{
+  return (uint32_t)Value;
+}

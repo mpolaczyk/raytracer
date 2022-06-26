@@ -3,6 +3,7 @@
 #include "hittables.h"
 #include "aabb.h"
 #include "materials.h"
+#include "common.h"
 
 hittable* hittable::spawn_by_type(hittable_type type)
 {
@@ -12,10 +13,70 @@ hittable* hittable::spawn_by_type(hittable_type type)
   else if (type == hittable_type::xy_rect) { return new xy_rect(); }
   else if (type == hittable_type::xz_rect) { return new xz_rect(); }
   else if (type == hittable_type::yz_rect) { return new yz_rect(); }
+  return nullptr;
 }
+
+hittable* hittable::clone() const
+{
+  hittable* ans = new hittable();
+  *ans = *this;
+  return ans;
+}
+
+hittable_list* hittable_list::clone() const
+{
+  hittable_list* ans = new hittable_list();
+  *ans = *this;
+  ans->objects.clear();
+  // Deep copy
+  for (const hittable* obj : objects)
+  {
+    hittable* new_obj = obj->clone();
+    ans->objects.push_back(new_obj);
+  }
+  return ans;
+}
+
+hittable_list::~hittable_list()
+{
+  for (hittable* obj : objects)
+  {
+    delete obj;
+  }
+}
+
+sphere* sphere::clone() const
+{
+  sphere* ans = new sphere();
+  *ans = *this;
+  return ans;
+}
+
+xy_rect* xy_rect::clone() const
+{
+  xy_rect* ans = new xy_rect();
+  *ans = *this;
+  return ans;
+}
+
+xz_rect* xz_rect::clone() const
+{
+  xz_rect* ans = new xz_rect();
+  *ans = *this;
+  return ans;
+}
+
+yz_rect* yz_rect::clone() const
+{
+  yz_rect* ans = new yz_rect();
+  *ans = *this;
+  return ans;
+}
+
 
 void hittable_list::build_boxes()
 {
+  // World collisions update
   for (hittable* object : objects)
   {
     assert(object != nullptr);
@@ -25,6 +86,8 @@ void hittable_list::build_boxes()
 
 void hittable_list::update_materials(material_instances* materials)
 {
+  // Find material pointers from material ids. We do it here to save processing. 
+  // Doing it here is much cheaper than resolve while processing.
   assert(materials != nullptr);
   for (hittable* obj : objects)
   {
@@ -188,4 +251,46 @@ bool yz_rect::get_bounding_box(aabb& out_box) const
   // dimension a small amount.
   out_box = aabb(vec3(x - 0.0001f, y0, z0), vec3(x + 0.0001f, y1, z1));
   return true;
+}
+
+
+inline uint32_t hittable::get_type_hash() const
+{
+  return hash_combine(::get_type_hash(material_ptr), (int)type);
+}
+
+inline uint32_t sphere::get_type_hash() const
+{
+  return hash_combine(hittable::get_type_hash(), origin.get_type_hash(), ::get_type_hash(radius));
+}
+
+inline uint32_t hittable_list::get_type_hash() const
+{
+  uint32_t a = 0;
+  for (hittable* obj : objects)
+  {
+    a = hash_combine(a, obj->get_type_hash());
+  }
+  return a;
+}
+
+inline uint32_t xy_rect::get_type_hash() const
+{
+  uint32_t a = hash_combine(hittable::get_type_hash(), ::get_type_hash(x0), ::get_type_hash(y0), ::get_type_hash(x1));
+  uint32_t b = hash_combine(::get_type_hash(y1), ::get_type_hash(z));
+  return hash_combine(a, b);
+}
+
+inline uint32_t xz_rect::get_type_hash() const
+{
+  uint32_t a = hash_combine(hittable::get_type_hash(), ::get_type_hash(x0), ::get_type_hash(z0), ::get_type_hash(x1));
+  uint32_t b = hash_combine(::get_type_hash(z1), ::get_type_hash(y));
+  return hash_combine(a, b);
+}
+
+inline uint32_t yz_rect::get_type_hash() const
+{
+  uint32_t a = hash_combine(hittable::get_type_hash(), ::get_type_hash(y0), ::get_type_hash(z0), ::get_type_hash(y1));
+  uint32_t b = hash_combine(::get_type_hash(z1), ::get_type_hash(x));
+  return hash_combine(a, b);
 }
