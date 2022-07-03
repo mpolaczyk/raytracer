@@ -140,21 +140,21 @@ int main(int, char**)
 
       bool do_render = rw_model.rp_model.render_pressed 
         || state.output_force_recreate
-        || state.renderer.is_world_dirty(state.world)
+        || state.renderer.is_world_dirty(state.scene_root)
         || state.renderer.is_renderer_setting_dirty(state.renderer_setting)
         || state.renderer.is_camera_setting_dirty(state.camera_setting);
 
       if (do_render)
       {
-        state.world.build_boxes();
-        state.world.update_materials(&state.materials);
+        state.scene_root.build_boxes();
+        state.scene_root.update_materials(&state.materials);
 
         update_default_spawn_position(state);
 
         state.output_width = state.resolution_horizontal;
         state.output_height = state.resolution_vertical;
 
-        state.renderer.set_config(state.resolution_horizontal, state.resolution_vertical, state.renderer_setting, state.world, state.camera_setting);
+        state.renderer.set_config(state.resolution_horizontal, state.resolution_vertical, state.renderer_setting, state.scene_root, state.camera_setting);
         state.renderer.render_single_async();
 
         if (state.output_force_recreate)

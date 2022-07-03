@@ -21,7 +21,7 @@ frame_renderer::~frame_renderer()
   if (ajs.img_bgr != nullptr) delete ajs.img_bgr;
 }
 
-void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_config& in_settings, const hittable_list& in_world, const camera_config& in_camera_state)
+void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state)
 {
   if (ajs.is_working) return;
 
@@ -33,7 +33,7 @@ void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_
   ajs.image_width = width;
   ajs.image_height = height;
   ajs.settings = in_settings;
-  ajs.world = *in_world.clone();
+  ajs.scene_root = *in_scene.clone();
   ajs.cam.set_camera(in_camera_state);
 
   // Delete buffers 
@@ -66,7 +66,7 @@ void frame_renderer::render_single_async()
   worker_semaphore.release();
 }
 
-//void frame_renderer::render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states)
+//void frame_renderer::render_multiple(const scene& in_scene, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states)
 //{
 //  camera cam;
 //  if (in_camera_states.size() < 2)
@@ -88,19 +88,19 @@ void frame_renderer::render_single_async()
 //      std::cout << name << std::endl;
 //
 //      float f = (float)(frame_id - frame_begin) / (float)(frame_end - frame_begin);
-//      render_single(in_world, camera_config::lerp(setup_begin, setup_end, f), frame_id);
+//      render_single(in_scene, camera_config::lerp(setup_begin, setup_end, f), frame_id);
 //    }
 //  }
 //}
 //
-//void frame_renderer::render_single(const hittable_list& in_world, const camera_config& in_camera_state, int frame_id)
+//void frame_renderer::render_single(const scene& in_scene, const camera_config& in_camera_state, int frame_id)
 //{
 //  cam.set_camera(in_camera_state);
 //  {
 //    benchmark::instance benchmark_render;
 //    benchmark_render.start("Render");
 //
-//    render(in_world);
+//    render(in_scene);
 //
 //    benchmark_render_time = benchmark_render.stop();
 //  }
@@ -117,9 +117,9 @@ void frame_renderer::render_single_async()
 //  }
 //}
 
-bool frame_renderer::is_world_dirty(const hittable_list& in_world)
+bool frame_renderer::is_world_dirty(const scene& in_scene)
 {
-  return ajs.world.get_type_hash() != in_world.get_type_hash();
+  return ajs.scene_root.get_type_hash() != in_scene.get_type_hash();
 }
 
 bool frame_renderer::is_renderer_setting_dirty(const renderer_config& in_settings)
@@ -251,7 +251,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
   }
 
   hit_record hit;
-  if (ajs.world.hit(in_ray, 0.001f, infinity, hit))
+  if (ajs.scene_root.hit(in_ray, 0.001f, infinity, hit))
   {
     ray scattered;
     vec3 attenuation;
@@ -278,13 +278,13 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
 
   // OLD CODE
   //hit_record hit;
-  //if (in_world.hit(in_ray, 0.001f, infinity, hit))  // 0.001f to fix "shadow acne"
+  //if (in_scene.hit(in_ray, 0.001f, infinity, hit))  // 0.001f to fix "shadow acne"
   //{
   //  ray scattered;
   //  vec3 attenuation;
   //  if (hit.mat->scatter(in_ray, hit, attenuation, scattered))
   //  {
-  //    return attenuation * ray_color(scattered, in_world, in_background, depth - 1);
+  //    return attenuation * ray_color(scattered, in_scene, in_background, depth - 1);
   //  }
   //  return black;
   //  

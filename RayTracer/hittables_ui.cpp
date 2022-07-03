@@ -9,16 +9,16 @@
 
 void hittable::get_name(std::string& out_name, bool with_params) const
 {
-  std::string base_name = hittable_type_names[(int)type];
+  std::string base_name = hittable_class_names[(int)type];
   
   std::ostringstream oss;
   oss << "/" << base_name << "/" << material_id;
   out_name = oss.str();
 }
 
-void hittable_list::get_name(std::string& out_name, bool with_params) const
+void scene::get_name(std::string& out_name, bool with_params) const
 {
-  out_name = hittable_type_names[(int)hittable_type::hittable_list];
+  out_name = hittable_class_names[(int)hittable_class::scene];
 }
 
 void sphere::get_name(std::string& out_name, bool with_params) const
@@ -95,7 +95,7 @@ void hittable::draw_edit_panel()
   ImGui::Text(hittable_name.c_str());
 }
 
-void hittable_list::draw_edit_panel()
+void scene::draw_edit_panel()
 {
   hittable::draw_edit_panel();
 }

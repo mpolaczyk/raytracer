@@ -138,6 +138,7 @@
     <ClCompile Include="aabb.cpp" />
     <ClCompile Include="app.cpp" />
     <ClCompile Include="app_json.cpp" />
+    <ClCompile Include="app_ui.cpp" />
     <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="bmp.cpp" />
     <ClCompile Include="camera_json.cpp" />

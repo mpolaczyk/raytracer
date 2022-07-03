@@ -20,7 +20,7 @@ public:
   // Initial state
   camera_config camera_setting;
   renderer_config renderer_setting;
-  hittable_list world;
+  scene scene_root;
   int resolution_vertical = 0;
   material_instances materials;
 

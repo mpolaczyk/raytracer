@@ -21,7 +21,7 @@ nlohmann::json sphere::serialize()
   return j;
 }
 
-nlohmann::json hittable_list::serialize()
+nlohmann::json scene::serialize()
 {
   nlohmann::json jarr = nlohmann::json::array();
   for (hittable* object : objects)
@@ -71,7 +71,7 @@ void sphere::deserialize(const nlohmann::json& j)
   origin.deserialize(j["origin"]);
 }
 
-void hittable_list::deserialize(const nlohmann::json& j)
+void scene::deserialize(const nlohmann::json& j)
 {
   hittable::from_json(j, *this);
   for (auto& element : j["objects"])

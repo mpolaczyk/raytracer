@@ -5,14 +5,14 @@
 #include "materials.h"
 #include "common.h"
 
-hittable* hittable::spawn_by_type(hittable_type type)
+hittable* hittable::spawn_by_type(hittable_class type)
 {
-  if (type == hittable_type::hittable) { return new hittable(); }
-  else if (type == hittable_type::hittable_list) { return new hittable_list(); }
-  else if (type == hittable_type::sphere) { return new sphere(); }
-  else if (type == hittable_type::xy_rect) { return new xy_rect(); }
-  else if (type == hittable_type::xz_rect) { return new xz_rect(); }
-  else if (type == hittable_type::yz_rect) { return new yz_rect(); }
+  if (type == hittable_class::hittable) { return new hittable(); }
+  else if (type == hittable_class::scene) { return new scene(); }
+  else if (type == hittable_class::sphere) { return new sphere(); }
+  else if (type == hittable_class::xy_rect) { return new xy_rect(); }
+  else if (type == hittable_class::xz_rect) { return new xz_rect(); }
+  else if (type == hittable_class::yz_rect) { return new yz_rect(); }
   return nullptr;
 }
 
@@ -23,9 +23,9 @@ hittable* hittable::clone() const
   return ans;
 }
 
-hittable_list* hittable_list::clone() const
+scene* scene::clone() const
 {
-  hittable_list* ans = new hittable_list();
+  scene* ans = new scene();
   *ans = *this;
   ans->objects.clear();
   // Deep copy
@@ -37,7 +37,7 @@ hittable_list* hittable_list::clone() const
   return ans;
 }
 
-hittable_list::~hittable_list()
+scene::~scene()
 {
   for (hittable* obj : objects)
   {
@@ -74,7 +74,7 @@ yz_rect* yz_rect::clone() const
 }
 
 
-void hittable_list::build_boxes()
+void scene::build_boxes()
 {
   // World collisions update
   for (hittable* object : objects)
@@ -84,7 +84,7 @@ void hittable_list::build_boxes()
   }
 }
 
-void hittable_list::update_materials(material_instances* materials)
+void scene::update_materials(material_instances* materials)
 {
   // Find material pointers from material ids. We do it here to save processing. 
   // Doing it here is much cheaper than resolve while processing.
@@ -133,7 +133,7 @@ bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hi
   return true;
 }
 
-bool hittable_list::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+bool scene::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
   hit_record temp_rec;
   bool hit_anything = false;
@@ -212,7 +212,7 @@ bool sphere::get_bounding_box(aabb& out_box) const
   return true;
 }
 
-bool hittable_list::get_bounding_box(aabb& out_box) const
+bool scene::get_bounding_box(aabb& out_box) const
 {
   if (objects.empty()) return false;
 
@@ -264,7 +264,7 @@ inline uint32_t sphere::get_type_hash() const
   return hash_combine(hittable::get_type_hash(), origin.get_type_hash(), ::get_type_hash(radius));
 }
 
-inline uint32_t hittable_list::get_type_hash() const
+inline uint32_t scene::get_type_hash() const
 {
   uint32_t a = 0;
   for (hittable* obj : objects)

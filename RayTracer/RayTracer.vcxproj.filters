@@ -57,32 +57,35 @@
     <ClCompile Include="bmp.cpp">
       <Filter>gfx</Filter>
     </ClCompile>
-    <ClCompile Include="materials_ui.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="hittables_ui.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
     <ClCompile Include="app.cpp">
       <Filter>app</Filter>
     </ClCompile>
-    <ClCompile Include="hittables_json.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="vec3_json.cpp">
-      <Filter>app</Filter>
+    <ClCompile Include="app_json.cpp">
+      <Filter>app\json</Filter>
     </ClCompile>
     <ClCompile Include="camera_json.cpp">
-      <Filter>app</Filter>
+      <Filter>app\json</Filter>
     </ClCompile>
     <ClCompile Include="frame_renderer_json.cpp">
-      <Filter>app</Filter>
+      <Filter>app\json</Filter>
     </ClCompile>
-    <ClCompile Include="app_json.cpp">
-      <Filter>app</Filter>
+    <ClCompile Include="hittables_json.cpp">
+      <Filter>app\json</Filter>
     </ClCompile>
     <ClCompile Include="materials_json.cpp">
-      <Filter>app</Filter>
+      <Filter>app\json</Filter>
+    </ClCompile>
+    <ClCompile Include="vec3_json.cpp">
+      <Filter>app\json</Filter>
+    </ClCompile>
+    <ClCompile Include="app_ui.cpp">
+      <Filter>app\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="hittables_ui.cpp">
+      <Filter>app\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="materials_ui.cpp">
+      <Filter>app\ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,7 +163,7 @@
       <Filter>app</Filter>
     </ClInclude>
     <ClInclude Include="serializable.h">
-      <Filter>app</Filter>
+      <Filter>app\json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +181,12 @@
     </Filter>
     <Filter Include="processing">
       <UniqueIdentifier>{e03e927c-53a4-4fd8-b5a7-be63b02733a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app\json">
+      <UniqueIdentifier>{c991e542-b0a4-43d5-b2fa-80568731f0f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app\ui">
+      <UniqueIdentifier>{afa0e002-4770-4072-aca4-7d8df9274bc4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

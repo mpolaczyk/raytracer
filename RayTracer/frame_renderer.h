@@ -82,9 +82,9 @@ public:
   ~frame_renderer();
 
   // Only allowed when worker thread is not running
-  void set_config(uint32_t width, uint32_t height, const renderer_config& in_settings, const hittable_list& in_world, const camera_config& in_camera_state);
+  void set_config(uint32_t width, uint32_t height, const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state);
   void render_single_async();
-  bool is_world_dirty(const hittable_list& in_world);
+  bool is_world_dirty(const scene& in_scene);
   bool is_renderer_setting_dirty(const renderer_config& in_settings);
   bool is_camera_setting_dirty(const camera_config& in_camera_state);
 
@@ -95,8 +95,8 @@ public:
   uint8_t* get_img_bgr() { return ajs.img_bgr->get_buffer(); }
   uint8_t* get_img_rgb() { return ajs.img_rgb->get_buffer(); }
 
-  //void render_multiple(const hittable_list& in_world, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states);
-  //void render_single(const hittable_list& in_world, const camera_config& in_camera_state, int frame_id = 0);
+  //void render_multiple(const scene& in_scene, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states);
+  //void render_single(const scene& in_scene, const camera_config& in_camera_state, int frame_id = 0);
 
 private:
   void render();
@@ -123,7 +123,7 @@ private:
 
     renderer_config settings;
     camera cam;
-    hittable_list world;
+    scene scene_root;
     
     bmp::bmp_image* img_bgr = nullptr;
     bmp::bmp_image* img_rgb = nullptr;
