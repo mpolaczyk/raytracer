@@ -47,23 +47,29 @@ public:
   // How work is split
   int chunks_num = 512;
   chunk_strategy_type chunks_strategy = chunk_strategy_type::rectangles;
+  bool shuffle_chunks = true;
 
   // How work is processed
   threading_strategy_type threading_strategy = threading_strategy_type::thread_pool;
   int threads_num = 0; // Apples only to thread pool strategy, 0 enforces std::thread::hardware_concurrency()
 
+  // Use emissive flow
   bool allow_emissive = true;
-  bool shuffle_chunks = true;
-
+  
+  // Color by processing time per pixel
   bool pixel_time_coloring = false;
   float pixel_time_coloring_scale = 0.01f;
 
+  // Draw in the same memory - real time update
   bool reuse_buffer = true;
+
+  int resolution_vertical = 0;
+  int resolution_horizontal = 0;
 
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, AA_samples_per_pixel, diffuse_max_bounce_num, diffuse_bounce_brightness, chunks_num, chunks_strategy, threading_strategy, threads_num, allow_emissive, shuffle_chunks, pixel_time_coloring, pixel_time_coloring_scale, reuse_buffer);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, AA_samples_per_pixel, diffuse_max_bounce_num, diffuse_bounce_brightness, chunks_num, chunks_strategy, threading_strategy, threads_num, allow_emissive, shuffle_chunks, pixel_time_coloring, pixel_time_coloring_scale, reuse_buffer, resolution_vertical, resolution_horizontal);
 
   inline uint32_t get_type_hash() const
   {
@@ -82,7 +88,7 @@ public:
   ~frame_renderer();
 
   // Only allowed when worker thread is not running
-  void set_config(uint32_t width, uint32_t height, const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state);
+  void set_config(const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state);
   void render_single_async();
   bool is_world_dirty(const scene& in_scene);
   bool is_renderer_setting_dirty(const renderer_config& in_settings);

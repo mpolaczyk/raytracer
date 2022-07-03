@@ -131,9 +131,9 @@ int main(int, char**)
     draw_scene_editor_window(sew_model, state);
 
     // Check if rendering is needed and do it 
-    if (!state.renderer.is_working() && (rw_model.rp_model.render_pressed || ow_model.auto_refresh))
+    if (!state.renderer.is_working() && (rw_model.rp_model.render_pressed || ow_model.auto_render))
     {
-      if (state.output_width != state.resolution_horizontal || state.output_height != state.resolution_vertical)
+      if (state.output_width != state.renderer_setting.resolution_horizontal || state.output_height != state.renderer_setting.resolution_vertical)
       {
         state.output_force_recreate = true;
       }
@@ -151,10 +151,10 @@ int main(int, char**)
 
         update_default_spawn_position(state);
 
-        state.output_width = state.resolution_horizontal;
-        state.output_height = state.resolution_vertical;
+        state.output_width = state.renderer_setting.resolution_horizontal;
+        state.output_height = state.renderer_setting.resolution_vertical;
 
-        state.renderer.set_config(state.resolution_horizontal, state.resolution_vertical, state.renderer_setting, state.scene_root, state.camera_setting);
+        state.renderer.set_config(state.renderer_setting, state.scene_root, state.camera_setting);
         state.renderer.render_single_async();
 
         if (state.output_force_recreate)

@@ -21,17 +21,17 @@ frame_renderer::~frame_renderer()
   if (ajs.img_bgr != nullptr) delete ajs.img_bgr;
 }
 
-void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state)
+void frame_renderer::set_config(const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state)
 {
   if (ajs.is_working) return;
 
-  bool force_recreate_buffers = ajs.image_width != width || ajs.image_height != height;
+  bool force_recreate_buffers = ajs.image_width != in_settings.resolution_horizontal || ajs.image_height != in_settings.resolution_vertical;
 
   // Copy all objects on purpose
   // - allows original scene to be edited while this one is rendering
   // - allows to detect if existing is dirty
-  ajs.image_width = width;
-  ajs.image_height = height;
+  ajs.image_width = in_settings.resolution_horizontal;
+  ajs.image_height = in_settings.resolution_vertical;
   ajs.settings = in_settings;
   ajs.scene_root = *in_scene.clone();
   ajs.cam.set_camera(in_camera_state);
@@ -51,11 +51,11 @@ void frame_renderer::set_config(uint32_t width, uint32_t height, const renderer_
   // Create new buffers if they are missing
   if (ajs.img_rgb == nullptr)
   {
-    ajs.img_rgb = new bmp::bmp_image(width, height);
-    ajs.img_bgr = new bmp::bmp_image(width, height);
+    ajs.img_rgb = new bmp::bmp_image(ajs.image_width, ajs.image_height);
+    ajs.img_bgr = new bmp::bmp_image(ajs.image_width, ajs.image_height);
   }
 
-  std::cout << "Frame renderer: " << width << "x" << height << std::endl;
+  std::cout << "Frame renderer: " << ajs.image_width << "x" << ajs.image_height << std::endl;
 }
 
 void frame_renderer::render_single_async()

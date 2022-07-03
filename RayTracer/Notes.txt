@@ -2,10 +2,10 @@
 TODO list:
  x spawn new objeects in front of the camera
  x real time update, auto rendering with low quality profile, no texture cleanup at the beginning of the frame
- - app state serialization (camera, renderer, world, materials) to json, each json as a scene file
+ x app state serialization (camera, renderer, world, materials) to json, each json as a scene file
  x material unique id instead of pointer (better for serialization)
  - list of materials, add, edit, delete operations
- - persistence for materials, json again
+ x persistence for materials, json again
  - ray tracing in one weekend part 3
  - transition to dx12
  - DXR tutorials and integration

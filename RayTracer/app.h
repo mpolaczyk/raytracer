@@ -18,14 +18,12 @@ class app_state : serializable<nlohmann::json>
 {
 public:
   // Initial state
+  scene scene_root;
   camera_config camera_setting;
   renderer_config renderer_setting;
-  scene scene_root;
-  int resolution_vertical = 0;
   material_instances materials;
-
+  
   // Runtime state
-  int resolution_horizontal = 0;
   int output_width = 0;
   int output_height = 0;
   struct ID3D11ShaderResourceView* output_srv = nullptr;
@@ -38,9 +36,6 @@ public:
 
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
-
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(app_state, resolution_vertical, resolution_horizontal);
-
 };
 
 /*
@@ -71,7 +66,7 @@ struct raytracer_window_model
 struct output_window_model
 {
   float zoom = 1.0f;
-  bool auto_refresh = false;
+  bool auto_render = false;
 };
 
 struct material_selection_combo_model

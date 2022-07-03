@@ -57,9 +57,9 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
   ImGui::Separator();
-  ImGui::InputInt("Resolution v", &state.resolution_vertical, 1, 2160);
-  state.resolution_horizontal = (int)((float)state.resolution_vertical * state.camera_setting.aspect_ratio_w / state.camera_setting.aspect_ratio_h);
-  ImGui::Text("Resolution h = %d", state.resolution_horizontal);
+  ImGui::InputInt("Resolution v", &state.renderer_setting.resolution_vertical, 1, 2160);
+  state.renderer_setting.resolution_horizontal = (int)((float)state.renderer_setting.resolution_vertical * state.camera_setting.aspect_ratio_w / state.camera_setting.aspect_ratio_h);
+  ImGui::Text("Resolution h = %d", state.renderer_setting.resolution_horizontal);
 
   ImGui::Separator();
   int chunk_strategy = (int)state.renderer_setting.chunks_strategy;
@@ -121,7 +121,7 @@ void draw_output_window(output_window_model& model, app_state& state)
     ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
     ImGui::Image((ImTextureID)state.output_srv, ImVec2(state.output_width * model.zoom, state.output_height * model.zoom), ImVec2(0, 1), ImVec2(1, 0));
-    ImGui::Checkbox("Auto refresh", &model.auto_refresh);
+    ImGui::Checkbox("Auto render on scene change", &model.auto_render);
     ImGui::End();
   }
 }

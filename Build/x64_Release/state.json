@@ -202,19 +202,19 @@
       "y": 1.0,
       "z": 1.0
     },
-    "chunks_num": 200,
-    "chunks_strategy": 1,
+    "chunks_num": 400,
+    "chunks_strategy": 3,
     "diffuse_bounce_brightness": 0.6000000238418579,
     "diffuse_max_bounce_num": 10,
     "pixel_time_coloring": false,
     "pixel_time_coloring_scale": 0.009999999776482582,
+    "resolution_horizontal": 400,
+    "resolution_vertical": 400,
     "reuse_buffer": true,
     "shuffle_chunks": true,
-    "threading_strategy": 1,
+    "threading_strategy": 2,
     "threads_num": 0
   },
-  "resolution_horizontal": 400,
-  "resolution_vertical": 400,
   "scene": {
     "material_id": "",
     "objects": [
@@ -275,7 +275,7 @@
       {
         "material_id": "glass",
         "origin": {
-          "x": 207.0,
+          "x": 216.0,
           "y": 290.0,
           "z": 250.0
         },
