@@ -1,9 +1,9 @@
 
 TODO list:
- - spawn new objeects in front of the camera
- - real time update, auto rendering with low quality profile, no texture cleanup at the beginning of the frame
+ x spawn new objeects in front of the camera
+ x real time update, auto rendering with low quality profile, no texture cleanup at the beginning of the frame
  - app state serialization (camera, renderer, world, materials) to json, each json as a scene file
- - material unique id instead of pointer (better for serialization)
+ x material unique id instead of pointer (better for serialization)
  - list of materials, add, edit, delete operations
  - persistence for materials, json again
  - ray tracing in one weekend part 3
@@ -32,4 +32,4 @@ Scene ideas:
 
  Problems with imgui (immediate UI paradigm):
  - Input widget setting new value every character instead of when pressed enter or focus left
- - 
+ - No panels nesting, drag and drop, snapping to window

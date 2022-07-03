@@ -57,10 +57,10 @@
     <ClCompile Include="bmp.cpp">
       <Filter>gfx</Filter>
     </ClCompile>
-    <ClCompile Include="materials_ext.cpp">
+    <ClCompile Include="materials_ui.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="hittables_ext.cpp">
+    <ClCompile Include="hittables_ui.cpp">
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="app.cpp">
