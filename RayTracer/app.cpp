@@ -5,19 +5,47 @@
 #include "nlohmann\json.hpp"
 #include <fstream>
 
-void load_app_state(app_state& out_state)
+void app_state::load_scene_state()
 {
-  std::ifstream i("state.json");
+  std::ifstream i("scene.json");
   nlohmann::json j;
   i >> j;
-  out_state.deserialize(j);
+  camera_setting.deserialize(j["camera_setting"]);
+  scene_root.deserialize(j["scene"]);
   i.close();
 }
 
-void save_app_state(app_state& in_state)
+void app_state::save_scene_state()
 {
-  std::ofstream o("state.json", std::ios_base::out | std::ios::binary);
-  std::string str = in_state.serialize().dump(2);
+  nlohmann::json j;
+  j["camera_setting"] = camera_setting.serialize();
+  j["scene"] = scene_root.serialize();
+  std::ofstream o("scene.json", std::ios_base::out | std::ios::binary);
+  std::string str = j.dump(2);
+  if (o.is_open())
+  {
+    o.write(str.data(), str.length());
+  }
+  o.close();
+}
+
+void app_state::load_rendering_state()
+{
+  std::ifstream i("rendering.json");
+  nlohmann::json j;
+  i >> j;
+  renderer_setting.deserialize(j["renderer_setting"]);
+  materials.deserialize(j["materials"]);
+  i.close();
+}
+
+void app_state::save_rendering_state()
+{
+  nlohmann::json j;
+  j["renderer_setting"] = renderer_setting.serialize();
+  j["materials"] = materials.serialize();
+  std::ofstream o("rendering.json", std::ios_base::out | std::ios::binary);
+  std::string str = j.dump(2);
   if (o.is_open())
   {
     o.write(str.data(), str.length());

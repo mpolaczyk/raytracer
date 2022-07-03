@@ -81,7 +81,8 @@ int main(int, char**)
   
   // Load state
   app_state state;
-  load_app_state(state);
+  state.load_scene_state();
+  state.load_rendering_state();
 
   // Not yet persistent
   solid_texture*    t_white         = new solid_texture(c_white);

@@ -14,12 +14,14 @@
    - holds resources
    - persistent
 */
-class app_state : serializable<nlohmann::json>
+class app_state
 {
 public:
-  // Initial state
+  // Scene state
   scene scene_root;
   camera_config camera_setting;
+
+  // Rendering state
   renderer_config renderer_setting;
   material_instances materials;
   
@@ -34,8 +36,10 @@ public:
   vec3 center_of_scene;
   float distance_to_center_of_scene = 0.0f;
 
-  nlohmann::json serialize();
-  void deserialize(const nlohmann::json& j);
+  void load_scene_state();
+  void save_scene_state();
+  void load_rendering_state();
+  void save_rendering_state();
 };
 
 /*
@@ -59,7 +63,6 @@ struct renderer_panel_model
 
 struct raytracer_window_model
 {
-  camera_panel_model cp_model;
   renderer_panel_model rp_model;
 };
 
@@ -89,6 +92,7 @@ struct delete_object_panel_model
 struct scene_editor_window_model
 {
   int selected_id = -1;
+  camera_panel_model cp_model;
   new_object_panel_model nop_model;
   delete_object_panel_model d_model;
   material_selection_combo_model m_model;
@@ -104,6 +108,3 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_st
 void draw_delete_object_panel(delete_object_panel_model& model, app_state& state);
 
 void update_default_spawn_position(app_state& state);
-
-void load_app_state(app_state& out_state);
-void save_app_state(app_state& in_state);

@@ -9,15 +9,15 @@ void draw_raytracer_window(raytracer_window_model& model, app_state& state)
 {
   ImGui::Begin("RAYTRACER", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
-  if (ImGui::MenuItem("Save"))
+  if (ImGui::MenuItem("SAVE STATE"))
   {
-    save_app_state(state);
+    state.save_rendering_state();
   }
+  ImGui::Separator();
 
   ImGuiIO& io = ImGui::GetIO();
   ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
-  draw_camera_panel(model.cp_model, state);
   draw_renderer_panel(model.rp_model, state);
   ImGui::End();
 }
@@ -129,6 +129,14 @@ void draw_output_window(output_window_model& model, app_state& state)
 void draw_scene_editor_window(scene_editor_window_model& model, app_state& state)
 {
   ImGui::Begin("SCENE", nullptr);
+  
+  if (ImGui::MenuItem("SAVE STATE"))
+  {
+    state.save_scene_state();
+  }
+
+  draw_camera_panel(model.cp_model, state);
+
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "OBJECTS");
   ImGui::Separator();

@@ -60,9 +60,6 @@
     <ClCompile Include="app.cpp">
       <Filter>app</Filter>
     </ClCompile>
-    <ClCompile Include="app_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
     <ClCompile Include="camera_json.cpp">
       <Filter>app\json</Filter>
     </ClCompile>
