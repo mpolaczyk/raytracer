@@ -103,30 +103,30 @@ void hittable_list::draw_edit_panel()
 void sphere::draw_edit_panel()
 {
   hittable::draw_edit_panel();
-  ImGui::InputFloat3("Origin", origin.e, "%f.2");
-  ImGui::InputFloat("Radius", &radius, 1);
+  ImGui::DragFloat3("Origin", origin.e);
+  ImGui::DragFloat("Radius", &radius, 1);
 }
 
 void xy_rect::draw_edit_panel()
 {
   hittable::draw_edit_panel();
-  ImGui::InputFloat2("x0 y0", x0y0);
-  ImGui::InputFloat2("x1 y1", x1y1);
-  ImGui::InputFloat("z", &z);
+  ImGui::DragFloat2("x0 y0", x0y0);
+  ImGui::DragFloat2("x1 y1", x1y1);
+  ImGui::DragFloat("z", &z);
 }
 
 void xz_rect::draw_edit_panel()
 {
   hittable::draw_edit_panel();
-  ImGui::InputFloat2("x0 z0", x0z0);
-  ImGui::InputFloat2("x1 z1", x1z1);
-  ImGui::InputFloat("y", &y);
+  ImGui::DragFloat2("x0 z0", x0z0);
+  ImGui::DragFloat2("x1 z1", x1z1);
+  ImGui::DragFloat("y", &y);
 }
 
 void yz_rect::draw_edit_panel()
 {
   hittable::draw_edit_panel();
-  ImGui::InputFloat2("y0 z0", y0z0);
-  ImGui::InputFloat2("y1 z1", y1z1);
-  ImGui::InputFloat("x", &x);
+  ImGui::DragFloat2("y0 z0", y0z0);
+  ImGui::DragFloat2("y1 z1", y1z1);
+  ImGui::DragFloat("x", &x);
 }
