@@ -1,0 +1,308 @@
+{
+  "camera_setting": {
+    "aperture": 0.019999999552965164,
+    "aspect_ratio_h": 1.0,
+    "aspect_ratio_w": 1.0,
+    "dist_to_focus": 800.0,
+    "field_of_view": 35.0,
+    "look_at": {
+      "x": 278.0,
+      "y": 278.0,
+      "z": 0.0
+    },
+    "look_from": {
+      "x": 278.0,
+      "y": 278.0,
+      "z": -800.0
+    },
+    "type": 0.0
+  },
+  "materials": [
+    {
+      "albedo": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "id": "black",
+      "type": 1
+    },
+    {
+      "albedo": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "id": "blue",
+      "type": 1
+    },
+    {
+      "albedo": {
+        "x": 0.7200000286102295,
+        "y": 0.44999998807907104,
+        "z": 0.20000000298023224
+      },
+      "fuzz": 0.03999999910593033,
+      "id": "copper",
+      "type": 3
+    },
+    {
+      "id": "diamond",
+      "index_of_refraction": 2.4000000953674316,
+      "type": 4
+    },
+    {
+      "id": "glass",
+      "index_of_refraction": 1.5,
+      "type": 4
+    },
+    {
+      "albedo": {
+        "x": 1.0,
+        "y": 0.8399999737739563,
+        "z": 0.0
+      },
+      "fuzz": 0.03999999910593033,
+      "id": "gold",
+      "type": 3
+    },
+    {
+      "albedo": {
+        "x": 0.11999999731779099,
+        "y": 0.44999998807907104,
+        "z": 0.15000000596046448
+      },
+      "id": "green",
+      "type": 1
+    },
+    {
+      "albedo": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "id": "light",
+      "type": 5
+    },
+    {
+      "albedo": {
+        "x": 4.0,
+        "y": 4.0,
+        "z": 4.0
+      },
+      "id": "light_strong",
+      "type": 5
+    },
+    {
+      "albedo": {
+        "x": 7.0,
+        "y": 7.0,
+        "z": 7.0
+      },
+      "id": "light_strong2",
+      "type": 5
+    },
+    {
+      "albedo": {
+        "x": 15.0,
+        "y": 15.0,
+        "z": 15.0
+      },
+      "id": "light_strong3",
+      "type": 5
+    },
+    {
+      "albedo": {
+        "x": 0.6000000238418579,
+        "y": 0.6000000238418579,
+        "z": 0.6000000238418579
+      },
+      "fuzz": 0.019999999552965164,
+      "id": "metal_matt",
+      "type": 3
+    },
+    {
+      "albedo": {
+        "x": 0.6000000238418579,
+        "y": 0.6000000238418579,
+        "z": 0.6000000238418579
+      },
+      "fuzz": 0.0,
+      "id": "metal_shiny",
+      "type": 3
+    },
+    {
+      "id": "moissanite",
+      "index_of_refraction": 2.6500000953674316,
+      "type": 4
+    },
+    {
+      "albedo": {
+        "x": 0.6499999761581421,
+        "y": 0.05000000074505806,
+        "z": 0.05000000074505806
+      },
+      "id": "red",
+      "type": 1
+    },
+    {
+      "id": "sapphire",
+      "index_of_refraction": 1.7699999809265137,
+      "type": 4
+    },
+    {
+      "albedo": {
+        "x": 0.3199999928474426,
+        "y": 0.3400000035762787,
+        "z": 0.3400000035762787
+      },
+      "fuzz": 0.03999999910593033,
+      "id": "silver",
+      "type": 3
+    },
+    {
+      "albedo": {
+        "x": 0.4399999976158142,
+        "y": 0.4699999988079071,
+        "z": 0.49000000953674316
+      },
+      "fuzz": 0.03999999910593033,
+      "id": "steel",
+      "type": 3
+    },
+    {
+      "id": "water",
+      "index_of_refraction": 1.3300000429153442,
+      "type": 4
+    },
+    {
+      "albedo": {
+        "x": 0.7300000190734863,
+        "y": 0.7300000190734863,
+        "z": 0.7300000190734863
+      },
+      "id": "white",
+      "type": 1
+    },
+    {
+      "albedo": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "id": "yellow",
+      "type": 1
+    }
+  ],
+  "renderer_setting": {
+    "AA_samples_per_pixel": 20,
+    "allow_emissive": false,
+    "background": {
+      "x": 1.0,
+      "y": 1.0,
+      "z": 1.0
+    },
+    "chunks_num": 200,
+    "chunks_strategy": 1,
+    "diffuse_bounce_brightness": 0.6000000238418579,
+    "diffuse_max_bounce_num": 10,
+    "pixel_time_coloring": false,
+    "pixel_time_coloring_scale": 0.009999999776482582,
+    "reuse_buffer": true,
+    "shuffle_chunks": true,
+    "threading_strategy": 1,
+    "threads_num": 0
+  },
+  "resolution_horizontal": 400,
+  "resolution_vertical": 400,
+  "world": {
+    "material_id": "",
+    "objects": [
+      {
+        "material_id": "green",
+        "type": 5,
+        "x": 555.0,
+        "y0": 0.0,
+        "y1": 555.0,
+        "z0": 0.0,
+        "z1": 555.0
+      },
+      {
+        "material_id": "red",
+        "type": 5,
+        "x": 0.0,
+        "y0": 0.0,
+        "y1": 555.0,
+        "z0": 0.0,
+        "z1": 555.0
+      },
+      {
+        "material_id": "light_strong3",
+        "type": 4,
+        "x0": 213.0,
+        "x1": 343.0,
+        "y": 554.0,
+        "z0": 127.0,
+        "z1": 332.0
+      },
+      {
+        "material_id": "white",
+        "type": 4,
+        "x0": 0.0,
+        "x1": 555.0,
+        "y": 0.0,
+        "z0": 0.0,
+        "z1": 555.0
+      },
+      {
+        "material_id": "white",
+        "type": 4,
+        "x0": 0.0,
+        "x1": 555.0,
+        "y": 555.0,
+        "z0": 0.0,
+        "z1": 555.0
+      },
+      {
+        "material_id": "white",
+        "type": 3,
+        "x0": 0.0,
+        "x1": 555.0,
+        "y0": 0.0,
+        "y1": 555.0,
+        "z": 901.0
+      },
+      {
+        "material_id": "glass",
+        "origin": {
+          "x": 207.0,
+          "y": 290.0,
+          "z": 250.0
+        },
+        "radius": 120.0,
+        "type": 2
+      },
+      {
+        "material_id": "metal_shiny",
+        "origin": {
+          "x": 376.0,
+          "y": 70.0,
+          "z": 260.0
+        },
+        "radius": 113.0,
+        "type": 2
+      },
+      {
+        "material_id": "light",
+        "origin": {
+          "x": 270.0,
+          "y": 270.0,
+          "z": 250.0
+        },
+        "radius": 1100.0,
+        "type": 2
+      }
+    ],
+    "type": 1
+  }
+}

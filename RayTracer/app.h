@@ -5,24 +5,27 @@
 #include "hittables.h"
 #include "materials.h"
 
+#include "nlohmann\json.hpp"
+#include "serializable.h"
+
 /*
    app_state - root structure for the application
    - accessible from multiple panels/widgets
    - holds resources
-   - persistent (in future)
+   - persistent
 */
-struct app_state
+class app_state : serializable<nlohmann::json>
 {
+public:
   // Initial state
   camera_config camera_setting;
   renderer_config renderer_setting;
   hittable_list world;
   int resolution_vertical = 0;
-  int resolution_horizontal = 0;
-  float background_color[3] = { 1.0f,1.0f,1.0f };
   material_instances materials;
 
   // Runtime state
+  int resolution_horizontal = 0;
   int output_width = 0;
   int output_height = 0;
   struct ID3D11ShaderResourceView* output_srv = nullptr;
@@ -32,6 +35,12 @@ struct app_state
   material* default_material = nullptr;
   vec3 center_of_scene;
   float distance_to_center_of_scene = 0.0f;
+
+  nlohmann::json serialize();
+  void deserialize(const nlohmann::json& j);
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(app_state, resolution_vertical, resolution_horizontal);
+
 };
 
 /*
@@ -50,6 +59,7 @@ struct camera_panel_model
 struct renderer_panel_model
 {
   bool render_pressed = false;
+  float background_color[3] = { 1.0f,1.0f,1.0f };
 };
 
 struct raytracer_window_model
@@ -99,3 +109,6 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_st
 void draw_delete_object_panel(delete_object_panel_model& model, app_state& state);
 
 void update_default_spawn_position(app_state& state);
+
+void load_app_state(app_state& out_state);
+void save_app_state(app_state& in_state);

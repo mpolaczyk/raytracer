@@ -3,13 +3,15 @@
 #include <cmath>
 #include <iostream>
 
-#define USE_SIMD 1
+#include "nlohmann\json.hpp"
+#include "serializable.h"
 
+#define USE_SIMD 1
 #if USE_SIMD
 #include <intrin.h> // SSE3 required
 #endif
 
-__declspec(align(16)) struct vec3
+__declspec(align(16)) class vec3 : serializable<nlohmann::json>
 {
 public:
   vec3() = default;
@@ -75,6 +77,11 @@ public:
     struct { float x, y, z, padding; };
     __m128 R128;
   };
+
+  nlohmann::json serialize();
+  void deserialize(const nlohmann::json& j);
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(vec3, x, y, z);
 
   uint32_t get_type_hash() const;
 };

@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;ImTextureID=ImU64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirtParty\imgui_v1.87;$(SolutionDir)ThirtParty\imgui_v1.87\backends;$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirtParty\json-3.10.5\include;$(SolutionDir)ThirtParty\imgui_v1.87;$(SolutionDir)ThirtParty\imgui_v1.87\backends;$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -89,7 +89,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirtParty\imgui_v1.87;$(SolutionDir)ThirtParty\imgui_v1.87\backends;$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirtParty\json-3.10.5\include;$(SolutionDir)ThirtParty\imgui_v1.87;$(SolutionDir)ThirtParty\imgui_v1.87\backends;$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -137,16 +137,21 @@
     </ClCompile>
     <ClCompile Include="aabb.cpp" />
     <ClCompile Include="app.cpp" />
+    <ClCompile Include="app_json.cpp" />
     <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="bmp.cpp" />
+    <ClCompile Include="camera_json.cpp" />
     <ClCompile Include="chunk_generator.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="dx11_helper.cpp" />
     <ClCompile Include="frame_renderer.cpp" />
+    <ClCompile Include="frame_renderer_json.cpp" />
+    <ClCompile Include="hittables_json.cpp" />
     <ClCompile Include="hittables_ui.cpp" />
     <ClCompile Include="hittables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="materials.cpp" />
+    <ClCompile Include="materials_json.cpp" />
     <ClCompile Include="materials_ui.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -154,6 +159,7 @@
     </ClCompile>
     <ClCompile Include="thread_pool.cpp" />
     <ClCompile Include="vec3.cpp" />
+    <ClCompile Include="vec3_json.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx11.h" />
@@ -174,6 +180,7 @@
     <ClInclude Include="frame_renderer.h" />
     <ClInclude Include="hittables.h" />
     <ClInclude Include="materials.h" />
+    <ClInclude Include="serializable.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ray.h" />

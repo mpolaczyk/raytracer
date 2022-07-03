@@ -4,31 +4,31 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="aabb.cpp">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClCompile>
     <ClCompile Include="hittables.cpp">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClCompile>
     <ClCompile Include="vec3.cpp">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClCompile>
     <ClCompile Include="benchmark.cpp">
-      <Filter>Processing</Filter>
+      <Filter>processing</Filter>
     </ClCompile>
     <ClCompile Include="chunk_generator.cpp">
-      <Filter>Processing</Filter>
+      <Filter>processing</Filter>
     </ClCompile>
     <ClCompile Include="frame_renderer.cpp">
-      <Filter>Processing</Filter>
+      <Filter>processing</Filter>
     </ClCompile>
     <ClCompile Include="thread_pool.cpp">
-      <Filter>Processing</Filter>
+      <Filter>processing</Filter>
     </ClCompile>
     <ClCompile Include="materials.cpp">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClCompile>
     <ClCompile Include="common.cpp">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui.cpp">
       <Filter>imgui</Filter>
@@ -58,52 +58,70 @@
       <Filter>gfx</Filter>
     </ClCompile>
     <ClCompile Include="materials_ui.cpp">
-      <Filter>UI</Filter>
+      <Filter>app</Filter>
     </ClCompile>
     <ClCompile Include="hittables_ui.cpp">
-      <Filter>UI</Filter>
+      <Filter>app</Filter>
     </ClCompile>
     <ClCompile Include="app.cpp">
-      <Filter>UI</Filter>
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="hittables_json.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="vec3_json.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_json.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="frame_renderer_json.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="app_json.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="materials_json.cpp">
+      <Filter>app</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="aabb.h">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="ray.h">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="hittables.h">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="textures.h">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="vec3.h">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="benchmark.h">
-      <Filter>Processing</Filter>
+      <Filter>processing</Filter>
     </ClInclude>
     <ClInclude Include="chunk_generator.h">
-      <Filter>Processing</Filter>
+      <Filter>processing</Filter>
     </ClInclude>
     <ClInclude Include="frame_renderer.h">
-      <Filter>Processing</Filter>
+      <Filter>processing</Filter>
     </ClInclude>
     <ClInclude Include="thread_pool.h">
-      <Filter>Processing</Filter>
+      <Filter>processing</Filter>
     </ClInclude>
     <ClInclude Include="materials.h">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
-      <Filter>Math</Filter>
+      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imconfig.h">
       <Filter>imgui</Filter>
@@ -139,24 +157,27 @@
       <Filter>gfx</Filter>
     </ClInclude>
     <ClInclude Include="app.h">
-      <Filter>UI</Filter>
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="serializable.h">
+      <Filter>app</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Math">
-      <UniqueIdentifier>{02ce4a4f-4175-4e95-bbab-11cc90f822e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Processing">
-      <UniqueIdentifier>{e03e927c-53a4-4fd8-b5a7-be63b02733a8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{f5bcb8ed-7e79-47a2-8101-c72f6f11618b}</UniqueIdentifier>
     </Filter>
     <Filter Include="gfx">
       <UniqueIdentifier>{6634c2ce-df53-41da-b630-a8150de3856e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI">
+    <Filter Include="app">
       <UniqueIdentifier>{aa90aa1e-0c9a-4fbc-9b5f-b7af4c45a09f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{02ce4a4f-4175-4e95-bbab-11cc90f822e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="processing">
+      <UniqueIdentifier>{e03e927c-53a4-4fd8-b5a7-be63b02733a8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

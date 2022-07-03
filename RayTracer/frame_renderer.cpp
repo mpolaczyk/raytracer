@@ -10,50 +10,6 @@
 #include "hittables.h"
 #include "materials.h"
 
-// Designated initializers c++20 https://en.cppreference.com/w/cpp/language/aggregate_initialization
-renderer_config renderer_config::ten_thousand_per_pixel_preset
-{
-  .AA_samples_per_pixel = 10000,
-  .diffuse_max_bounce_num = 10
-};
-renderer_config renderer_config::thousand_per_pixel_preset
-{
-  .AA_samples_per_pixel = 1000,
-  .diffuse_max_bounce_num = 10
-};
-renderer_config renderer_config::super_mega_ultra_high_quality_preset
-{
-  .AA_samples_per_pixel = 500,
-  .diffuse_max_bounce_num = 20
-};
-renderer_config renderer_config::mega_ultra_high_quality_preset
-{
-  .AA_samples_per_pixel = 200,
-  .diffuse_max_bounce_num = 20
-};
-renderer_config renderer_config::ultra_high_quality_preset
-{
-  .AA_samples_per_pixel = 100,
-  .diffuse_max_bounce_num = 20
-};
-renderer_config renderer_config::high_quality_preset
-{ 
-  .AA_samples_per_pixel = 50,
-  .diffuse_max_bounce_num = 20,
-  .chunks_num = 16,
-  .chunks_strategy = chunk_strategy_type::rectangles
-};
-renderer_config renderer_config::medium_quality_preset
-{
-  .AA_samples_per_pixel = 20,
-  .diffuse_max_bounce_num = 10
-};
-renderer_config renderer_config::low_quality_preset
-{
-  .AA_samples_per_pixel = 5,
-  .diffuse_max_bounce_num = 3
-};
-
 frame_renderer::frame_renderer()
 {
   worker_thread = std::thread(&frame_renderer::async_job, this);

@@ -1,6 +1,7 @@
 .vs
 
 *.exe
+*.dll
 *.pdb
 *.obj
 *.ilk
@@ -11,6 +12,7 @@
 *.idb
 *.iobj
 *.ipdb
+*.ini
+*.bmp
 Archive/*
-Build/*
 Intermediate/*

@@ -6,6 +6,9 @@
 #include "ray.h"
 #include "aabb.h"
 
+#include "nlohmann\json.hpp"
+#include "serializable.h"
+
 class material;
 class material_instances;
 
@@ -39,7 +42,7 @@ static inline const char* hittable_type_names[] =
   "YZ Rectangle"
 };
 
-class hittable
+class hittable : serializable<nlohmann::json>
 {
 public:
   hittable() {}
@@ -52,14 +55,21 @@ public:
   virtual void draw_edit_panel();
   virtual void set_origin(const vec3& value) {};
   virtual void set_extent(float value) {};
+  virtual nlohmann::json serialize();
+  virtual void deserialize(const nlohmann::json& j);
 
   virtual uint32_t get_type_hash() const;
   virtual hittable* clone() const;
 
+  // Persistent members
+  hittable_type type = hittable_type::hittable;
   std::string material_id;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(hittable, type, material_id);
+  
+  // Runtime members
   material* material_ptr = nullptr; // no deep copy for now!
   aabb bounding_box;
-  hittable_type type = hittable_type::hittable;
 
   static hittable* spawn_by_type(hittable_type type);
 };
@@ -78,12 +88,17 @@ public:
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { origin = value; };
   virtual void set_extent(float value) { radius = value; };
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   virtual uint32_t get_type_hash() const override;
   virtual sphere* clone() const override;
 
+  // Persistent members
   vec3 origin = { 0,0,0 };
   float radius = 0.0f;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(sphere, radius);
 };
 
 
@@ -100,6 +115,8 @@ public:
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { };
   virtual void set_extent(float value) { };
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   virtual uint32_t get_type_hash() const override;
   virtual hittable_list* clone() const override;
@@ -127,7 +144,9 @@ public:
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { x0 = value.x; y0 = value.y; };
   virtual void set_extent(float value) { x1 = x0 + value; y1 = y0 + value; };
-  
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
+
   virtual uint32_t get_type_hash() const override;
   virtual xy_rect* clone() const override;
 
@@ -143,6 +162,8 @@ public:
     struct { float x1, y1; };
   };
   float z = 0.0f;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(xy_rect, x0, y0, x1, y1, z);
 };
 
 class xz_rect : public hittable
@@ -159,6 +180,8 @@ public:
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { x0 = value.x; z0 = value.z; };
   virtual void set_extent(float value) { x1 = x0 + value; z1 = z0 + value; };
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   virtual uint32_t get_type_hash() const override;
   virtual xz_rect* clone() const override;
@@ -175,6 +198,8 @@ public:
     struct { float x1, z1; };
   };
   float y = 0.0f;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(xz_rect, x0, z0, x1, z1, y);
 };
 
 class yz_rect : public hittable 
@@ -191,6 +216,8 @@ public:
   virtual void draw_edit_panel() override;
   virtual void set_origin(const vec3& value) override { y0 = value.y; z0 = value.z; };
   virtual void set_extent(float value) { y1 = y0 + value; z1 = z0 + value; };
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   virtual uint32_t get_type_hash() const override;
   virtual yz_rect* clone() const override;
@@ -207,4 +234,6 @@ public:
     struct { float y1, z1; };
   };
   float x;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(yz_rect, y0, z0, y1, z1, x);
 };

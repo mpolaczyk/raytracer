@@ -2,6 +2,19 @@
 
 #include "vec3.h"
 
+enum class texture_class  // No RTTI, simple type detection
+{
+  none = 0,
+  solid,
+  checker
+};
+static inline const char* texture_class_names[] =
+{
+  "None",
+  "Solid",
+  "Checker"
+};
+
 class texture 
 {
 public:

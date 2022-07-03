@@ -3,6 +3,9 @@
 #include "vec3.h"
 #include "ray.h"
 
+#include "nlohmann\json.hpp"
+#include "serializable.h"
+
 struct plane
 {
   vec3 horizontal;            // size horizontal
@@ -14,8 +17,9 @@ struct plane
   }
 };
 
-struct camera_config
+class camera_config : serializable<nlohmann::json>
 {
+public: 
   camera_config() = default;
   camera_config(vec3 look_from, vec3 look_at, float field_of_view, float aspect_ratio_w, float aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
     : look_from(look_from), look_at(look_at), field_of_view(field_of_view), aspect_ratio_w(aspect_ratio_w), aspect_ratio_h(aspect_ratio_h), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
@@ -36,6 +40,7 @@ struct camera_config
     return ::hash_combine(a, b);
   }
 
+  // Persistent members
   vec3 look_from;
   vec3 look_at;
   float field_of_view = 90.0f;
@@ -44,6 +49,12 @@ struct camera_config
   float aperture = 0.0f;       // defocus blur
   float dist_to_focus = 1.0f;  // distance from camera to the focus object
   float type = 0.0f;           // 0.0f perspective camera, 1.0f orthographic camera
+
+  nlohmann::json serialize();
+  void deserialize(const nlohmann::json& j);
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(camera_config, field_of_view, aspect_ratio_h, aspect_ratio_w, aperture, dist_to_focus, type);
+
 };
 
 class camera

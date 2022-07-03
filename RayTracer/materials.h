@@ -7,6 +7,8 @@
 #include "textures.h"
 #include <map>
 
+#include "nlohmann\json.hpp"
+#include "serializable.h"
 
 enum class material_class  // No RTTI, simple type detection
 {
@@ -27,7 +29,7 @@ static inline const char* material_class_names[] =
   "Diffuse light"
 };
 
-class material_instances
+class material_instances : serializable<nlohmann::json>
 {
 public:
   bool is_id_in_use(const std::string& id) const;
@@ -38,12 +40,14 @@ public:
   std::vector<std::string> get_material_names() const;
   int get_index_by_name(const std::string& name) const;
   int get_index_by_id(const std::string& id) const;
+  nlohmann::json serialize();
+  void deserialize(const nlohmann::json& j);
 
 private:
   std::map<std::string, material*> registry;
 };
 
-class material
+class material : serializable<nlohmann::json>
 {
 public:
   material() {}
@@ -53,9 +57,15 @@ public:
   virtual vec3 emitted(float u, float v, const vec3& p) const;
   virtual void get_name(std::string& out_name, bool with_params=true) const;
   virtual void draw_edit_panel();
+  virtual nlohmann::json serialize();
+  virtual void deserialize(const nlohmann::json& j);
 
   material_class type = material_class::none;
   std::string id;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(material, type, id);
+
+  static material* spawn_by_type(material_class type);
 };
 
 
@@ -68,6 +78,8 @@ public:
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   vec3 albedo;
 };
@@ -82,6 +94,8 @@ public:
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   texture* texture = nullptr;
 };
@@ -96,9 +110,13 @@ public:
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   vec3 albedo;
   float fuzz = 0.02f;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(metal_material, fuzz);
 };
 
 
@@ -111,8 +129,12 @@ public:
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   float index_of_refraction = 1.5f;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(dialectric_material, index_of_refraction);
 };
 
 
@@ -120,13 +142,15 @@ class diffuse_light_material : public material
 {
 public:
   diffuse_light_material() : material(material_class::diffuse_light) {}
-  diffuse_light_material(std::string&& id, texture* texture) : texture(texture), material(std::move(id), material_class::diffuse_light) {}
+  diffuse_light_material(std::string&& id, vec3 albedo) : albedo(albedo), material(std::move(id), material_class::diffuse_light) {}
 
   virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& out_attenuation, ray& out_scattered) const override;
   virtual vec3 emitted(float u, float v, const vec3& p) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
 public:
-  texture* texture;
+  vec3 albedo;
 };

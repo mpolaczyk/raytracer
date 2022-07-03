@@ -3,6 +3,16 @@
 #include "materials.h"
 #include "common.h"
 
+material* material::spawn_by_type(material_class type)
+{
+  if (type == material_class::dialectric) { return new dialectric_material(); }
+  else if (type == material_class::diffuse) { return new diffuse_material(); }
+  else if (type == material_class::diffuse_light) { return new diffuse_light_material(); }
+  else if (type == material_class::metal) { return new metal_material(); }
+  else if (type == material_class::texture) { return new texture_material(); }
+  return nullptr;
+}
+
 bool material::scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const
 {
   return false;
@@ -79,5 +89,5 @@ bool diffuse_light_material::scatter(const ray& r_in, const hit_record& rec, vec
 
 vec3 diffuse_light_material::emitted(float u, float v, const vec3& p) const
 {
-  return texture->value(u, v, p);
+  return albedo;
 }

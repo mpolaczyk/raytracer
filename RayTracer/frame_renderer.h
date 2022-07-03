@@ -10,6 +10,8 @@
 #include "camera.h"
 #include "bmp.h"
 
+#include "nlohmann\json.hpp"
+#include "serializable.h"
 
 namespace bmp
 {
@@ -30,17 +32,9 @@ static inline const char* threading_strategy_names[] =
   "Thread poll"
 };
 
-struct renderer_config
+class renderer_config : serializable<nlohmann::json>
 {
-  static renderer_config ten_thousand_per_pixel_preset;
-  static renderer_config thousand_per_pixel_preset;
-  static renderer_config super_mega_ultra_high_quality_preset;
-  static renderer_config mega_ultra_high_quality_preset;
-  static renderer_config ultra_high_quality_preset;
-  static renderer_config high_quality_preset;
-  static renderer_config medium_quality_preset;
-  static renderer_config low_quality_preset;
-
+public:
   // Anti Aliasing oversampling
   int AA_samples_per_pixel = 20;            
 
@@ -65,6 +59,11 @@ struct renderer_config
   float pixel_time_coloring_scale = 0.01f;
 
   bool reuse_buffer = true;
+
+  nlohmann::json serialize();
+  void deserialize(const nlohmann::json& j);
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, AA_samples_per_pixel, diffuse_max_bounce_num, diffuse_bounce_brightness, chunks_num, chunks_strategy, threading_strategy, threads_num, allow_emissive, shuffle_chunks, pixel_time_coloring, pixel_time_coloring_scale, reuse_buffer);
 
   inline uint32_t get_type_hash() const
   {

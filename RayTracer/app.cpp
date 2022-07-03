@@ -5,9 +5,37 @@
 #include "chunk_generator.h"
 #include "frame_renderer.h"
 
+#include "nlohmann\json.hpp"
+#include <fstream>
+
+void load_app_state(app_state& out_state)
+{
+  std::ifstream i("state.json");
+  nlohmann::json j;
+  i >> j;
+  out_state.deserialize(j);
+  i.close();
+}
+
+void save_app_state(app_state& in_state)
+{
+  std::ofstream o("state.json", std::ios_base::out | std::ios::binary);
+  std::string str = in_state.serialize().dump(2);
+  if (o.is_open())
+  {
+    o.write(str.data(), str.length());
+  }
+  o.close();
+}
+
 void draw_raytracer_window(raytracer_window_model& model, app_state& state)
 {
   ImGui::Begin("RAYTRACER", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+  if (ImGui::MenuItem("Save")) 
+  {
+    save_app_state(state);
+  }
 
   ImGuiIO& io = ImGui::GetIO();
   ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
@@ -19,8 +47,6 @@ void draw_raytracer_window(raytracer_window_model& model, app_state& state)
 
 void draw_camera_panel(camera_panel_model& model, app_state& state)
 {
-  //ImGui::BeginDisabled(state.renderer.is_working());
-
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
   ImGui::Separator();
@@ -47,14 +73,10 @@ void draw_camera_panel(camera_panel_model& model, app_state& state)
   }
   ImGui::Checkbox("Use custom focus distance", &model.use_custom_focus_distance);
   ImGui::InputFloat("Aperture", &state.camera_setting.aperture, 0.1f, 1.0f, "%.2f");
-
-  //ImGui::EndDisabled();
 }
 
 void draw_renderer_panel(renderer_panel_model& model, app_state& state)
 {
-  //ImGui::BeginDisabled(state.renderer.is_working());
-
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
   ImGui::Separator();
@@ -90,8 +112,8 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   ImGui::Checkbox("Enable emissive materials", &state.renderer_setting.allow_emissive);
   if (!state.renderer_setting.allow_emissive)
   {
-    ImGui::ColorEdit3("Background", state.background_color, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-    state.renderer_setting.background = vec3(state.background_color[0], state.background_color[1], state.background_color[2]);
+    ImGui::ColorEdit3("Background", model.background_color, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+    state.renderer_setting.background = vec3(model.background_color[0], model.background_color[1], model.background_color[2]);
   }
   ImGui::Separator();
   ImGui::Checkbox("Show time per pixel", &state.renderer_setting.pixel_time_coloring);
@@ -113,8 +135,6 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   }
   ImGui::Text("Last render time = %lld [ms]", state.renderer.get_render_time() / 1000);
   ImGui::Text("Last save time = %lld [ms]", state.renderer.get_save_time() / 1000);
-
-  //ImGui::EndDisabled();
 }
 
 void draw_output_window(output_window_model& model, app_state& state)
