@@ -7,7 +7,6 @@
 #include "textures.h"
 #include <map>
 
-#include "nlohmann\json.hpp"
 #include "serializable.h"
 
 enum class material_class  // No RTTI, simple type detection
@@ -63,7 +62,7 @@ public:
   material_class type = material_class::none;
   std::string id;
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(material, type, id);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(material, type, id); // to_json only
 
   static material* spawn_by_type(material_class type);
 };
@@ -116,7 +115,7 @@ public:
   vec3 albedo;
   float fuzz = 0.02f;
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(metal_material, fuzz);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(metal_material, fuzz); // to_json only
 };
 
 
@@ -134,7 +133,7 @@ public:
 
   float index_of_refraction = 1.5f;
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(dialectric_material, index_of_refraction);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(dialectric_material, index_of_refraction); // to_json only
 };
 
 

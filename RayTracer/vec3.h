@@ -3,7 +3,6 @@
 #include <cmath>
 #include <iostream>
 
-#include "nlohmann\json.hpp"
 #include "serializable.h"
 
 #define USE_SIMD 1
@@ -81,7 +80,7 @@ public:
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(vec3, x, y, z);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(vec3, x, y, z); // to_json only
 
   uint32_t get_type_hash() const;
 };

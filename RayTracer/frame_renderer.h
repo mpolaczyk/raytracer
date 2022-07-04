@@ -10,7 +10,6 @@
 #include "camera.h"
 #include "bmp.h"
 
-#include "nlohmann\json.hpp"
 #include "serializable.h"
 
 namespace bmp
@@ -69,7 +68,7 @@ public:
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, AA_samples_per_pixel, diffuse_max_bounce_num, diffuse_bounce_brightness, chunks_num, chunks_strategy, threading_strategy, threads_num, allow_emissive, shuffle_chunks, pixel_time_coloring, pixel_time_coloring_scale, reuse_buffer, resolution_vertical, resolution_horizontal);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, AA_samples_per_pixel, diffuse_max_bounce_num, diffuse_bounce_brightness, chunks_num, chunks_strategy, threading_strategy, threads_num, allow_emissive, shuffle_chunks, pixel_time_coloring, pixel_time_coloring_scale, reuse_buffer, resolution_vertical, resolution_horizontal); // to_json only
 
   inline uint32_t get_type_hash() const
   {

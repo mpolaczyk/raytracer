@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "nlohmann\json.hpp"
-
 #include "hittables.h"
 
 
@@ -61,41 +59,69 @@ nlohmann::json yz_rect::serialize()
 
 void hittable::deserialize(const nlohmann::json& j)
 {
-  from_json(j, *this);
+  TRY_PARSE(hittable_class, j, "type", type);
+  TRY_PARSE(std::string, j, "material_id", material_id);
 }
 
 void sphere::deserialize(const nlohmann::json& j)
 {
   hittable::from_json(j, *this);
-  from_json(j, *this);
-  origin.deserialize(j["origin"]);
+  
+  TRY_PARSE(float, j, "radius", radius);
+
+  nlohmann::json jorigin;
+  if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { origin.deserialize(jorigin); }
 }
 
 void scene::deserialize(const nlohmann::json& j)
 {
   hittable::from_json(j, *this);
-  for (auto& element : j["objects"])
+
+  nlohmann::json jobjects;
+  if (TRY_PARSE(nlohmann::json, j, "objects", jobjects))
   {
-    hittable* obj = hittable::spawn_by_type(element["type"]);
-    obj->deserialize(element);
-    objects.push_back(obj);
+    for (auto& element : jobjects)
+    {
+      hittable_class type;
+      if (TRY_PARSE(hittable_class, element, "type", type))
+      {
+        hittable* obj = hittable::spawn_by_type(type);
+        obj->deserialize(element);
+        objects.push_back(obj);
+      }
+    }
   }
 }
 
 void xy_rect::deserialize(const nlohmann::json& j)
 {
   hittable::from_json(j, *this);
-  from_json(j, *this);
+  
+  TRY_PARSE(float, j, "x0", x0);
+  TRY_PARSE(float, j, "y0", y0);
+  TRY_PARSE(float, j, "x1", x1);
+  TRY_PARSE(float, j, "y1", y1);
+  TRY_PARSE(float, j, "z", z);
 }
 
 void xz_rect::deserialize(const nlohmann::json& j)
 {
   hittable::from_json(j, *this);
-  from_json(j, *this);
+
+  TRY_PARSE(float, j, "x0", x0);
+  TRY_PARSE(float, j, "z0", z0);
+  TRY_PARSE(float, j, "x1", x1);
+  TRY_PARSE(float, j, "z1", z1);
+  TRY_PARSE(float, j, "y", y);
 }
 
 void yz_rect::deserialize(const nlohmann::json& j)
 {
   hittable::from_json(j, *this);
-  from_json(j, *this);
+  
+  TRY_PARSE(float, j, "y0", y0);
+  TRY_PARSE(float, j, "z0", z0);
+  TRY_PARSE(float, j, "y1", y1);
+  TRY_PARSE(float, j, "z1", z1);
+  TRY_PARSE(float, j, "x", x);
 }

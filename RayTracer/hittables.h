@@ -6,7 +6,6 @@
 #include "ray.h"
 #include "aabb.h"
 
-#include "nlohmann\json.hpp"
 #include "serializable.h"
 
 class material;
@@ -65,7 +64,7 @@ public:
   hittable_class type = hittable_class::hittable;
   std::string material_id;
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(hittable, type, material_id);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(hittable, type, material_id); // to_json only
   
   // Runtime members
   material* material_ptr = nullptr; // no deep copy for now!
@@ -98,7 +97,7 @@ public:
   vec3 origin = { 0,0,0 };
   float radius = 0.0f;
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(sphere, radius);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(sphere, radius); // to_json only
 };
 
 
@@ -163,7 +162,7 @@ public:
   };
   float z = 0.0f;
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(xy_rect, x0, y0, x1, y1, z);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(xy_rect, x0, y0, x1, y1, z); // to_json only
 };
 
 class xz_rect : public hittable
@@ -199,7 +198,7 @@ public:
   };
   float y = 0.0f;
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(xz_rect, x0, z0, x1, z1, y);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(xz_rect, x0, z0, x1, z1, y); // to_json only
 };
 
 class yz_rect : public hittable 
@@ -235,5 +234,5 @@ public:
   };
   float x;
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(yz_rect, y0, z0, y1, z1, x);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(yz_rect, y0, z0, y1, z1, x); // to_json only
 };

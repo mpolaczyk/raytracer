@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "nlohmann\json.hpp"
-
 #include "materials.h"
 
 
@@ -76,38 +74,46 @@ void material_instances::deserialize(const nlohmann::json& j)
 
 void material::deserialize(const nlohmann::json& j)
 {
-  from_json(j, *this);
+  TRY_PARSE(material_class, j, "type", type);
+  TRY_PARSE(std::string, j, "id", id);
 }
 
 void diffuse_material::deserialize(const nlohmann::json& j)
 {
   material::from_json(j, *this);
-  albedo.deserialize(j["albedo"]);
+
+  nlohmann::json jalbedo;
+  if (TRY_PARSE(nlohmann::json, j, "albedo", jalbedo)) { albedo.deserialize(jalbedo); }
 }
 
 void texture_material::deserialize(const nlohmann::json& j)
 {
   material::from_json(j, *this);
   // texture
-  from_json(j, *this);
 }
 
 void metal_material::deserialize(const nlohmann::json& j)
 {
   material::from_json(j, *this);
-  albedo.deserialize(j["albedo"]);
-  from_json(j, *this);
+  
+  TRY_PARSE(float, j, "fuzz", fuzz);
+
+  nlohmann::json jalbedo;
+  if (TRY_PARSE(nlohmann::json, j, "albedo", jalbedo)) { albedo.deserialize(jalbedo); }
 }
 
 void dialectric_material::deserialize(const nlohmann::json& j)
 {
   material::from_json(j, *this);
-  from_json(j, *this);
+  
+  TRY_PARSE(float, j, "index_of_refraction", index_of_refraction);
 }
 
 void diffuse_light_material::deserialize(const nlohmann::json& j)
 {
   material::from_json(j, *this);
-  albedo.deserialize(j["albedo"]);
+
+  nlohmann::json jalbedo;
+  if (TRY_PARSE(nlohmann::json, j, "albedo", jalbedo)) { albedo.deserialize(jalbedo); }
 }
 

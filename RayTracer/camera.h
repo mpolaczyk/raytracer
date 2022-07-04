@@ -3,7 +3,6 @@
 #include "vec3.h"
 #include "ray.h"
 
-#include "nlohmann\json.hpp"
 #include "serializable.h"
 
 struct plane
@@ -53,7 +52,7 @@ public:
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(camera_config, field_of_view, aspect_ratio_h, aspect_ratio_w, aperture, dist_to_focus, type);
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(camera_config, field_of_view, aspect_ratio_h, aspect_ratio_w, aperture, dist_to_focus, type); // to_json only
 
 };
 

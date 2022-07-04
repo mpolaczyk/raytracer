@@ -5,7 +5,6 @@
 #include "hittables.h"
 #include "materials.h"
 
-#include "nlohmann\json.hpp"
 #include "serializable.h"
 
 class window_config : serializable<nlohmann::json>
@@ -19,46 +18,7 @@ public:
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(window_config, x, y, w, h);
-};
-
-/*
-   app_state - root structure for the application
-   - accessible from multiple panels/widgets
-   - holds resources
-   - persistent
-*/
-class app_state
-{
-public:
-  // Scene state
-  scene scene_root;
-  camera_config camera_setting;
-
-  // Rendering state
-  renderer_config renderer_setting;
-  material_instances materials;
-  
-  // Window state
-  window_config window;
-
-  // Runtime state
-  int output_width = 0;
-  int output_height = 0;
-  struct ID3D11ShaderResourceView* output_srv = nullptr;
-  struct ID3D11Texture2D* output_texture = nullptr;
-  bool output_force_recreate = true;
-  frame_renderer renderer;
-  material* default_material = nullptr;
-  vec3 center_of_scene;
-  float distance_to_center_of_scene = 0.0f;
-
-  void load_scene_state();
-  void save_scene_state();
-  void load_rendering_state();
-  void save_rendering_state();
-  void load_window_state();
-  void save_window_state();
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(window_config, x, y, w, h);  // to_json only
 };
 
 /*
@@ -115,6 +75,51 @@ struct scene_editor_window_model
   new_object_panel_model nop_model;
   delete_object_panel_model d_model;
   material_selection_combo_model m_model;
+};
+
+
+/*
+   app_state - root structure for the application
+   - accessible from multiple panels/widgets
+   - holds resources
+   - persistent
+*/
+class app_state
+{
+public:
+  // Scene state
+  scene scene_root;
+  camera_config camera_setting;
+
+  // Rendering state
+  renderer_config renderer_setting;
+  material_instances materials;
+  
+  // OS window state
+  window_config window;
+
+  // Imgui window states
+  raytracer_window_model rw_model;
+  output_window_model ow_model;
+  scene_editor_window_model sew_model;
+
+  // Runtime state
+  int output_width = 0;
+  int output_height = 0;
+  struct ID3D11ShaderResourceView* output_srv = nullptr;
+  struct ID3D11Texture2D* output_texture = nullptr;
+  bool output_force_recreate = true;
+  frame_renderer renderer;
+  material* default_material = nullptr;
+  vec3 center_of_scene;
+  float distance_to_center_of_scene = 0.0f;
+
+  void load_scene_state();
+  void save_scene_state();
+  void load_rendering_state();
+  void save_rendering_state();
+  void load_window_state();
+  void save_window_state();
 };
 
 void draw_camera_panel(camera_panel_model& model, app_state& state);

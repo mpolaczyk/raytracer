@@ -403,5 +403,5 @@
 #endif
 
 #ifndef JSON_DIAGNOSTICS
-    #define JSON_DIAGNOSTICS 0
+    #define JSON_DIAGNOSTICS 1
 #endif
