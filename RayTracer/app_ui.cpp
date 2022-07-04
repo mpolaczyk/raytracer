@@ -153,7 +153,9 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
       hittable* obj = state.scene_root.objects[n];
       std::string obj_name;
       obj->get_name(obj_name, false);
-      if (ImGui::Selectable(obj_name.c_str(), model.selected_id == n))
+      std::ostringstream oss;
+      oss << "[" << n << "] " << obj_name;
+      if (ImGui::Selectable(oss.str().c_str(), model.selected_id == n))
       {
         model.m_model.selected_material_name_index = -1;
         model.selected_id = n;
