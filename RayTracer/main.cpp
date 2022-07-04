@@ -111,14 +111,14 @@ int main(int, char**)
     MSG msg;
     while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
     {
-      if (msg.message == WM_QUIT)
+      if(msg.message == WM_QUIT)
       {
         done = true;
       }
       ::TranslateMessage(&msg);
       ::DispatchMessage(&msg);
     }
-    if (done) { break; }
+    if (done) break;
 
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
