@@ -5,6 +5,7 @@
 #include "nlohmann\json.hpp"
 #include <fstream>
 
+
 void app_state::load_scene_state()
 {
   std::ifstream i("scene.json");
@@ -14,6 +15,26 @@ void app_state::load_scene_state()
   scene_root.deserialize(j["scene"]);
   i.close();
 }
+
+void app_state::load_rendering_state()
+{
+  std::ifstream i("rendering.json");
+  nlohmann::json j;
+  i >> j;
+  renderer_setting.deserialize(j["renderer_setting"]);
+  materials.deserialize(j["materials"]);
+  i.close();
+}
+
+void app_state::load_window_state()
+{
+  std::ifstream i("window.json");
+  nlohmann::json j;
+  i >> j;
+  window.deserialize(j["window"]);
+  i.close();
+}
+
 
 void app_state::save_scene_state()
 {
@@ -29,16 +50,6 @@ void app_state::save_scene_state()
   o.close();
 }
 
-void app_state::load_rendering_state()
-{
-  std::ifstream i("rendering.json");
-  nlohmann::json j;
-  i >> j;
-  renderer_setting.deserialize(j["renderer_setting"]);
-  materials.deserialize(j["materials"]);
-  i.close();
-}
-
 void app_state::save_rendering_state()
 {
   nlohmann::json j;
@@ -52,6 +63,20 @@ void app_state::save_rendering_state()
   }
   o.close();
 }
+
+void app_state::save_window_state()
+{
+  nlohmann::json j;
+  j["window"] = window.serialize();
+  std::ofstream o("window.json", std::ios_base::out | std::ios::binary);
+  std::string str = j.dump(2);
+  if (o.is_open())
+  {
+    o.write(str.data(), str.length());
+  }
+  o.close();
+}
+
 
 void update_default_spawn_position(app_state& state)
 {

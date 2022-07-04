@@ -84,6 +84,9 @@
     <ClCompile Include="materials_ui.cpp">
       <Filter>app\ui</Filter>
     </ClCompile>
+    <ClCompile Include="app_json.cpp">
+      <Filter>app\json</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

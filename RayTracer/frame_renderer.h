@@ -123,6 +123,7 @@ private:
   struct 
   {
     bool is_working = false;
+    bool requested_stop = false;
 
     uint32_t image_height = 0;
     uint32_t image_width = 0;

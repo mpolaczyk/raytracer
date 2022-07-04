@@ -47,7 +47,7 @@ int main(int, char**)
   //ImGui_ImplWin32_EnableDpiAwareness();
   WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("RayTracer"), NULL };
   ::RegisterClassEx(&wc);
-  HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("RayTracer"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
+  HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("RayTracer"), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
   if (!dx11::CreateDeviceD3D(hwnd))
@@ -78,11 +78,13 @@ int main(int, char**)
 
   // Raytracer init
   random_cache::init();
-  
-  // Load state
+
+  // Load persistent state
   app_state state;
   state.load_scene_state();
   state.load_rendering_state();
+  state.load_window_state();
+  ::SetWindowPos(hwnd, NULL, state.window.x, state.window.y, state.window.w, state.window.h, NULL);
 
   // Not yet persistent
   solid_texture*    t_white         = new solid_texture(c_white);
@@ -90,11 +92,8 @@ int main(int, char**)
   checker_texture*  t_checker       = new checker_texture(t_white, t_grey);
   texture_material* texture_default = new texture_material("default", t_checker);
   state.default_material = texture_default;
+  state.materials.try_add(texture_default);
   
-  // Imgui state
-  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-  const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-
   // Window models
   raytracer_window_model rw_model;
   output_window_model ow_model;
@@ -112,13 +111,14 @@ int main(int, char**)
     MSG msg;
     while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
     {
+      if (msg.message == WM_QUIT)
+      {
+        done = true;
+      }
       ::TranslateMessage(&msg);
       ::DispatchMessage(&msg);
-      if (msg.message == WM_QUIT)
-        done = true;
     }
-    if (done)
-      break;
+    if (done) { break; }
 
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
@@ -176,6 +176,14 @@ int main(int, char**)
     }
     
     // UI rendering
+    static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    static float clear_color_with_alpha[4] = 
+    { 
+      clear_color.x * clear_color.w, 
+      clear_color.y * clear_color.w, 
+      clear_color.z * clear_color.w, 
+      clear_color.w 
+    };
     ImGui::Render();
     dx11::g_pd3dDeviceContext->OMSetRenderTargets(1, &dx11::g_mainRenderTargetView, NULL);
     dx11::g_pd3dDeviceContext->ClearRenderTargetView(dx11::g_mainRenderTargetView, clear_color_with_alpha);
@@ -183,7 +191,16 @@ int main(int, char**)
 
     dx11::g_pSwapChain->Present(1, 0); // Present with vsync
     //g_pSwapChain->Present(0, 0); // Present without vsync
+
+    RECT rect;
+    ::GetWindowRect(hwnd, &rect);
+    state.window.x = rect.left;
+    state.window.y = rect.top;
+    state.window.w = rect.right - rect.left;
+    state.window.h = rect.bottom - rect.top;
   }
+
+  state.save_window_state();
 
   // Cleanup
   ImGui_ImplDX11_Shutdown();

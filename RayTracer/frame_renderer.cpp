@@ -16,6 +16,8 @@ frame_renderer::frame_renderer()
 }
 frame_renderer::~frame_renderer()
 {
+  ajs.requested_stop = true;
+  worker_semaphore.release();
   worker_thread.join();
   if (ajs.img_rgb != nullptr) delete ajs.img_rgb;
   if (ajs.img_bgr != nullptr) delete ajs.img_bgr;
@@ -137,6 +139,7 @@ void frame_renderer::async_job()
   while (true)
   {
     worker_semaphore.acquire();
+    if(ajs.requested_stop) { break; }
 
     benchmark::instance benchmark_render;
     benchmark_render.start("Render");
