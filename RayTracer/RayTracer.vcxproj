@@ -64,6 +64,8 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -93,6 +95,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +148,7 @@
     <ClCompile Include="chunk_generator.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="dx11_helper.cpp" />
+    <ClCompile Include="exceptions.cpp" />
     <ClCompile Include="frame_renderer.cpp" />
     <ClCompile Include="frame_renderer_json.cpp" />
     <ClCompile Include="hittables_json.cpp" />
@@ -178,9 +182,12 @@
     <ClInclude Include="chunk_generator.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="dx11_helper.h" />
+    <ClInclude Include="exceptions.h" />
+    <ClInclude Include="fpexcept.h" />
     <ClInclude Include="frame_renderer.h" />
     <ClInclude Include="hittables.h" />
     <ClInclude Include="materials.h" />
+    <ClInclude Include="onb.h" />
     <ClInclude Include="serializable.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stdafx.h" />

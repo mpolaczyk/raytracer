@@ -14,7 +14,12 @@
 #define USE_PIX
 #include "pix3.h" // https://devblogs.microsoft.com/pix/winpixeventruntime
 #endif
-#define DO_BENCHMARK 1
 
 #include "common.h"
+
+#define DO_BENCHMARK 1
 #include "benchmark.h"
+
+#define USE_FPEXCEPT _DEBUG // Use floating point exceptions. Remember to set /fp:except and /EHa in the compiler setting
+#include "fpexcept.h"
+#include "exceptions.h"

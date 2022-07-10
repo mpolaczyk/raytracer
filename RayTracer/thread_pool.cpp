@@ -2,6 +2,8 @@
 
 #include "thread_pool.h"
 
+extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
+
 void thread_pool::queue_job(const std::function<void()>& job)
 {
   {
@@ -24,24 +26,41 @@ void thread_pool::start(uint32_t num_threads)
 
 void thread_pool::thread_loop()
 {
-  while (true)
+  if (!IsDebuggerPresent())
   {
-    std::function<void()> job;
+    // Register SEH exception catching when no debugger is present
+    _set_se_translator(seh_exception_handler);
+}
+  fpexcept::enabled_scope fpe;
+
+  try
+  {
+    while (true)
     {
-      std::unique_lock<std::mutex> lock(queue_mutex);
-      mutex_condition.wait(lock,
-        [this]
-        {
-          return !jobs.empty() || should_terminate;
-        });
-      if (should_terminate)
+      std::function<void()> job;
       {
-        return;
+        std::unique_lock<std::mutex> lock(queue_mutex);
+        mutex_condition.wait(lock,
+          [this]
+          {
+            return !jobs.empty() || should_terminate;
+          });
+        if (should_terminate)
+        {
+          return;
+        }
+        job = jobs.front();
+        jobs.pop();
       }
-      job = jobs.front();
-      jobs.pop();
+      job();
     }
-    job();
+  }
+  catch (const std::exception& e)
+  {
+    std::cout << "Exception handler:" << std::endl;
+    std::cout << e.what() << std::endl;
+    __debugbreak;
+    system("pause");
   }
 }
 

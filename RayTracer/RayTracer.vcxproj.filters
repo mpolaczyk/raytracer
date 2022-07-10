@@ -87,6 +87,9 @@
     <ClCompile Include="app_json.cpp">
       <Filter>app\json</Filter>
     </ClCompile>
+    <ClCompile Include="exceptions.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -164,6 +167,15 @@
     </ClInclude>
     <ClInclude Include="serializable.h">
       <Filter>app\json</Filter>
+    </ClInclude>
+    <ClInclude Include="onb.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="fpexcept.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="exceptions.h">
+      <Filter>app</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

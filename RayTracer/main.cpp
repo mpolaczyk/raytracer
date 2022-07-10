@@ -10,9 +10,8 @@
 #include "dx11_helper.h"
 #include "materials.h"
 
-
-// Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
 
 // Win32 message handler
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -43,6 +42,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int main(int, char**)
 {
+  if (!IsDebuggerPresent())
+  {
+    // Register SEH exception catching when no debugger is present
+    _set_se_translator(seh_exception_handler);
+  }
+  fpexcept::enabled_scope fpe;
+
   try
   {
     // Create application window
@@ -80,7 +86,7 @@ int main(int, char**)
     
     // Raytracer init
     random_cache::init();
-    
+
     // Load persistent state
     app_state state;
     state.load_scene_state();
@@ -210,8 +216,9 @@ int main(int, char**)
   }
   catch (const std::exception& e)
   {
-    std::cout << "Main exception handler:" << std::endl;
+    std::cout << "Exception handler:" << std::endl;
     std::cout << e.what() << std::endl;
+    __debugbreak;
     system("pause");
   }
   return 0;
