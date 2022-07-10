@@ -1,6 +1,6 @@
 {
   "camera_setting": {
-    "aperture": 0.019999999552965164,
+    "aperture": 0.0,
     "aspect_ratio_h": 1.0,
     "aspect_ratio_w": 1.0,
     "dist_to_focus": 800.0,
@@ -41,11 +41,11 @@
       {
         "material_id": "light_strong3",
         "type": 4,
-        "x0": 213.0,
-        "x1": 343.0,
-        "y": 554.0,
-        "z0": 127.0,
-        "z1": 332.0
+        "x0": 47.0,
+        "x1": 509.0,
+        "y": 484.0,
+        "z0": 164.0,
+        "z1": 246.0
       },
       {
         "material_id": "white",
@@ -57,7 +57,7 @@
         "z1": 555.0
       },
       {
-        "material_id": "white",
+        "material_id": "metal_shiny",
         "type": 4,
         "x0": 0.0,
         "x1": 555.0,
@@ -75,9 +75,9 @@
         "z": 555.0
       },
       {
-        "material_id": "glass",
+        "material_id": "red",
         "origin": {
-          "x": 349.0,
+          "x": 450.0,
           "y": 290.0,
           "z": 250.0
         },
@@ -85,9 +85,9 @@
         "type": 2
       },
       {
-        "material_id": "metal_shiny",
+        "material_id": "green",
         "origin": {
-          "x": 144.0,
+          "x": 157.0,
           "y": 70.0,
           "z": 260.0
         },

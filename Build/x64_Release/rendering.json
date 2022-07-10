@@ -181,22 +181,22 @@
     }
   ],
   "renderer_setting": {
-    "AA_samples_per_pixel": 200,
-    "allow_emissive": false,
+    "AA_samples_per_pixel": 50,
+    "allow_emissive": true,
     "background": {
       "x": 1.0,
       "y": 1.0,
       "z": 1.0
     },
-    "chunks_num": 400,
-    "chunks_strategy": 2,
+    "chunks_num": 200,
+    "chunks_strategy": 3,
     "diffuse_bounce_brightness": 0.6000000238418579,
     "diffuse_max_bounce_num": 7,
     "pixel_time_coloring": false,
-    "pixel_time_coloring_scale": 0.009999999776482582,
+    "pixel_time_coloring_scale": 0.059999994933605194,
     "resolution_horizontal": 400,
     "resolution_vertical": 400,
-    "reuse_buffer": true,
+    "reuse_buffer": false,
     "shuffle_chunks": true,
     "threading_strategy": 2,
     "threads_num": 0
