@@ -56,7 +56,7 @@ public:
   material(std::string&& id, material_class type) : id(std::move(id)), type(type) { }
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered, float& out_pdf) const;
   virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const;
-  virtual vec3 emitted(float u, float v, const vec3& p) const;
+  virtual vec3 emitted(const hit_record& in_hit) const;
   virtual void get_name(std::string& out_name, bool with_params=true) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize();
@@ -169,7 +169,7 @@ public:
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered, float& out_pdf) const override;
   //virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
-  virtual vec3 emitted(float u, float v, const vec3& p) const override;
+  virtual vec3 emitted(const hit_record& in_hit) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;

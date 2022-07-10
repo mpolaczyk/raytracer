@@ -147,7 +147,7 @@ void frame_renderer::async_job()
     ajs.benchmark_render_time = benchmark_render.stop();
 
     char image_file_name[100];
-    std::sprintf(image_file_name, "last_render.bmp");
+    std::sprintf(image_file_name, paths::get_last_render_file_path().c_str());
 
     benchmark::instance benchmark_save;
     benchmark_save.start("Save");
@@ -258,7 +258,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
   hit_record hit;
   if (ajs.scene_root.hit(in_ray, 0.001f, infinity, hit))
   {
-    vec3 c_emission = hit.material_ptr->emitted(hit.u, hit.v, hit.p);
+    vec3 c_emission = hit.material_ptr->emitted(hit);
 
     ray scattered;
     vec3 c_attenuation;

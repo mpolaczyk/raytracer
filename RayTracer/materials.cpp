@@ -25,7 +25,7 @@ float material::scatter_pdf(const ray& in_ray, const hit_record& in_rec, const r
   return 0.0f;
 }
 
-vec3 material::emitted(float u, float v, const vec3& p) const
+vec3 material::emitted(const hit_record& in_hit) const
 {
   return vec3(0.0f, 0.0f, 0.0f);
 }
@@ -121,7 +121,9 @@ bool diffuse_light_material::scatter(const ray& in_ray, const hit_record& in_hit
   return false;
 }
 
-vec3 diffuse_light_material::emitted(float u, float v, const vec3& p) const
+vec3 diffuse_light_material::emitted(const hit_record& in_hit) const
 {
+  if (in_hit.front_face)
+    return c_black;
   return albedo;
 }
