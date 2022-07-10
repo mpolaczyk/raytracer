@@ -30,7 +30,7 @@ void thread_pool::thread_loop()
   {
     // Register SEH exception catching when no debugger is present
     _set_se_translator(seh_exception_handler);
-}
+  }
   fpexcept::enabled_scope fpe;
 
   try

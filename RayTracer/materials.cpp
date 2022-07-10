@@ -2,6 +2,7 @@
 
 #include "materials.h"
 #include "common.h"
+#include "onb.h"
 
 material* material::spawn_by_type(material_class type)
 {
@@ -24,12 +25,18 @@ vec3 material::emitted(float u, float v, const vec3& p) const
 
 bool diffuse_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
 {
-  // Fake Lambertian, uniform distribution, bounces outside of the surface
-  vec3 scatter_direction = random_unit_in_hemisphere(in_hit.normal);
-  if (is_near_zero(scatter_direction))
-  {
-    scatter_direction = in_hit.normal;
-  }
+  //// Fake Lambertian, uniform distribution, bounces outside of the surface
+  //vec3 scatter_direction = random_unit_in_hemisphere(in_hit.normal);
+  //if (is_near_zero(scatter_direction))
+  //{
+  //  scatter_direction = in_hit.normal;
+  //}
+
+  // Lambertian - scatter direction uses a cosine distribution, so we need to rotate it to match the hit normal
+  onb uvw;
+  uvw.build_from_w(in_hit.normal);
+  vec3 scatter_direction = uvw.local(random_cosine_direction());
+
   out_scattered = ray(in_hit.p, scatter_direction);
   out_attenuation = albedo;
   return true;
@@ -43,6 +50,7 @@ bool texture_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3
   {
     scatter_direction = in_hit.normal;
   }
+
   out_scattered = ray(in_hit.p, scatter_direction);
   out_attenuation = texture->value(in_hit.u, in_hit.v, in_hit.p);
   return true;

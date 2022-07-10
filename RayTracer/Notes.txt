@@ -1,4 +1,4 @@
-
+﻿
 TODO list:
  x spawn new objeects in front of the camera
  x real time update, auto rendering with low quality profile, no texture cleanup at the beginning of the frame
@@ -28,8 +28,50 @@ Scene ideas:
  - refreshing only those parts that changed (low ray count prepass, high ray count pass)
  - scale all vectors until you get out of floating point precision
  - grid of square glass tiles surface/texture behind it, lots of caustics
+ - rotating split screen dynamically creating one screen
 
-
- Problems with imgui (immediate UI paradigm):
+Problems with imgui (immediate UI paradigm):
  - Input widget setting new value every character instead of when pressed enter or focus left
  - No panels nesting, drag and drop, snapping to window
+ - Minimal input validation
+
+Dictionary:
+ - specular, specularly - calculated based on angle of incidence, surface reflecting rays in one direction (mirrrors, metal etc.)
+ - diffuse, diffusely - calculater based on the surface and angle of incidence, reflecting rays in multiple directions
+ https://www.computerhope.com/jargon/d/diffuse-reflection.htm
+ https://en.wikipedia.org/wiki/Diffuse_reflection#/media/File:Lambert2.gif
+ - lambertian - ideal diffuse reflection (matte), brightness of the surface to the observer is ideal no matter the angle. Luminance is isotropic.
+ https://en.wikipedia.org/wiki/Lambertian_reflectance
+ - lambert's cosine law / cosine emission law - luminous intensity observed from an ideal diffusely reflecting surface is directly proportional to the cosine of the angle θ between the direction of the incident light and the surface normal
+ https://en.wikipedia.org/wiki/Lambert%27s_cosine_law
+ - luminance - measure of luminous intensity per unit area of light travelling in a given direction. The amount of light that passes through, is emitted from or reflected from an area.
+ https://en.wikipedia.org/wiki/Luminance
+ - isotrophy - uniformity in all directions
+ https://en.wikipedia.org/wiki/Isotropy
+
+ - radiance - power emitted/reflected by a surface per unit solid angle, per unit of a projected area. The amount of light incoming to a point from a single direction.
+ - radiance vs luminance - radiance used in radiometry where physical properties are relevant, luminance in photometry where the visual perception is relevant (spectral response)
+ - irradiance - irradiance is the amount of light incoming to a certain point from possibly all directions.
+
+ - scatter - spread, distribute
+
+ - albedo
+ - attenuation
+  
+ - zero angle - 0
+ - acute/sharp angle - less than 90
+ - right angle - 90
+ - obtuse/blunt angle - 90-180
+ - straight angle - 180
+ - reflex angle - 180-360
+ - perigon angle - 360
+ 
+ - complementary angle - two angles witha sum of 90
+ - suplementary angle - two angles with a sum of 180
+
+ - reciprocal - inversely related
+
+ - normal - perpendicular to a given object
+ - perpendicular - when two objects intersect at a right angle
+ - orthogonal - when two vectors are perpendicular
+ - orthonormal - when two unit vectors are perpendicular 

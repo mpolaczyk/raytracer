@@ -25,6 +25,18 @@ vec3 random_unit_in_hemisphere(const vec3& normal)
   return sign(dot(random_unit, normal)) * random_unit;
 }
 
+vec3 random_cosine_direction()
+{
+  // Cosine distribution around positive z axis
+  float r1 = random_cache::get_float_0_1();
+  float r2 = random_cache::get_float_0_1();
+  float phi = 2 * pi * r1;
+  float x = cos(phi) * sqrt(r2);
+  float y = sin(phi) * sqrt(r2);
+  float z = sqrt(1 - r2);
+  return vec3(x, y, z);
+}
+
 bool is_near_zero(vec3& value)
 {
   return (fabs(value[0]) < small_number) && (fabs(value[1]) < small_number) && (fabs(value[2]) < small_number);
@@ -87,5 +99,15 @@ namespace random_cache
   vec3 get_vec3()
   {
     return vec3(get_float(), get_float(), get_float());
+  }
+
+  float get_float_0_1()
+  {
+    return fabs(get_float());
+  }
+
+  vec3 get_vec3_0_1()
+  {
+    return vec3(fabs(get_float()), fabs(get_float()), fabs(get_float()));
   }
 }

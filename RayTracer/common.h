@@ -24,8 +24,9 @@ const float small_number = 1e-8;
 
 float degrees_to_radians(float degrees);
 float sign(float value);
-vec3 random_unit_in_hemisphere(const vec3& normal);
 vec3 random_in_unit_disk();
+vec3 random_unit_in_hemisphere(const vec3& normal);
+vec3 random_cosine_direction();
 bool is_near_zero(vec3& value);
 vec3 reflect(const vec3& v, const vec3& n);
 vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
@@ -51,8 +52,9 @@ inline void get_sphere_uv(const vec3& p, float& out_u, float& out_v)
   //     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
   //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
   //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
-  float theta = acos(-p.y);
-  float phi = atan2(-p.z, p.x) + pi;
+  vec3 pp = unit_vector(p); // normalize to get sensible values for acos, otherwise floating point exceptions will happen
+  float theta = acos(-pp.y);
+  float phi = atan2(-pp.z, pp.x) + pi;
   out_u = phi / (2.0f * pi);
   out_v = theta / pi;
 }
@@ -67,6 +69,8 @@ namespace random_cache
   void init();
   float get_float();
   vec3 get_vec3();
+  float get_float_0_1();
+  vec3 get_vec3_0_1();
 }
 
 inline uint32_t hash_combine(uint32_t A, uint32_t C)
