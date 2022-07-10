@@ -253,49 +253,25 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
     return c_black;
   }
 
+  // TODO ajs.settings.allow_emissive - not in use for now!
+
   hit_record hit;
   if (ajs.scene_root.hit(in_ray, 0.001f, infinity, hit))
   {
+    vec3 c_emission = hit.material_ptr->emitted(hit.u, hit.v, hit.p);
+
     ray scattered;
-    vec3 attenuation;
-    vec3 emitted;
-    if (ajs.settings.allow_emissive)
+    vec3 c_attenuation;
+    float pdf;
+    if (hit.material_ptr->scatter(in_ray, hit, c_attenuation, scattered, pdf))
     {
-      emitted = hit.material_ptr->emitted(hit.u, hit.v, hit.p);
+      float scattering_pdf = hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
+      vec3 color_from_scatter = (c_attenuation * scattering_pdf * ray_color(scattered, in_background, depth - 1)) / pdf;  // divide by zero causes black screen!
+      return c_emission + color_from_scatter;
     }
-    if (hit.material_ptr->scatter(in_ray, hit, attenuation, scattered))
-    {
-      return emitted+attenuation * ray_color(scattered, in_background, depth - 1);
-    }
-    
-    if (ajs.settings.allow_emissive)
-    {
-      return emitted;
-    }
-  }
-  if (ajs.settings.allow_emissive)
-  {
-    return c_black;
+    return c_emission;
   }
   return in_background; // source of light for non emissive mode
-
-  // OLD CODE
-  //hit_record hit;
-  //if (in_scene.hit(in_ray, 0.001f, infinity, hit))  // 0.001f to fix "shadow acne"
-  //{
-  //  ray scattered;
-  //  vec3 attenuation;
-  //  if (hit.mat->scatter(in_ray, hit, attenuation, scattered))
-  //  {
-  //    return attenuation * ray_color(scattered, in_scene, in_background, depth - 1);
-  //  }
-  //  return black;
-  //  
-  //}
-  //
-  //vec3 unit_direction = in_ray.direction;              // unit_vector(r.direction)
-  //float y =  0.5f * (unit_direction.y + 1.0f);  // base blend based on y component of a ray
-  //return (1.0f - y) * white + y * white_blue;     // linear blend (lerp) between white and blue
 }
 
 void frame_renderer::save(const char* file_name)

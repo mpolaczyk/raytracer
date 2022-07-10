@@ -20,7 +20,15 @@ nlohmann::json material::serialize()
   return j;
 }
 
-nlohmann::json diffuse_material::serialize()
+nlohmann::json lambertian_material::serialize()
+{
+  nlohmann::json j;
+  material::to_json(j, *this);
+  j["albedo"] = albedo.serialize();
+  return j;
+}
+
+nlohmann::json isotropic_material::serialize()
 {
   nlohmann::json j;
   material::to_json(j, *this);
@@ -78,7 +86,15 @@ void material::deserialize(const nlohmann::json& j)
   TRY_PARSE(std::string, j, "id", id);
 }
 
-void diffuse_material::deserialize(const nlohmann::json& j)
+void lambertian_material::deserialize(const nlohmann::json& j)
+{
+  material::from_json(j, *this);
+
+  nlohmann::json jalbedo;
+  if (TRY_PARSE(nlohmann::json, j, "albedo", jalbedo)) { albedo.deserialize(jalbedo); }
+}
+
+void isotropic_material::deserialize(const nlohmann::json& j)
 {
   material::from_json(j, *this);
 

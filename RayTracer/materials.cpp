@@ -7,31 +7,31 @@
 material* material::spawn_by_type(material_class type)
 {
   if (type == material_class::dialectric) { return new dialectric_material(); }
-  else if (type == material_class::diffuse) { return new diffuse_material(); }
+  else if (type == material_class::lambertian) { return new lambertian_material(); }
+  else if (type == material_class::isotropic) { return new isotropic_material(); }
   else if (type == material_class::diffuse_light) { return new diffuse_light_material(); }
   else if (type == material_class::metal) { return new metal_material(); }
   else if (type == material_class::texture) { return new texture_material(); }
   return nullptr;
 }
 
-bool material::scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered) const
+bool material::scatter(const ray& in_ray, const hit_record& in_rec, vec3& out_attenuation, ray& out_scattered, float& out_pdf) const
 {
   return false;
 }
+
+float material::scatter_pdf(const ray& in_ray, const hit_record& in_rec, const ray& in_scattered) const
+{
+  return 0.0f;
+}
+
 vec3 material::emitted(float u, float v, const vec3& p) const
 {
   return vec3(0.0f, 0.0f, 0.0f);
 }
 
-bool diffuse_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
+bool lambertian_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered, float& out_pdf) const
 {
-  //// Fake Lambertian, uniform distribution, bounces outside of the surface
-  //vec3 scatter_direction = random_unit_in_hemisphere(in_hit.normal);
-  //if (is_near_zero(scatter_direction))
-  //{
-  //  scatter_direction = in_hit.normal;
-  //}
-
   // Lambertian - scatter direction uses a cosine distribution, so we need to rotate it to match the hit normal
   onb uvw;
   uvw.build_from_w(in_hit.normal);
@@ -39,10 +39,36 @@ bool diffuse_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3
 
   out_scattered = ray(in_hit.p, scatter_direction);
   out_attenuation = albedo;
+  out_pdf = dot(uvw.w, out_scattered.direction) / pi;
   return true;
 }
 
-bool texture_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
+float lambertian_material::scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const
+{
+  float cosine = dot(in_hit.normal, unit_vector(in_scattered.direction));
+  return cosine < 0.0f ? 0.0f : cosine / pi;
+}
+
+bool isotropic_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered, float& out_pdf) const
+{
+  // Fake Lambertian, uniform distribution, bounces outside of the surface
+  vec3 scatter_direction = random_unit_in_hemisphere(in_hit.normal);
+  if (is_near_zero(scatter_direction))
+  {
+    scatter_direction = in_hit.normal;
+  }
+  out_scattered = ray(in_hit.p, scatter_direction);
+  out_attenuation = albedo;
+  out_pdf = 1.0f / (4.0f * pi);
+  return true;
+}
+
+float isotropic_material::scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const
+{
+  return 1.0f / (4.0f * pi);
+}
+
+bool texture_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered, float& out_pdf) const
 {
   // Fake Lambertian, uniform distribution, bounces outside of the surface
   vec3 scatter_direction = random_unit_in_hemisphere(in_hit.normal);
@@ -56,7 +82,7 @@ bool texture_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3
   return true;
 }
 
-bool metal_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
+bool metal_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered, float& out_pdf) const
 {
   vec3 reflected = reflect(unit_vector(in_ray.direction), in_hit.normal);
   out_scattered = ray(in_hit.p, reflected + fuzz * unit_vector(random_cache::get_vec3()));
@@ -64,7 +90,7 @@ bool metal_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& 
   return (dot(out_scattered.direction, in_hit.normal) > 0);
 }
 
-bool dialectric_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered) const
+bool dialectric_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered, float& out_pdf) const
 {
   out_attenuation = vec3(1.0f, 1.0f, 1.0f);
   float refraction_ratio = in_hit.front_face ? (1.0f / index_of_refraction) : index_of_refraction;
@@ -90,7 +116,7 @@ bool dialectric_material::scatter(const ray& in_ray, const hit_record& in_hit, v
   return true;
 }
 
-bool diffuse_light_material::scatter(const ray& r_in, const hit_record& rec, vec3& out_attenuation, ray& out_scattered) const
+bool diffuse_light_material::scatter(const ray& in_ray, const hit_record& in_hit, vec3& out_attenuation, ray& out_scattered, float& out_pdf) const
 {
   return false;
 }

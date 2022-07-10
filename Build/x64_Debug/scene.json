@@ -21,7 +21,7 @@
     "material_id": "",
     "objects": [
       {
-        "material_id": "green",
+        "material_id": "lambertian_green",
         "type": 5,
         "x": 555.0,
         "y0": 0.0,
@@ -30,7 +30,7 @@
         "z1": 555.0
       },
       {
-        "material_id": "red",
+        "material_id": "lambertian_red",
         "type": 5,
         "x": 0.0,
         "y0": 0.0,
@@ -48,7 +48,7 @@
         "z1": 246.0
       },
       {
-        "material_id": "white",
+        "material_id": "lambertian_white",
         "type": 4,
         "x0": 0.0,
         "x1": 555.0,
@@ -66,7 +66,7 @@
         "z1": 555.0
       },
       {
-        "material_id": "white",
+        "material_id": "lambertian_white",
         "type": 3,
         "x0": 0.0,
         "x1": 555.0,
@@ -75,7 +75,7 @@
         "z": 555.0
       },
       {
-        "material_id": "red",
+        "material_id": "isotropic_red",
         "origin": {
           "x": 450.0,
           "y": 290.0,
@@ -85,7 +85,7 @@
         "type": 2
       },
       {
-        "material_id": "green",
+        "material_id": "isotropic_green",
         "origin": {
           "x": 157.0,
           "y": 70.0,

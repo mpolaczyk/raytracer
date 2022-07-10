@@ -98,7 +98,23 @@ void material::get_name(std::string& out_name, bool with_params) const
   out_name = oss.str();
 }
 
-void diffuse_material::get_name(std::string& out_name, bool with_params) const
+void lambertian_material::get_name(std::string& out_name, bool with_params) const
+{
+  std::string base_name;
+  material::get_name(base_name);
+  if (with_params)
+  {
+    std::ostringstream oss;
+    oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")";
+    out_name = oss.str();
+  }
+  else
+  {
+    out_name = base_name;
+  }
+}
+
+void isotropic_material::get_name(std::string& out_name, bool with_params) const
 {
   std::string base_name;
   material::get_name(base_name);
@@ -171,7 +187,13 @@ void material::draw_edit_panel()
   //id = x;
 }
 
-void diffuse_material::draw_edit_panel()
+void lambertian_material::draw_edit_panel()
+{
+  material::draw_edit_panel();
+  ImGui::ColorEdit3("Albedo", albedo.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+}
+
+void isotropic_material::draw_edit_panel()
 {
   material::draw_edit_panel();
   ImGui::ColorEdit3("Albedo", albedo.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
