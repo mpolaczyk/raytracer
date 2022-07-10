@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <filesystem>
+
 #include "common.h"
 
 float degrees_to_radians(float degrees)
@@ -109,5 +111,52 @@ namespace random_cache
   vec3 get_vec3_0_1()
   {
     return vec3(fabs(get_float()), fabs(get_float()), fabs(get_float()));
+  }
+}
+
+namespace paths
+{
+  std::string get_working_dir()
+  {
+    std::string current_dir = std::filesystem::current_path().string();
+    std::ostringstream oss;
+    oss << current_dir << "\\";
+    return oss.str();
+  }
+
+  std::string get_project_dir()
+  {
+    std::string working_dir = get_working_dir();
+    std::ostringstream oss;
+    oss << working_dir << "..\\..\\Project\\";
+    return oss.str();
+  }
+
+  std::string get_project_file_path(const char* project_file_name)
+  {
+    std::string project_dir = get_project_dir();
+    std::ostringstream oss;
+    oss << project_dir << project_file_name;
+    return oss.str();
+  }
+
+  std::string get_window_file_path()
+  {
+    return get_project_file_path("window.json");
+  }
+
+  std::string get_scene_file_path()
+  {
+    return get_project_file_path("scene.json");
+  }
+
+  std::string get_rendering_file_path()
+  {
+    return get_project_file_path("rendering.json");
+  }
+
+  std::string get_last_render_file_path()
+  {
+    return get_project_file_path("last_render.bmp");
   }
 }

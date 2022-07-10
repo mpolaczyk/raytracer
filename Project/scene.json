@@ -57,7 +57,7 @@
         "z1": 555.0
       },
       {
-        "material_id": "metal_shiny",
+        "material_id": "lambertian_white",
         "type": 4,
         "x0": 0.0,
         "x1": 555.0,

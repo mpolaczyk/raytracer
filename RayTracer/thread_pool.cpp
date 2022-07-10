@@ -26,12 +26,14 @@ void thread_pool::start(uint32_t num_threads)
 
 void thread_pool::thread_loop()
 {
+#if USE_FPEXCEPT
   if (!IsDebuggerPresent())
   {
     // Register SEH exception catching when no debugger is present
     _set_se_translator(seh_exception_handler);
   }
   fpexcept::enabled_scope fpe;
+#endif
 
   try
   {
@@ -59,7 +61,7 @@ void thread_pool::thread_loop()
   {
     std::cout << "Exception handler:" << std::endl;
     std::cout << e.what() << std::endl;
-    __debugbreak;
+    __debugbreak();
     system("pause");
   }
 }

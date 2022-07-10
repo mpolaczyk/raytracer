@@ -23,7 +23,7 @@ void window_config::deserialize(const nlohmann::json& j)
 
 void app_state::load_scene_state()
 {
-  std::ifstream input_stream("scene.json");
+  std::ifstream input_stream(paths::get_scene_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
 
@@ -38,7 +38,7 @@ void app_state::load_scene_state()
 
 void app_state::load_rendering_state()
 {
-  std::ifstream input_stream("rendering.json");
+  std::ifstream input_stream(paths::get_rendering_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
 
@@ -53,7 +53,7 @@ void app_state::load_rendering_state()
 
 void app_state::load_window_state()
 {
-  std::ifstream input_stream("window.json");
+  std::ifstream input_stream(paths::get_window_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
 
@@ -72,7 +72,7 @@ void app_state::save_scene_state()
   nlohmann::json j;
   j["camera_setting"] = camera_setting.serialize();
   j["scene"] = scene_root.serialize();
-  std::ofstream o("scene.json", std::ios_base::out | std::ios::binary);
+  std::ofstream o(paths::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {
@@ -86,7 +86,7 @@ void app_state::save_rendering_state()
   nlohmann::json j;
   j["renderer_setting"] = renderer_setting.serialize();
   j["materials"] = materials.serialize();
-  std::ofstream o("rendering.json", std::ios_base::out | std::ios::binary);
+  std::ofstream o(paths::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {
@@ -101,7 +101,7 @@ void app_state::save_window_state()
   j["window"] = window.serialize();
   j["auto_render"] = ow_model.auto_render;
   j["zoom"] = ow_model.zoom;
-  std::ofstream o("window.json", std::ios_base::out | std::ios::binary);
+  std::ofstream o(paths::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {

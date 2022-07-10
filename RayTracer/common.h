@@ -20,7 +20,7 @@ const vec3 c_gold = vec3(1.f, 0.84f, 0.f);
 
 const float infinity = std::numeric_limits<float>::infinity();
 const float pi = 3.1415926535897932385f;
-const float small_number = 1e-8;
+const float small_number = 0.00000001f;
 
 float degrees_to_radians(float degrees);
 float sign(float value);
@@ -167,4 +167,18 @@ inline uint32_t get_type_hash(void* A)
 inline uint32_t get_type_hash(bool Value)
 {
   return (uint32_t)Value;
+}
+
+namespace paths
+{
+  // Directories
+  std::string get_working_dir();
+  std::string get_project_dir();
+
+  // Files
+  std::string get_project_file_path(const char* project_file_name);
+  std::string get_window_file_path();
+  std::string get_scene_file_path();
+  std::string get_rendering_file_path();
+  std::string get_last_render_file_path();
 }

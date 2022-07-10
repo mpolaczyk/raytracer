@@ -42,15 +42,20 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int main(int, char**)
 {
+#if USE_FPEXCEPT
   if (!IsDebuggerPresent())
   {
     // Register SEH exception catching when no debugger is present
     _set_se_translator(seh_exception_handler);
   }
   fpexcept::enabled_scope fpe;
+#endif
 
   try
   {
+    std::cout << "Working dir: " << paths::get_working_dir().c_str() << std::endl;
+    std::cout << "Project dir: " << paths::get_project_dir().c_str() << std::endl;
+
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("RayTracer"), NULL };
@@ -218,7 +223,7 @@ int main(int, char**)
   {
     std::cout << "Exception handler:" << std::endl;
     std::cout << e.what() << std::endl;
-    __debugbreak;
+    __debugbreak();
     system("pause");
   }
   return 0;
