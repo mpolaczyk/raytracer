@@ -78,6 +78,13 @@ int main(int, char**)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+    {
+      // overwrite imgui config file name
+      std::string imgui_ini_filename = paths::get_imgui_file_path();
+      char* buff = new char[imgui_ini_filename.size() + 1];
+      strcpy(buff, imgui_ini_filename.c_str());  // returning char* is fucked up
+      io.IniFilename = buff;
+    }
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     

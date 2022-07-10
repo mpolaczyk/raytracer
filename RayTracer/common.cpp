@@ -159,4 +159,9 @@ namespace paths
   {
     return get_project_file_path("last_render.bmp");
   }
+
+  std::string get_imgui_file_path()
+  {
+    return get_project_file_path("imgui.ini");
+  }
 }

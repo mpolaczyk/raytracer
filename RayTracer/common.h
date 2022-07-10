@@ -181,4 +181,5 @@ namespace paths
   std::string get_scene_file_path();
   std::string get_rendering_file_path();
   std::string get_last_render_file_path();
+  std::string get_imgui_file_path();
 }
