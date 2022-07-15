@@ -9,6 +9,7 @@
 #include "thread_pool.h"
 #include "hittables.h"
 #include "materials.h"
+#include "pdf.h"
 
 frame_renderer::frame_renderer()
 {
@@ -256,22 +257,36 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
   // TODO ajs.settings.allow_emissive - not in use for now!
 
   hit_record hit;
-  if (ajs.scene_root.hit(in_ray, 0.001f, infinity, hit))
+  if (!ajs.scene_root.hit(in_ray, 0.001f, infinity, hit))
   {
-    vec3 c_emission = hit.material_ptr->emitted(hit);
-
-    ray scattered;
-    vec3 c_attenuation;
-    float pdf;
-    if (hit.material_ptr->scatter(in_ray, hit, c_attenuation, scattered, pdf))
-    {
-      float scattering_pdf = hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
-      vec3 color_from_scatter = (c_attenuation * scattering_pdf * ray_color(scattered, in_background, depth - 1)) / pdf;  // divide by zero causes black screen!
-      return c_emission + color_from_scatter;
-    }
-    return c_emission;
+    return in_background; // source of light for non emissive mode
   }
-  return in_background; // source of light for non emissive mode
+  
+  scatter_record sr;
+  if (!hit.material_ptr->scatter(in_ray, hit, sr))
+  {
+    vec3 c_emissive = hit.material_ptr->emitted(hit);
+    return c_emissive;
+  }
+
+  if (sr.is_specular)
+  {
+    vec3 c_specular = sr.attenuation * ray_color(sr.specular_ray, in_background, depth - 1);
+    return c_specular;
+  }
+  else
+  {
+    ray scattered = ray(hit.p, sr.pdf.generate());
+    float pdf_val =  sr.pdf.value(scattered.direction);
+
+    // edit: scatter_pdf anf pdf.value do the same thing! no sense
+    //float scattering_pdf =  hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
+    //vec3 c_scatter = (sr.attenuation * scattering_pdf * ray_color(scattered, in_background, depth - 1)) / pdf_val;  // divide by zero causes black screen!
+    
+    vec3 c_diffuse = sr.attenuation * pdf_val * ray_color(scattered, in_background, depth - 1);
+
+    return c_diffuse;
+  }
 }
 
 void frame_renderer::save(const char* file_name)

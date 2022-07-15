@@ -27,6 +27,17 @@ vec3 random_unit_in_hemisphere(const vec3& normal)
   return sign(dot(random_unit, normal)) * random_unit;
 }
 
+vec3 random_in_unit_sphere()
+{
+  while (true) 
+  {
+    vec3 p = random_cache::get_vec3();
+    if (p.length_squared() >= 1) continue;
+    return p;
+  }
+}
+
+
 vec3 random_cosine_direction()
 {
   // Cosine distribution around positive z axis

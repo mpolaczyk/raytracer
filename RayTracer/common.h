@@ -26,6 +26,7 @@ float degrees_to_radians(float degrees);
 float sign(float value);
 vec3 random_in_unit_disk();
 vec3 random_unit_in_hemisphere(const vec3& normal);
+vec3 random_in_unit_sphere();
 vec3 random_cosine_direction();
 bool is_near_zero(vec3& value);
 vec3 reflect(const vec3& v, const vec3& n);

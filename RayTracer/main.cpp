@@ -99,6 +99,20 @@ int main(int, char**)
     // Raytracer init
     random_cache::init();
 
+    //int N = 1000000;
+    //float sum = 0.0;
+    //for (int i = 0; i < N; i++) 
+    //{
+    //  vec3 v = random_cosine_direction();
+    //  sum += v.z * v.z * v.z / (v.z / pi);
+    //}
+    //
+    //std::cout << std::fixed << std::setprecision(12);
+    //std::cout << "PI/2 = " << pi / 2 << '\n';
+    //std::cout << "Estimate = " << sum / N << '\n';
+
+
+
     // Load persistent state
     app_state state;
     state.load_scene_state();

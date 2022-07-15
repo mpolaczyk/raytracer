@@ -38,6 +38,7 @@ Problems with imgui (immediate UI paradigm):
 Dictionary:
  - specular, specularly - calculated based on angle of incidence, surface reflecting rays in one direction (mirrrors, metal etc.)
  - diffuse, diffusely - calculater based on the surface and angle of incidence, reflecting rays in multiple directions
+ - emissive - calculated based on emission
  https://www.computerhope.com/jargon/d/diffuse-reflection.htm
  https://en.wikipedia.org/wiki/Diffuse_reflection#/media/File:Lambert2.gif
  - lambertian - ideal diffuse reflection (matte), brightness of the surface to the observer is ideal no matter the angle. Luminance is isotropic.

@@ -177,6 +177,9 @@
     <ClInclude Include="exceptions.h">
       <Filter>app</Filter>
     </ClInclude>
+    <ClInclude Include="pdf.h">
+      <Filter>math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

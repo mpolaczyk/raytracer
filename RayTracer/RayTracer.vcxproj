@@ -188,6 +188,7 @@
     <ClInclude Include="hittables.h" />
     <ClInclude Include="materials.h" />
     <ClInclude Include="onb.h" />
+    <ClInclude Include="pdf.h" />
     <ClInclude Include="serializable.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stdafx.h" />
