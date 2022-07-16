@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
 #include <filesystem>
+#include <random>
+#include <chrono>
 
 #include "common.h"
 
@@ -93,8 +95,10 @@ bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outw
 }
 namespace random_cache
 {
-  void init()
+  template<typename T, int N>
+  void cache_internal<T,N>::init(float min, float max)
   {
+    distribution = std::uniform_real_distribution<T>(min, max);
     uint32_t seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::mt19937 generator(seed);
     for (int s = 0; s < num; s++)
@@ -103,25 +107,41 @@ namespace random_cache
     }
   }
 
-  float get_float()
+  template<typename T, int N>
+  float cache_internal<T, N>::get()
   {
     last_index = (last_index + 1) % num;
     return cache[last_index];
   }
 
+  void init()
+  {
+    f_cache.init(-1.0f, 1.0f);
+  }
+
+  float get_float()
+  {
+    return f_cache.get();
+  }
+
   vec3 get_vec3()
   {
-    return vec3(get_float(), get_float(), get_float());
+    return vec3(f_cache.get(), f_cache.get(), f_cache.get());
   }
 
   float get_float_0_1()
   {
-    return fabs(get_float());
+    return fabs(f_cache.get());
   }
 
   vec3 get_vec3_0_1()
   {
-    return vec3(fabs(get_float()), fabs(get_float()), fabs(get_float()));
+    return vec3(fabs(f_cache.get()), fabs(f_cache.get()), fabs(f_cache.get()));
+  }
+
+  int32_t get_int_0_N(int32_t N)
+  {
+    return (int32_t)(get_float_0_1() * N);
   }
 }
 

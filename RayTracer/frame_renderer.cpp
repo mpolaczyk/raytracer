@@ -268,24 +268,23 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
     vec3 c_emissive = hit.material_ptr->emitted(hit);
     return c_emissive;
   }
-
-  if (sr.is_specular)
+  else if (sr.is_specular)
   {
     vec3 c_specular = sr.attenuation * ray_color(sr.specular_ray, in_background, depth - 1);
     return c_specular;
   }
-  else
+  else if (sr.is_diffuse)
   {
+    sr.pdf = cosine_pdf(hit.normal);
     ray scattered = ray(hit.p, sr.pdf.generate());
     float pdf_val =  sr.pdf.value(scattered.direction);
 
-    // edit: scatter_pdf anf pdf.value do the same thing! no sense
+    vec3 c_diffuse = sr.attenuation * ray_color(scattered, in_background, depth - 1) * pdf_val;
+    return c_diffuse;
+
+    // edit: scatter_pdf and pdf.value do the same thing! no sense
     //float scattering_pdf =  hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
     //vec3 c_scatter = (sr.attenuation * scattering_pdf * ray_color(scattered, in_background, depth - 1)) / pdf_val;  // divide by zero causes black screen!
-    
-    vec3 c_diffuse = sr.attenuation * pdf_val * ray_color(scattered, in_background, depth - 1);
-
-    return c_diffuse;
   }
 }
 

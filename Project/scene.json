@@ -15,7 +15,7 @@
       "y": 278.0,
       "z": -800.0
     },
-    "type": 7.450580596923828e-08
+    "type": 1.4901161193847656e-08
   },
   "scene": {
     "material_id": "",
@@ -41,11 +41,11 @@
       {
         "material_id": "light_strong3",
         "type": 4,
-        "x0": 87.0,
-        "x1": 509.0,
-        "y": 484.0,
-        "z0": 33.0,
-        "z1": 230.0
+        "x0": 61.0,
+        "x1": 286.0,
+        "y": 426.0,
+        "z0": -130.0,
+        "z1": 419.0
       },
       {
         "material_id": "lambertian_white",
@@ -75,33 +75,63 @@
         "z": 555.0
       },
       {
-        "material_id": "glass",
+        "material_id": "lambertian_red",
         "origin": {
-          "x": 317.0,
-          "y": 180.0,
-          "z": 211.0
+          "x": 443.0,
+          "y": 70.0,
+          "z": 260.0
+        },
+        "radius": 55.0,
+        "type": 2
+      },
+      {
+        "material_id": "lambertian_green",
+        "origin": {
+          "x": 115.0,
+          "y": 238.0,
+          "z": 260.0
         },
         "radius": 107.0,
         "type": 2
       },
       {
-        "material_id": "steel",
-        "origin": {
-          "x": 157.0,
-          "y": 70.0,
-          "z": 260.0
-        },
-        "radius": 102.0,
-        "type": 2
-      },
-      {
-        "material_id": "light_strong2",
+        "material_id": "light",
         "origin": {
           "x": 270.0,
           "y": 270.0,
           "z": 250.0
         },
         "radius": 1100.0,
+        "type": 2
+      },
+      {
+        "material_id": "glass",
+        "origin": {
+          "x": 443.0,
+          "y": 283.0,
+          "z": 229.0
+        },
+        "radius": 80.0,
+        "type": 2
+      },
+      {
+        "material_id": "metal_shiny",
+        "origin": {
+          "x": 278.0,
+          "y": 143.0,
+          "z": 597.0
+        },
+        "radius": 132.0,
+        "type": 2
+      },
+      {
+        "material_id": "lambertian_white",
+        "origin": {
+          "x": 340.0,
+          "y": 414.0,
+          "z": -817.0
+        },
+        "radius": 134.0,
         "type": 2
       }
     ],

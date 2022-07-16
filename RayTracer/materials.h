@@ -50,10 +50,13 @@ private:
 
 struct scatter_record
 {
-  ray specular_ray;
-  bool is_specular;
   vec3 attenuation;
-  cosine_pdf pdf;
+
+  bool is_specular = false;
+  ray specular_ray; // used only for specular mode
+  
+  bool is_diffuse = false;
+  cosine_pdf pdf; // used only for diffuse mode
 };
 
 class material : serializable<nlohmann::json>
@@ -63,7 +66,7 @@ public:
   material(material_class type) : type(type) { }
   material(std::string&& id, material_class type) : id(std::move(id)), type(type) { }
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const;
-  virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const;
+  //virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const;
   virtual vec3 emitted(const hit_record& in_hit) const;
   virtual void get_name(std::string& out_name, bool with_params=true) const;
   virtual void draw_edit_panel();
@@ -86,7 +89,7 @@ public:
   lambertian_material(std::string&& id, const vec3& albedo) : albedo(albedo), material(std::move(id), material_class::lambertian) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const override;
-  virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
+  //virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;

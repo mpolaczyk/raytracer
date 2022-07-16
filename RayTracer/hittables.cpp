@@ -73,9 +73,20 @@ yz_rect* yz_rect::clone() const
   return ans;
 }
 
+void scene::add(hittable* object)
+{
+  objects.push_back(object);
+}
+
+void scene::remove(int object_id) 
+{ 
+  delete objects[object_id]; 
+  objects.erase(objects.begin() + object_id); 
+}
 
 void scene::build_boxes()
 {
+  assert(objects.size() > 0);
   // World collisions update
   for (hittable* object : objects)
   {
@@ -86,6 +97,7 @@ void scene::build_boxes()
 
 void scene::update_materials(material_instances* materials)
 {
+  assert(objects.size() > 0);
   // Find material pointers from material ids. We do it here to save processing. 
   // Doing it here is much cheaper than resolve while processing.
   assert(materials != nullptr);
@@ -95,6 +107,26 @@ void scene::update_materials(material_instances* materials)
     assert(mat_ptr != nullptr);
     obj->material_ptr = mat_ptr;
   }
+}
+
+void scene::query_lights()
+{
+  lights.clear();
+  for (hittable* object : objects)
+  {
+    if (object->material_ptr != nullptr 
+      && object->material_ptr->type == material_class::diffuse_light)
+    {
+      lights.push_back(object);
+    }
+  }
+  assert(lights.size() > 0);
+}
+
+hittable* scene::get_random_light()
+{
+  assert(lights.size() > 0);
+  return lights[random_cache::get_int_0_N(lights.size() - 1)];
 }
 
 bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const

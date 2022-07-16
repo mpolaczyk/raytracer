@@ -62,16 +62,31 @@ inline void get_sphere_uv(const vec3& p, float& out_u, float& out_v)
 
 namespace random_cache
 {
-  static int num = 500000;
-  static int last_index = 0;
-  static std::vector<float> cache;
-  static std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+  template<typename T, int N>
+  struct cache_internal
+  {
+    void init(float min, float max);
+    float get();
+
+  private:
+    int num = 500000;
+    int last_index = 0;
+    std::vector<T> cache;
+    std::uniform_real_distribution<T> distribution;
+  };
+  
+  // Range: [-1, 1]
+  static cache_internal<float, 500000> f_cache;
 
   void init();
+
   float get_float();
-  vec3 get_vec3();
   float get_float_0_1();
+
+  vec3 get_vec3();
   vec3 get_vec3_0_1();
+
+  int32_t get_int_0_N(int32_t N);
 }
 
 inline uint32_t hash_combine(uint32_t A, uint32_t C)

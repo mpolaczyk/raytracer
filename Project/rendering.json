@@ -208,7 +208,7 @@
     }
   ],
   "renderer_setting": {
-    "AA_samples_per_pixel": 100,
+    "AA_samples_per_pixel": 10,
     "allow_emissive": true,
     "background": {
       "x": 1.0,

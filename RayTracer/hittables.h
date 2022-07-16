@@ -120,12 +120,16 @@ public:
   virtual uint32_t get_type_hash() const override;
   virtual scene* clone() const override;
 
-  void add(hittable* object) { objects.push_back(object); }
-  void remove(int object_id) { delete objects[object_id]; objects.erase(objects.begin() + object_id); }
+  void add(hittable* object);
+  void remove(int object_id);
+
   void build_boxes();
   void update_materials(material_instances* materials);
+  void query_lights();
+  hittable* get_random_light();
 
   std::vector<hittable*> objects;
+  std::vector<hittable*> lights;
 };
 
 

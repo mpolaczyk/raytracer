@@ -178,6 +178,7 @@ int main(int, char**)
         {
           state.scene_root.build_boxes();
           state.scene_root.update_materials(&state.materials);
+          state.scene_root.query_lights();
     
           update_default_spawn_position(state);
     
