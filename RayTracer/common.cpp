@@ -16,6 +16,12 @@ float sign(float value)
   return value >= 0.0f ? 1.0f : -1.0f;  //  Assume 0 is positive
 }
 
+bool is_almost_zero(float value)
+{
+  constexpr float epsilon = std::numeric_limits<float>::epsilon();
+  return value <= epsilon && value >= -epsilon;
+}
+
 vec3 random_in_unit_disk() 
 {
   vec3 random_unit = unit_vector(random_cache::get_vec3());
@@ -134,6 +140,20 @@ namespace random_cache
     return fabs(f_cache.get());
   }
 
+  float get_float_0_N(float N)
+  {
+    return fabs(f_cache.get()) * N;
+  }
+
+  float get_float_M_N(float M, float N)
+  {
+    if (M < N)
+    {
+      return M + fabs(f_cache.get()) * (N - M);
+    }
+    return N + fabs(f_cache.get()) * (M-N);
+  }
+
   vec3 get_vec3_0_1()
   {
     return vec3(fabs(f_cache.get()), fabs(f_cache.get()), fabs(f_cache.get()));
@@ -186,9 +206,12 @@ namespace paths
     return get_project_file_path("rendering.json");
   }
 
-  std::string get_last_render_file_path()
+  std::string get_render_output_file_path()
   {
-    return get_project_file_path("last_render.bmp");
+    std::time_t result = std::time(nullptr);
+    std::ostringstream oss;
+    oss << "output_" << result << ".bmp";
+    return get_project_file_path(oss.str().c_str());
   }
 
   std::string get_imgui_file_path()

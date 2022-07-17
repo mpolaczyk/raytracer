@@ -191,6 +191,7 @@ bool scene::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit
 
 bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
+  if (is_almost_zero(in_ray.direction.z)) { return false; }
   float t = (z - in_ray.origin.z) / in_ray.direction.z;
   if (t < t_min || t > t_max) { return false; }
   float x = in_ray.origin.x + t * in_ray.direction.x;
@@ -207,6 +208,8 @@ bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
 
 bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
+  if (is_almost_zero(in_ray.direction.y)) { return false; }
+  if (in_ray.direction.y == 0.0f) { return false; }
   float t = (y - in_ray.origin.y) / in_ray.direction.y;
   if (t < t_min || t > t_max) { return false; }
   float x = in_ray.origin.x + t * in_ray.direction.x;
@@ -223,6 +226,8 @@ bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
 
 bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
+  if (is_almost_zero(in_ray.direction.x)) { return false; }
+  if (in_ray.direction.x == 0.0f) { return false; }
   float t = (x - in_ray.origin.x) / in_ray.direction.x;
   if (t < t_min || t > t_max) { return false; }
   float y = in_ray.origin.y + t * in_ray.direction.y;
@@ -235,6 +240,91 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.material_ptr = material_ptr;
   out_hit.p = in_ray.at(t);
   return true;
+}
+
+
+vec3 sphere::get_random_point() const
+{
+  return random_in_unit_sphere() * radius;
+}
+
+vec3 xy_rect::get_random_point() const
+{
+  float rx = random_cache::get_float_M_N(x0, x1);
+  float ry = random_cache::get_float_M_N(y0, y1);
+  return vec3(rx, ry, z);
+}
+
+vec3 xz_rect::get_random_point() const
+{
+  float rx = random_cache::get_float_M_N(x0, x1);
+  float rz = random_cache::get_float_M_N(z0, z1);
+  return vec3(rx, y, rz);
+}
+
+vec3 yz_rect::get_random_point() const
+{
+  float ry = random_cache::get_float_M_N(y0, y1);
+  float rz = random_cache::get_float_M_N(z0, z1);
+  return vec3(x, ry, rz);
+}
+
+
+float sphere::get_area() const
+{
+  return 4.0f * pi * radius * radius;
+}
+
+float xy_rect::get_area() const
+{
+  return (x1 - x0) * (y1 - y0);
+}
+
+float xz_rect::get_area() const
+{
+  return (x1 - x0) * (z1 - z0);
+}
+
+float yz_rect::get_area() const
+{
+  return (y1 - y0) * (z1 - z0);
+}
+
+
+float xz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
+{
+  float light_area = get_area();
+  assert(light_area > 0.0f);
+  float distance_squared = from_to.length_squared();
+  assert(distance_squared > 0.0f);
+  vec3 unit_from_to = unit_vector(from_to);
+  //if (dot(to_light, hit.normal) < 0)
+  //  return c_emissive;
+  float light_cosine = fmax(small_number, fabs(unit_from_to.y)); // fmax to protect from divide by zero
+  //if (light_cosine < 0.000001)
+  //  return c_emissive;
+  float pdf = distance_squared / (light_cosine * light_area);
+  assert(pdf > 0.0f);
+  return pdf;
+}
+
+float sphere::get_pdf_value(const vec3& look_from, const vec3& from_to) const
+{
+  float cos_theta_max = sqrt(1 - radius * radius / (origin - look_from).length_squared());
+  float solid_angle = 2 * pi * (1 - cos_theta_max);
+
+  return  1 / solid_angle;
+}
+
+
+vec3 xz_rect::get_pdf_direction(const vec3& look_from) const
+{
+  return get_random_point() - look_from;
+}
+
+vec3 sphere::get_pdf_direction(const vec3& look_from) const
+{
+  return random_in_unit_sphere()*radius - look_from;
 }
 
 

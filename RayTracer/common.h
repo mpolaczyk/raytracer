@@ -24,6 +24,7 @@ const float small_number = 0.00000001f;
 
 float degrees_to_radians(float degrees);
 float sign(float value);
+bool is_almost_zero(float value);
 vec3 random_in_unit_disk();
 vec3 random_unit_in_hemisphere(const vec3& normal);
 vec3 random_in_unit_sphere();
@@ -82,6 +83,8 @@ namespace random_cache
 
   float get_float();
   float get_float_0_1();
+  float get_float_0_N(float N);
+  float get_float_M_N(float M, float N);
 
   vec3 get_vec3();
   vec3 get_vec3_0_1();
@@ -196,6 +199,6 @@ namespace paths
   std::string get_window_file_path();
   std::string get_scene_file_path();
   std::string get_rendering_file_path();
-  std::string get_last_render_file_path();
+  std::string get_render_output_file_path();
   std::string get_imgui_file_path();
 }

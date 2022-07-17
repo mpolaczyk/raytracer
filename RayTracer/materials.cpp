@@ -22,10 +22,10 @@ bool material::scatter(const ray& in_ray, const hit_record& in_rec, scatter_reco
   return false;
 }
 
-//float material::scatter_pdf(const ray& in_ray, const hit_record& in_rec, const ray& in_scattered) const
-//{
-//  return 0.0f;
-//}
+float material::scatter_pdf(const ray& in_ray, const hit_record& in_rec, const ray& in_scattered) const
+{
+  return .0f;
+}
 
 vec3 material::emitted(const hit_record& in_hit) const
 {
@@ -40,11 +40,11 @@ bool lambertian_material::scatter(const ray& in_ray, const hit_record& in_hit, s
   return true;
 }
 
-//float lambertian_material::scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const
-//{
-//  float cosine = dot(in_hit.normal, unit_vector(in_scattered.direction));
-//  return cosine < 0.0f ? 0.0f : cosine / pi; // not in use
-//}
+float lambertian_material::scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const
+{
+  float cosine = dot(in_hit.normal, unit_vector(in_scattered.direction));
+  return cosine < 0.0f ? 0.0f : cosine / pi; // not in use
+}
 
 bool isotropic_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
 {
@@ -112,7 +112,7 @@ bool dialectric_material::scatter(const ray& in_ray, const hit_record& in_hit, s
 
 vec3 diffuse_light_material::emitted(const hit_record& in_hit) const
 {
-  if (in_hit.front_face)  // TODO bug here
+  if (in_hit.front_face)  // TODO: inverted for now
     return c_black;
   return albedo;
 }

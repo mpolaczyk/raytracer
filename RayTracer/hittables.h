@@ -51,12 +51,19 @@ public:
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const { return false; };
   virtual bool get_bounding_box(aabb& out_box) const { return false; };
   virtual void get_name(std::string& out_name, bool with_params = true) const;
-  virtual void draw_edit_panel();
+  virtual vec3 get_random_point_on_surface() const { return vec3(0.0f, 0.0f, 0.0f); };
+  virtual vec3 get_origin() const { return vec3(0.0f, 0.0f, 0.0f); };
+  virtual vec3 get_extent() const { return vec3(0.0f, 0.0f, 0.0f); };
+  virtual vec3 get_random_point() const { return get_origin(); };
+  virtual float get_area() const { return 1.0f; };
   virtual void set_origin(const vec3& value) {};
   virtual void set_extent(float value) {};
+  virtual float get_pdf_value(const vec3& origin, const vec3& v) const { return 0.0; }
+  virtual vec3 get_pdf_direction(const vec3& look_from) const { return vec3(0, 1, 0); }
+
+  virtual void draw_edit_panel();
   virtual nlohmann::json serialize();
   virtual void deserialize(const nlohmann::json& j);
-
   virtual uint32_t get_type_hash() const;
   virtual hittable* clone() const;
 
@@ -84,12 +91,18 @@ public:
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name, bool with_params) const override;
-  virtual void draw_edit_panel() override;
+  virtual vec3 get_origin() const override { return origin; };
+  virtual vec3 get_extent() const override { return radius; };
+  virtual float get_area() const override;
+  virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
+  virtual vec3 get_pdf_direction(const vec3& look_from) const override;
+  virtual vec3 get_random_point() const override;
   virtual void set_origin(const vec3& value) override { origin = value; };
   virtual void set_extent(float value) { radius = value; };
+
+  virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-
   virtual uint32_t get_type_hash() const override;
   virtual sphere* clone() const override;
 
@@ -111,12 +124,10 @@ public:
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name, bool with_params) const override;
+
   virtual void draw_edit_panel() override;
-  virtual void set_origin(const vec3& value) override { };
-  virtual void set_extent(float value) { };
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-
   virtual uint32_t get_type_hash() const override;
   virtual scene* clone() const override;
 
@@ -144,12 +155,16 @@ public:
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name, bool with_params) const override;
-  virtual void draw_edit_panel() override;
+  virtual vec3 get_origin() const override { return vec3(x0, y0, z); };
+  virtual vec3 get_extent() const override { return vec3(x1-x0, y1-y0, 0.0f); };
+  virtual float get_area() const override;
+  virtual vec3 get_random_point() const override;
   virtual void set_origin(const vec3& value) override { x0 = value.x; y0 = value.y; };
   virtual void set_extent(float value) { x1 = x0 + value; y1 = y0 + value; };
+
+  virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-
   virtual uint32_t get_type_hash() const override;
   virtual xy_rect* clone() const override;
 
@@ -180,12 +195,18 @@ public:
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name, bool with_params) const override;
-  virtual void draw_edit_panel() override;
+  virtual vec3 get_origin() const override { return vec3(x0, y, z0); };
+  virtual vec3 get_extent() const override { return vec3(x1-x0, 0.0f, z1-z0); };
+  virtual float get_area() const override;
+  virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
+  virtual vec3 get_pdf_direction(const vec3& look_from) const override;
+  virtual vec3 get_random_point() const override;
   virtual void set_origin(const vec3& value) override { x0 = value.x; z0 = value.z; };
   virtual void set_extent(float value) { x1 = x0 + value; z1 = z0 + value; };
+
+  virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-
   virtual uint32_t get_type_hash() const override;
   virtual xz_rect* clone() const override;
 
@@ -216,12 +237,16 @@ public:
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name, bool with_params) const override;
-  virtual void draw_edit_panel() override;
+  virtual vec3 get_origin() const override { return vec3(x, y0, z0); };
+  virtual vec3 get_extent() const override { return vec3(0.0f, y1-y0, z1-z0); };
+  virtual float get_area() const override;
+  virtual vec3 get_random_point() const override;
   virtual void set_origin(const vec3& value) override { y0 = value.y; z0 = value.z; };
   virtual void set_extent(float value) { y1 = y0 + value; z1 = z0 + value; };
+
+  virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-
   virtual uint32_t get_type_hash() const override;
   virtual yz_rect* clone() const override;
 

@@ -6,10 +6,22 @@ TODO list:
  x material unique id instead of pointer (better for serialization)
  - list of materials, add, edit, delete operations
  x persistence for materials, json again
- - ray tracing in one weekend part 3
+ - hittables abstract
+ - emitter with side selection
+
+ x ray tracing in one weekend part 3
+ - review once again for small details
+ - names refactor in hittable_pdf
+ - remove isotropic material
+ - material pdf type as a selectable enum 
+ - weight in pdf mixer as a slider in ui
+ - fix or remove allow emissive
+ - measure variance when sampling pixel, variance output
+ - fix texture material
+
  - transition to dx12
  - DXR tutorials and integration
- - new GPU
+ x new GPU
 
 Scene ideas:
  - light bend by a sphere, focus in a spot

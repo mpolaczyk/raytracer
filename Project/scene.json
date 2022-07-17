@@ -39,13 +39,13 @@
         "z1": 555.0
       },
       {
-        "material_id": "light_strong3",
+        "material_id": "light_strong2",
         "type": 4,
-        "x0": 61.0,
-        "x1": 286.0,
-        "y": 426.0,
-        "z0": -130.0,
-        "z1": 419.0
+        "x0": 100.0,
+        "x1": 247.0,
+        "y": 462.0,
+        "z0": 6.0,
+        "z1": 307.0
       },
       {
         "material_id": "lambertian_white",
@@ -107,7 +107,7 @@
       {
         "material_id": "glass",
         "origin": {
-          "x": 443.0,
+          "x": 448.0,
           "y": 283.0,
           "z": 229.0
         },
@@ -132,6 +132,16 @@
           "z": -817.0
         },
         "radius": 134.0,
+        "type": 2
+      },
+      {
+        "material_id": "glass",
+        "origin": {
+          "x": 493.0,
+          "y": 404.0,
+          "z": 177.0
+        },
+        "radius": 50.0,
         "type": 2
       }
     ],
