@@ -114,22 +114,6 @@ void lambertian_material::get_name(std::string& out_name, bool with_params) cons
   }
 }
 
-void isotropic_material::get_name(std::string& out_name, bool with_params) const
-{
-  std::string base_name;
-  material::get_name(base_name);
-  if (with_params)
-  {
-    std::ostringstream oss;
-    oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")";
-    out_name = oss.str();
-  }
-  else
-  {
-    out_name = base_name;
-  }
-}
-
 void texture_material::get_name(std::string& out_name, bool with_params) const
 {
   material::get_name(out_name);
@@ -181,19 +165,9 @@ void material::draw_edit_panel()
   ImGui::Text("Material: ");
   ImGui::SameLine();
   ImGui::Text(mat_name.c_str());
-
-  //char* x = &*id.begin();
-  //ImGui::InputText("Friendly name", x, 100);
-  //id = x;
 }
 
 void lambertian_material::draw_edit_panel()
-{
-  material::draw_edit_panel();
-  ImGui::ColorEdit3("Albedo", albedo.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-}
-
-void isotropic_material::draw_edit_panel()
 {
   material::draw_edit_panel();
   ImGui::ColorEdit3("Albedo", albedo.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
@@ -221,5 +195,5 @@ void dialectric_material::draw_edit_panel()
 void diffuse_light_material::draw_edit_panel()
 {
   material::draw_edit_panel();
-  ImGui::Text("TODO add texture input");
+  ImGui::Combo("Surface side", &sides, surface_side_type_names, IM_ARRAYSIZE(hittable_class_names));
 }

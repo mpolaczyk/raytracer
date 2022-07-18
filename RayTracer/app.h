@@ -37,7 +37,6 @@ struct camera_panel_model
 struct renderer_panel_model
 {
   bool render_pressed = false;
-  float background_color[3] = { 1.0f,1.0f,1.0f };
 };
 
 struct raytracer_window_model

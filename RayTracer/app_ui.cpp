@@ -84,14 +84,9 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   ImGui::Separator();
   ImGui::InputInt("Rays per pixel", &state.renderer_setting.AA_samples_per_pixel, 1, 10);
   ImGui::InputInt("Ray bounces", &state.renderer_setting.diffuse_max_bounce_num, 1);
-  ImGui::InputFloat("Bounce brightness", &state.renderer_setting.diffuse_bounce_brightness, 0.01f, 0.1f, "%.2f");
-  ImGui::Separator();
-  ImGui::Checkbox("Enable emissive materials", &state.renderer_setting.allow_emissive);
-  if (!state.renderer_setting.allow_emissive)
-  {
-    ImGui::ColorEdit3("Background", model.background_color, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-    state.renderer_setting.background = vec3(model.background_color[0], model.background_color[1], model.background_color[2]);
-  }
+  ImGui::SliderFloat("PDF ratio", &state.renderer_setting.pdf_ratio, 0.0f, 1.0f, "%.2f");
+  ImGui::SliderInt("PDF mix type", &state.renderer_setting.pdf_mix_type, 0, 1);
+  
   ImGui::Separator();
   ImGui::Checkbox("Show time per pixel", &state.renderer_setting.pixel_time_coloring);
   if (state.renderer_setting.pixel_time_coloring)

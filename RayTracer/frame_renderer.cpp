@@ -228,7 +228,7 @@ void frame_renderer::render_chunk(const chunk& in_chunk)
         float u = (float(x) + random_cache::get_float()) / (ajs.image_width - 1);
         float v = (float(y) + random_cache::get_float()) / (ajs.image_height - 1);
         ray r = ajs.cam.get_ray(u, v);
-        vec3 sample = ray_color(r, ajs.settings.background, ajs.settings.diffuse_max_bounce_num);
+        vec3 sample = ray_color(r, ajs.settings.diffuse_max_bounce_num);
         assert(!isnan(sample.x));
         assert(!isnan(sample.y));
         assert(!isnan(sample.z));
@@ -255,19 +255,17 @@ void frame_renderer::render_chunk(const chunk& in_chunk)
   }
 }
 
-vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_background, uint32_t depth)
+vec3 inline frame_renderer::ray_color(const ray& in_ray, uint32_t depth)
 {
   if (depth <= 0)
   {
     return c_black;
   }
 
-  // TODO ajs.settings.allow_emissive - not in use for now!
-
   hit_record hit;
   if (!ajs.scene_root.hit(in_ray, 0.001f, infinity, hit))
   {
-    return in_background; // source of light for non emissive mode
+    return c_white;
   }
 
   vec3 c_emissive = hit.material_ptr->emitted(hit);
@@ -279,14 +277,14 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
   }
   else if (sr.is_specular)
   {
-    vec3 c_specular = sr.attenuation * ray_color(sr.specular_ray, in_background, depth - 1);
+    vec3 c_specular = sr.attenuation * ray_color(sr.specular_ray, depth - 1);
     return c_specular;
   }
   else if (sr.is_diffuse)
   {
     int32_t option = -2;
 
-    if (option == -2)
+    if (option == -2) // FINAL
     {
       // book 3, The Mixture PDF Class
       hittable* light = ajs.scene_root.get_random_light();
@@ -303,20 +301,40 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
       // Q: Can we denoise only material output?
       hittable_pdf light_pdf(light, hit.p);
       cosine_pdf material_pdf = cosine_pdf(hit.normal);
-      mixture_pdf mix_pdf = mixture_pdf(&light_pdf, &material_pdf, 0.50f);
 
-      vec3 to_light = mix_pdf.generate();
-      float pdf_val = mix_pdf.value(to_light);
+      // I'm not satisfied with results. I can barely achieve results presented on the pictures, book 3 seems to have so many bugs.
+      // Originally book uses mixture_pdf, it uses direction vectors in turns and mixes values, I'd try different approach here too.
+      // Light pdf produce low noise but super dark image.
+      // Material pdf is super noisy and also is brighter with more lights which decrease the quality after mixing.
+      // I'm going to move to DXR and DX12 as I'm more interested in the pipeline than math at this point.
+      vec3 pdf_direction;
+      float pdf_val;
+      if (ajs.settings.pdf_mix_type)
+      {
+        mixture_pdf mix_pdf = mixture_pdf(&light_pdf, &material_pdf, ajs.settings.pdf_ratio);
+        pdf_direction = mix_pdf.get_direction();
+        pdf_val = mix_pdf.get_value(pdf_direction);
+      }
+      else
+      {
+        if (is_almost_equal(0.0f, ajs.settings.pdf_ratio) || random_cache::get_float_0_1() > ajs.settings.pdf_ratio)
+        {
+          pdf_direction = light_pdf.get_direction();
+          pdf_val = light_pdf.get_value(pdf_direction);
+        }
+        else if(is_almost_equal(1.0f, ajs.settings.pdf_ratio) || random_cache::get_float_0_1() < ajs.settings.pdf_ratio)
+        {
+          pdf_direction = material_pdf.get_direction();
+          pdf_val = material_pdf.get_value(pdf_direction);
+        }
+      }
 
-      ray scattered = ray(hit.p, to_light);
+      ray scattered = ray(hit.p, unit_vector(pdf_direction));
       float scattering_pdf = hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
 
-      vec3 color_from_scatter = (sr.attenuation 
-        * scattering_pdf 
-        * ray_color(scattered, in_background, depth - 1)) 
-        / pdf_val;
+      vec3 c_diffuse = sr.attenuation * scattering_pdf * ray_color(scattered, depth - 1) / pdf_val;
 
-      return c_emissive + color_from_scatter;
+      return c_emissive + c_diffuse;
     }
     else if (option == -1)
     {
@@ -324,15 +342,15 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
       hittable* light = ajs.scene_root.get_random_light();
       hittable_pdf light_pdf(light, hit.p);
 
-      vec3 to_light = light_pdf.generate();         
-      float pdf_val = light_pdf.value(to_light);
+      vec3 to_light = light_pdf.get_direction();
+      float pdf_val = light_pdf.get_value(to_light);
 
       ray scattered = ray(hit.p, to_light);
       float scattering_pdf = hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
 
-      vec3 color_from_scatter = (sr.attenuation * scattering_pdf * ray_color(scattered, in_background, depth - 1)) / pdf_val;
+      vec3 c_diffuse = (sr.attenuation * scattering_pdf * ray_color(scattered, depth - 1)) / pdf_val;
 
-      return c_emissive + color_from_scatter;
+      return c_emissive + c_diffuse;
     }
     else if (option == 0)
     {
@@ -342,69 +360,47 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, const vec3& in_backgrou
       // get_pdf_direction
       vec3 on_light = light->get_random_point();
       vec3 to_light = on_light - hit.p;
-      return unit_vector(to_light);
 
       // get_pdf_value
       float light_area = light->get_area();
       float distance_squared = to_light.length_squared();
       to_light = unit_vector(to_light);
-      //if (dot(to_light, hit.normal) < 0)
-      //  return c_emissive;
       float light_cosine = fabs(to_light.y);
-      //if (light_cosine < 0.000001)
-      //  return c_emissive;
       float pdf = distance_squared / (light_cosine * light_area);
 
       ray scattered = ray(hit.p, to_light);
 
       float scattering_pdf = hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
 
-      vec3 color_from_scatter =
-        (sr.attenuation * scattering_pdf * ray_color(scattered, in_background, depth - 1)) / pdf;
+      vec3 color_from_scatter = (sr.attenuation * scattering_pdf * ray_color(scattered, depth - 1)) / pdf;
 
       return c_emissive + color_from_scatter;
     }
     else if (option==1)
     {
-      // mixture of light and material pdf handmade
-      hittable* light = ajs.scene_root.get_random_light();
-
-      vec3 dir_to_light = unit_vector(light->get_random_point() - hit.p);
-      cosine_pdf light_pdf = cosine_pdf(dir_to_light);
-
-      cosine_pdf material_pdf = cosine_pdf(hit.normal);
-      
-      vec3 mix_dir = random_cache::get_float() > 0.5f ? material_pdf.generate() : light_pdf.generate();
-      ray scattered = ray(hit.p, mix_dir);
-
-      float pdf = 0.5f * light_pdf.value(scattered.direction)
-                + 0.5f * material_pdf.value(scattered.direction);
-            
-      vec3 c_diffuse = c_emissive + sr.attenuation
-        //* hit.material_ptr->scatter_pdf(in_ray, hit, scattered)
-        * ray_color(scattered, in_background, depth - 1)
-        * pdf;
-      return c_diffuse;
-    }
-    else if (option==2)
-    {
       // light ray only
       hittable* light = ajs.scene_root.get_random_light();
       vec3 dir_to_light = unit_vector(light->get_origin() - hit.p);
       cosine_pdf light_pdf = cosine_pdf(dir_to_light);
-      ray light_ray = ray(hit.p, light_pdf.generate());
-      float light_pdf_val = light_pdf.value(light_ray.direction);
+      ray light_ray = ray(hit.p, light_pdf.get_direction());
+      float light_pdf_val = light_pdf.get_value(light_ray.direction);
 
-      vec3 c_diffuse = sr.attenuation * ray_color(light_ray, in_background, depth - 1) * light_pdf_val;
+      float scattering_pdf = hit.material_ptr->scatter_pdf(in_ray, hit, light_ray);
+
+      vec3 c_diffuse = sr.attenuation * scattering_pdf * ray_color(light_ray, depth - 1) / light_pdf_val;
       return c_diffuse;
     }
-    else if (option==3)
+    else if (option==2)
     {
       // material ray only
-      sr.pdf = cosine_pdf(hit.normal);
-      ray scattered = ray(hit.p, sr.pdf.generate());
-      float pdf_val = sr.pdf.value(scattered.direction);
-      vec3 c_diffuse = sr.attenuation * ray_color(scattered, in_background, depth - 1) * pdf_val;
+      cosine_pdf material_pdf = cosine_pdf(hit.normal);
+      vec3 pdf_direction = material_pdf.get_direction();
+      float pdf_val = material_pdf.get_value(pdf_direction);
+      ray scattered = ray(hit.p, pdf_direction);
+      
+      float scattering_pdf = hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
+      
+      vec3 c_diffuse = sr.attenuation * scattering_pdf * ray_color(scattered, depth - 1) / pdf_val;
       return c_diffuse;
     }
     assert(false);

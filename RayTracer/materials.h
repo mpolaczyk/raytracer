@@ -13,7 +13,6 @@ enum class material_class  // No RTTI, simple type detection
 {
   none = 0,
   lambertian,
-  isotropic,
   texture,
   metal,
   dialectric,
@@ -23,11 +22,23 @@ static inline const char* material_class_names[] =
 {
   "None",
   "Lambertian",
-  "Isotropic",
   "Texture",
   "Metal",
   "Dialectric",
   "Diffuse light"
+};
+
+enum class surface_side_type
+{
+  aligned_to_normal = 0,
+  opposite_to_normal,
+  both
+};
+static inline const char* surface_side_type_names[] =
+{
+  "Aligned to normal",
+  "Opposite to normal",
+  "Both"
 };
 
 class material_instances : serializable<nlohmann::json>
@@ -101,23 +112,6 @@ public:
 };
 
 
-class isotropic_material : public material
-{
-public:
-  isotropic_material() : material(material_class::isotropic) {}
-  isotropic_material(std::string&& id, const vec3& albedo) : albedo(albedo), material(std::move(id), material_class::isotropic) {}
-
-  virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const override;
-  //virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
-  virtual void get_name(std::string& out_name, bool with_params) const;
-  virtual void draw_edit_panel();
-  virtual nlohmann::json serialize() override;
-  virtual void deserialize(const nlohmann::json& j) override;
-
-  vec3 albedo;
-};
-
-
 class texture_material : public material
 {
 public:
@@ -125,13 +119,13 @@ public:
   texture_material(std::string&& id, texture* texture) : texture(texture), material(std::move(id), material_class::texture) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const override;
-  //virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
+  virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
 
-  texture* texture = nullptr;
+  texture* texture = nullptr; // Should point to resource id/name
 };
 
 
@@ -142,7 +136,6 @@ public:
   metal_material(std::string&& id, const vec3& albedo, float fuzz) : albedo(albedo), fuzz(fuzz), material(std::move(id), material_class::metal) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, scatter_record& out_sr) const override;
-  //virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;
@@ -162,7 +155,6 @@ public:
   dialectric_material(std::string&& id, float index_of_refraction) : index_of_refraction(index_of_refraction), material(std::move(id), material_class::dialectric) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const override;
-  //virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;
@@ -180,8 +172,6 @@ public:
   diffuse_light_material() : material(material_class::diffuse_light) {}
   diffuse_light_material(std::string&& id, vec3 albedo) : albedo(albedo), material(std::move(id), material_class::diffuse_light) {}
 
-  //virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const override;
-  //virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
   virtual vec3 emitted(const hit_record& in_hit) const override;
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
@@ -190,4 +180,7 @@ public:
 
 public:
   vec3 albedo;
+  int sides = (int)surface_side_type::aligned_to_normal;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(diffuse_light_material, sides); // to_json only
 };

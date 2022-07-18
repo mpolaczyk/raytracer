@@ -28,14 +28,6 @@ nlohmann::json lambertian_material::serialize()
   return j;
 }
 
-nlohmann::json isotropic_material::serialize()
-{
-  nlohmann::json j;
-  material::to_json(j, *this);
-  j["albedo"] = albedo.serialize();
-  return j;
-}
-
 nlohmann::json texture_material::serialize()
 {
   nlohmann::json j;
@@ -66,6 +58,7 @@ nlohmann::json diffuse_light_material::serialize()
   nlohmann::json j;
   material::to_json(j, *this);
   j["albedo"] = albedo.serialize();
+  to_json(j, *this);
   return j;
 }
 
@@ -87,14 +80,6 @@ void material::deserialize(const nlohmann::json& j)
 }
 
 void lambertian_material::deserialize(const nlohmann::json& j)
-{
-  material::from_json(j, *this);
-
-  nlohmann::json jalbedo;
-  if (TRY_PARSE(nlohmann::json, j, "albedo", jalbedo)) { albedo.deserialize(jalbedo); }
-}
-
-void isotropic_material::deserialize(const nlohmann::json& j)
 {
   material::from_json(j, *this);
 
@@ -128,6 +113,8 @@ void dialectric_material::deserialize(const nlohmann::json& j)
 void diffuse_light_material::deserialize(const nlohmann::json& j)
 {
   material::from_json(j, *this);
+
+  TRY_PARSE(int, j, "sides", sides);
 
   nlohmann::json jalbedo;
   if (TRY_PARSE(nlohmann::json, j, "albedo", jalbedo)) { albedo.deserialize(jalbedo); }

@@ -99,20 +99,6 @@ int main(int, char**)
     // Raytracer init
     random_cache::init();
 
-    //int N = 1000000;
-    //float sum = 0.0;
-    //for (int i = 0; i < N; i++) 
-    //{
-    //  vec3 v = random_cosine_direction();
-    //  sum += v.z * v.z * v.z / (v.z / pi);
-    //}
-    //
-    //std::cout << std::fixed << std::setprecision(12);
-    //std::cout << "PI/2 = " << pi / 2 << '\n';
-    //std::cout << "Estimate = " << sum / N << '\n';
-
-
-
     // Load persistent state
     app_state state;
     state.load_scene_state();
@@ -122,12 +108,14 @@ int main(int, char**)
     
     // Not yet persistent
     solid_texture*    t_white         = new solid_texture(c_white);
-    solid_texture*    t_grey          = new solid_texture(c_grey);
+    solid_texture*    t_grey          = new solid_texture(c_grey/2.0f);
     checker_texture*  t_checker       = new checker_texture(t_white, t_grey);
     texture_material* texture_default = new texture_material("default", t_checker);
     state.default_material = texture_default;
     state.materials.try_add(texture_default);
     
+    bool renderer_worked_last_frame = false;
+
     // Main loop
     bool done = false;
     while (!done)
@@ -178,6 +166,7 @@ int main(int, char**)
         {
           state.scene_root.build_boxes();
           state.scene_root.update_materials(&state.materials);
+          state.scene_root.override_texture_material(state.default_material);
           state.scene_root.query_lights();
     
           update_default_spawn_position(state);
@@ -200,11 +189,13 @@ int main(int, char**)
       }
     
       // Update the output panel while rendering
-      if (state.renderer.is_working())
+      bool is_working = state.renderer.is_working();
+      if (is_working || (!is_working && renderer_worked_last_frame))
       {
         dx11::UpdateTextureBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, state.output_texture);
+        renderer_worked_last_frame = is_working;
       }
-      
+            
       // UI rendering
       static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
       static float clear_color_with_alpha[4] = 

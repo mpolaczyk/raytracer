@@ -6,10 +6,10 @@
 struct pdf 
 {
   // Return a random direction weighted by the internal PDF distribution
-  virtual vec3 generate() const = 0;
+  virtual vec3 get_direction() const = 0;
 
   // Return the corresponding PDF distribution value in that direction
-  virtual float value(const vec3& direction) const = 0;
+  virtual float get_value(const vec3& direction) const = 0;
 };
 
 
@@ -17,12 +17,12 @@ struct sphere_pdf : public pdf
 {
   sphere_pdf() {}
 
-  virtual vec3 generate() const override
+  virtual vec3 get_direction() const override
   {
     return random_cache::get_vec3();
   }
 
-  virtual float value(const vec3& direction) const override
+  virtual float get_value(const vec3& direction) const override
   {
     return 1.0f / (4.0f * pi);
   }
@@ -37,12 +37,12 @@ struct cosine_pdf : public pdf
     uvw.build_from_w(w); 
   }
 
-  virtual vec3 generate() const override
+  virtual vec3 get_direction() const override
   {
     return uvw.local(random_cosine_direction());
   }
 
-  virtual float value(const vec3& direction) const override
+  virtual float get_value(const vec3& direction) const override
   {
     float cosine_theta = dot(unit_vector(direction), uvw.w);
     return (cosine_theta <= 0) ? 0 : cosine_theta / pi;
@@ -58,12 +58,12 @@ public:
     : object(_objects), origin(_origin)
   {}
 
-  virtual vec3 generate() const override
+  virtual vec3 get_direction() const override
   {
     return object->get_pdf_direction(origin);
   }
 
-  virtual float value(const vec3& direction) const override
+  virtual float get_value(const vec3& direction) const override
   {
     return object->get_pdf_value(origin, direction);
   }
@@ -73,7 +73,7 @@ public:
   vec3 origin;
 };
 
-class mixture_pdf : public pdf 
+class mixture_pdf : public pdf
 {
 public:
   mixture_pdf(pdf* p0, pdf* p1, float ratio)
@@ -83,19 +83,18 @@ public:
     p[1] = p1;
   }
 
-  float value(const vec3& direction) const override 
+  float get_value(const vec3& direction) const override
   {
-    int32_t num = 2;
-    return (1.0f / (float)num) * p[0]->value(direction)
-         + (1.0f / (float)num) * p[1]->value(direction);
+    return 0.5f * p[0]->get_value(direction)
+         + 0.5f * p[1]->get_value(direction);
   }
 
-  vec3 generate() const override 
+  vec3 get_direction() const override
   {
-    if (random_cache::get_float_0_1() < ratio)
-      return p[0]->generate();
+    if (random_cache::get_float_0_1() > ratio)
+      return p[0]->get_direction();
     else
-      return p[1]->generate();
+      return p[1]->get_direction();
   }
 
 public:

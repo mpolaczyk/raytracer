@@ -22,7 +22,7 @@
     "objects": [
       {
         "material_id": "lambertian_green",
-        "type": 5,
+        "type": 4,
         "x": 555.0,
         "y0": 0.0,
         "y1": 555.0,
@@ -31,7 +31,7 @@
       },
       {
         "material_id": "lambertian_red",
-        "type": 5,
+        "type": 4,
         "x": 0.0,
         "y0": 0.0,
         "y1": 555.0,
@@ -39,26 +39,26 @@
         "z1": 555.0
       },
       {
-        "material_id": "light_strong2",
-        "type": 4,
-        "x0": 100.0,
-        "x1": 247.0,
+        "material_id": "light_strong3_opposite",
+        "type": 3,
+        "x0": 203.0,
+        "x1": 347.0,
         "y": 462.0,
-        "z0": 6.0,
-        "z1": 307.0
+        "z0": 221.0,
+        "z1": 363.0
       },
       {
-        "material_id": "lambertian_white",
-        "type": 4,
+        "material_id": "default",
+        "type": 3,
         "x0": 0.0,
         "x1": 555.0,
-        "y": 0.0,
+        "y": 1.0,
         "z0": 0.0,
         "z1": 555.0
       },
       {
         "material_id": "lambertian_white",
-        "type": 4,
+        "type": 3,
         "x0": 0.0,
         "x1": 555.0,
         "y": 555.0,
@@ -67,7 +67,7 @@
       },
       {
         "material_id": "copper",
-        "type": 3,
+        "type": 2,
         "x0": 0.0,
         "x1": 555.0,
         "y0": 0.0,
@@ -82,7 +82,7 @@
           "z": 260.0
         },
         "radius": 55.0,
-        "type": 2
+        "type": 1
       },
       {
         "material_id": "lambertian_green",
@@ -92,17 +92,7 @@
           "z": 260.0
         },
         "radius": 107.0,
-        "type": 2
-      },
-      {
-        "material_id": "light",
-        "origin": {
-          "x": 270.0,
-          "y": 270.0,
-          "z": 250.0
-        },
-        "radius": 1100.0,
-        "type": 2
+        "type": 1
       },
       {
         "material_id": "glass",
@@ -112,7 +102,7 @@
           "z": 229.0
         },
         "radius": 80.0,
-        "type": 2
+        "type": 1
       },
       {
         "material_id": "metal_shiny",
@@ -122,7 +112,7 @@
           "z": 597.0
         },
         "radius": 132.0,
-        "type": 2
+        "type": 1
       },
       {
         "material_id": "lambertian_white",
@@ -132,7 +122,7 @@
           "z": -817.0
         },
         "radius": 134.0,
-        "type": 2
+        "type": 1
       },
       {
         "material_id": "glass",
@@ -142,7 +132,17 @@
           "z": 177.0
         },
         "radius": 50.0,
-        "type": 2
+        "type": 1
+      },
+      {
+        "material_id": "light_strong2",
+        "origin": {
+          "x": 59.0,
+          "y": 52.0,
+          "z": 467.0
+        },
+        "radius": 23.0,
+        "type": 1
       }
     ],
     "type": 1

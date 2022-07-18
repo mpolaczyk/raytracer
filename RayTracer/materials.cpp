@@ -8,7 +8,6 @@ material* material::spawn_by_type(material_class type)
 {
   if (type == material_class::dialectric) { return new dialectric_material(); }
   else if (type == material_class::lambertian) { return new lambertian_material(); }
-  else if (type == material_class::isotropic) { return new isotropic_material(); }
   else if (type == material_class::diffuse_light) { return new diffuse_light_material(); }
   else if (type == material_class::metal) { return new metal_material(); }
   else if (type == material_class::texture) { return new texture_material(); }
@@ -34,7 +33,6 @@ vec3 material::emitted(const hit_record& in_hit) const
 
 bool lambertian_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
 {
-  // Lambertian - scatter direction uses a cosine distribution, so we need to rotate it to match the hit normal
   out_sr.attenuation = albedo;
   out_sr.is_diffuse = true;
   return true;
@@ -43,33 +41,20 @@ bool lambertian_material::scatter(const ray& in_ray, const hit_record& in_hit, s
 float lambertian_material::scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const
 {
   float cosine = dot(in_hit.normal, unit_vector(in_scattered.direction));
-  return cosine < 0.0f ? 0.0f : cosine / pi; // not in use
+  return cosine < 0.0f ? 0.0f : cosine / pi;
 }
-
-bool isotropic_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
-{
-  // Fake Lambertian, uniform distribution, bounces outside of the surface
-  out_sr.attenuation = albedo;
-  out_sr.is_specular = true; // no, we just use different pdf
-  vec3 scatter_direction = random_unit_in_hemisphere(in_hit.normal);
-  if (is_near_zero(scatter_direction))
-  {
-    scatter_direction = in_hit.normal;
-  }
-  out_sr.specular_ray = ray(in_hit.p, scatter_direction);
-  return true;
-}
-
-//float isotropic_material::scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const
-//{
-//  return 1.0f / pi; // not in use
-//}
 
 bool texture_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
 {
   out_sr.attenuation = texture->value(in_hit.u, in_hit.v, in_hit.p);
   out_sr.is_diffuse = true;
   return true;
+}
+
+float texture_material::scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const
+{
+  float cosine = dot(in_hit.normal, unit_vector(in_scattered.direction));
+  return cosine < 0.0f ? 0.0f : cosine / pi;
 }
 
 bool metal_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
@@ -112,7 +97,11 @@ bool dialectric_material::scatter(const ray& in_ray, const hit_record& in_hit, s
 
 vec3 diffuse_light_material::emitted(const hit_record& in_hit) const
 {
-  if (in_hit.front_face)  // TODO: inverted for now
-    return c_black;
-  return albedo;
+  if (sides == (int)surface_side_type::aligned_to_normal && in_hit.front_face)
+    return albedo;
+  if (sides == (int)surface_side_type::opposite_to_normal && !in_hit.front_face)
+    return albedo;
+  if (sides == (int)surface_side_type::both)
+    return albedo;
+  return c_black;
 }

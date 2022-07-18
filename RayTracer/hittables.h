@@ -24,8 +24,7 @@ struct hit_record
 
 enum class hittable_class  // No RTTI, simple type detection
 {
-  hittable=0,
-  scene,
+  scene=0,
   sphere,
   xy_rect,
   xz_rect,
@@ -33,7 +32,6 @@ enum class hittable_class  // No RTTI, simple type detection
 };
 static inline const char* hittable_class_names[] =
 {
-  "Hittable",
   "Scene",
   "Sphere",
   "XY Rectangle",
@@ -48,27 +46,26 @@ public:
   hittable(const hittable* rhs) { *this = *rhs; };
   hittable(std::string&& in_material_id, hittable_class in_type) : material_id(std::move(in_material_id)), type(in_type) { };
 
-  virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const { return false; };
-  virtual bool get_bounding_box(aabb& out_box) const { return false; };
+  virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const = 0;
+  virtual bool get_bounding_box(aabb& out_box) const = 0;
   virtual void get_name(std::string& out_name, bool with_params = true) const;
-  virtual vec3 get_random_point_on_surface() const { return vec3(0.0f, 0.0f, 0.0f); };
-  virtual vec3 get_origin() const { return vec3(0.0f, 0.0f, 0.0f); };
-  virtual vec3 get_extent() const { return vec3(0.0f, 0.0f, 0.0f); };
-  virtual vec3 get_random_point() const { return get_origin(); };
-  virtual float get_area() const { return 1.0f; };
-  virtual void set_origin(const vec3& value) {};
-  virtual void set_extent(float value) {};
-  virtual float get_pdf_value(const vec3& origin, const vec3& v) const { return 0.0; }
-  virtual vec3 get_pdf_direction(const vec3& look_from) const { return vec3(0, 1, 0); }
+  virtual vec3 get_origin() const = 0;
+  virtual vec3 get_extent() const = 0;
+  virtual vec3 get_random_point() const = 0;
+  virtual float get_area() const = 0;
+  virtual void set_origin(const vec3& value) = 0;
+  virtual void set_extent(float value) = 0;
+  virtual float get_pdf_value(const vec3& origin, const vec3& v) const = 0;
+  virtual vec3 get_pdf_direction(const vec3& look_from) const = 0;
 
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize();
   virtual void deserialize(const nlohmann::json& j);
   virtual uint32_t get_type_hash() const;
-  virtual hittable* clone() const;
+  virtual hittable* clone() const = 0;
 
   // Persistent members
-  hittable_class type = hittable_class::hittable;
+  hittable_class type = hittable_class::scene;
   std::string material_id;
 
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(hittable, type, material_id); // to_json only
@@ -124,6 +121,14 @@ public:
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name, bool with_params) const override;
+  virtual vec3 get_origin() const override { assert(false); return vec3(0, 0, 0); };
+  virtual vec3 get_extent() const override { assert(false); return vec3(0, 0, 0); };
+  virtual float get_area() const override { assert(false); return 0.0f; };
+  virtual float get_pdf_value(const vec3& origin, const vec3& v) const override { assert(false); return 0.0f; };
+  virtual vec3 get_pdf_direction(const vec3& look_from) const override { assert(false); return vec3(0, 0, 0); };
+  virtual vec3 get_random_point() const override { assert(false); return vec3(0, 0, 0); };
+  virtual void set_origin(const vec3& value) override { assert(false); };
+  virtual void set_extent(float value) { assert(false); };
 
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
@@ -136,6 +141,7 @@ public:
 
   void build_boxes();
   void update_materials(material_instances* materials);
+  void override_texture_material(material* texture);
   void query_lights();
   hittable* get_random_light();
 
@@ -158,6 +164,8 @@ public:
   virtual vec3 get_origin() const override { return vec3(x0, y0, z); };
   virtual vec3 get_extent() const override { return vec3(x1-x0, y1-y0, 0.0f); };
   virtual float get_area() const override;
+  virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
+  virtual vec3 get_pdf_direction(const vec3& look_from) const override;
   virtual vec3 get_random_point() const override;
   virtual void set_origin(const vec3& value) override { x0 = value.x; y0 = value.y; };
   virtual void set_extent(float value) { x1 = x0 + value; y1 = y0 + value; };
@@ -240,6 +248,8 @@ public:
   virtual vec3 get_origin() const override { return vec3(x, y0, z0); };
   virtual vec3 get_extent() const override { return vec3(0.0f, y1-y0, z1-z0); };
   virtual float get_area() const override;
+  virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
+  virtual vec3 get_pdf_direction(const vec3& look_from) const override;
   virtual vec3 get_random_point() const override;
   virtual void set_origin(const vec3& value) override { y0 = value.y; z0 = value.z; };
   virtual void set_extent(float value) { y1 = y0 + value; z1 = z0 + value; };

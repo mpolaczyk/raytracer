@@ -39,9 +39,6 @@ public:
 
   // Diffuse reflection
   int diffuse_max_bounce_num = 7;
-  float diffuse_bounce_brightness = 0.6f;
-
-  vec3 background = vec3(0.0f, 0.0f, 0.0f);
 
   // How work is split
   int chunks_num = 512;
@@ -51,10 +48,7 @@ public:
   // How work is processed
   threading_strategy_type threading_strategy = threading_strategy_type::thread_pool;
   int threads_num = 0; // Apples only to thread pool strategy, 0 enforces std::thread::hardware_concurrency()
-
-  // Use emissive flow
-  bool allow_emissive = true;
-  
+    
   // Color by processing time per pixel
   bool pixel_time_coloring = false;
   float pixel_time_coloring_scale = 0.01f;
@@ -65,17 +59,20 @@ public:
   int resolution_vertical = 0;
   int resolution_horizontal = 0;
 
+  float pdf_ratio = 0.5f;
+  int pdf_mix_type = 0;
+
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, AA_samples_per_pixel, diffuse_max_bounce_num, diffuse_bounce_brightness, chunks_num, chunks_strategy, threading_strategy, threads_num, allow_emissive, shuffle_chunks, pixel_time_coloring, pixel_time_coloring_scale, reuse_buffer, resolution_vertical, resolution_horizontal); // to_json only
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, AA_samples_per_pixel, diffuse_max_bounce_num, chunks_num, chunks_strategy, threading_strategy, threads_num, shuffle_chunks, pixel_time_coloring, pixel_time_coloring_scale, reuse_buffer, resolution_vertical, resolution_horizontal, pdf_ratio, pdf_mix_type); // to_json only
 
   inline uint32_t get_type_hash() const
   {
-    uint32_t a = hash_combine(AA_samples_per_pixel, diffuse_max_bounce_num, ::get_type_hash(diffuse_bounce_brightness), background.get_type_hash());
+    uint32_t a = hash_combine(AA_samples_per_pixel, diffuse_max_bounce_num, pdf_mix_type);
     uint32_t b = hash_combine(chunks_num, (int)chunks_strategy, (int)threading_strategy, threads_num);
-    uint32_t c = hash_combine(::get_type_hash(allow_emissive), ::get_type_hash(shuffle_chunks), ::get_type_hash(pixel_time_coloring), ::get_type_hash(pixel_time_coloring_scale));
-    uint32_t d = ::get_type_hash(reuse_buffer);
+    uint32_t c = hash_combine(::get_type_hash(shuffle_chunks), ::get_type_hash(pixel_time_coloring), ::get_type_hash(pixel_time_coloring_scale), ::get_type_hash(pixel_time_coloring_scale));
+    uint32_t d = ::get_type_hash(pdf_ratio);
     return hash_combine(a, b, c, d);
   }
 };
@@ -106,7 +103,7 @@ public:
 private:
   void render();
   void render_chunk(const chunk& in_chunk);
-  vec3 ray_color(const ray& in_ray, const vec3& in_background, uint32_t depth);
+  vec3 ray_color(const ray& in_ray, uint32_t depth);
   void save(const char* file_name);
 
   // Synchronization - fire and forget

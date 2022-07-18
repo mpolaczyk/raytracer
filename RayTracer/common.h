@@ -21,20 +21,24 @@ const vec3 c_gold = vec3(1.f, 0.84f, 0.f);
 const float infinity = std::numeric_limits<float>::infinity();
 const float pi = 3.1415926535897932385f;
 const float small_number = 0.00000001f;
+constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
 float degrees_to_radians(float degrees);
 float sign(float value);
 bool is_almost_zero(float value);
+bool is_almost_equal(float a, float b);
 vec3 random_in_unit_disk();
 vec3 random_unit_in_hemisphere(const vec3& normal);
 vec3 random_in_unit_sphere();
 vec3 random_cosine_direction();
+vec3 random_to_sphere(float radius, float distance_squared);
 bool is_near_zero(vec3& value);
 vec3 reflect(const vec3& v, const vec3& n);
 vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
 float reflectance(float cosine, float ref_idx);
 bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal);
 inline float lerp_float(float a, float b, float f) { return a + f * (b - a); }
+vec3 lerp_vec3(vec3 a, vec3 b, float f);
 inline float min1(float a, float b) { return a < b ? a : b; }
 inline float max1(float a, float b) { return a < b ? b : a; }
 inline float clamp(float a, float b, float f) { return  min1(b, max1(a, f)); }

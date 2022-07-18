@@ -45,9 +45,9 @@ public:
  
   virtual vec3 value(float u, float v, const vec3& p) const override
   {
-    float sines = sin(10 * p.x) * sin(10 * p.y) * sin(10 * p.z);
-    if (sines < 0) return odd->value(u, v, p);
-    else return even->value(u, v, p);
+    float scale = 0.05f;
+    float sines = sin(scale * p.x) * sin(scale * p.y) * sin(scale * p.z);
+    return sines < 0 ? odd->value(u, v, p) : even->value(u, v, p);
   }
 
 public:

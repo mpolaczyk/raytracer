@@ -18,8 +18,12 @@ float sign(float value)
 
 bool is_almost_zero(float value)
 {
-  constexpr float epsilon = std::numeric_limits<float>::epsilon();
   return value <= epsilon && value >= -epsilon;
+}
+
+bool is_almost_equal(float a, float b)
+{
+  return fabs(a - b) <= epsilon;
 }
 
 vec3 random_in_unit_disk() 
@@ -45,7 +49,6 @@ vec3 random_in_unit_sphere()
   }
 }
 
-
 vec3 random_cosine_direction()
 {
   // Cosine distribution around positive z axis
@@ -55,6 +58,19 @@ vec3 random_cosine_direction()
   float x = cos(phi) * sqrt(r2);
   float y = sin(phi) * sqrt(r2);
   float z = sqrt(1 - r2);
+  return vec3(x, y, z);
+}
+
+vec3 random_to_sphere(float radius, float distance_squared)
+{
+  float r1 = random_cache::get_float_0_1();
+  float r2 = random_cache::get_float_0_1();
+  float z = 1 + r2 * (sqrt(1 - radius * radius / distance_squared) - 1);
+
+  float phi = 2 * pi * r1;
+  float x = cos(phi) * sqrt(1 - z * z);
+  float y = sin(phi) * sqrt(1 - z * z);
+
   return vec3(x, y, z);
 }
 
@@ -99,6 +115,12 @@ bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outw
     return false;
   }
 }
+
+vec3 lerp_vec3(vec3 a, vec3 b, float f)
+{
+  return vec3(lerp_float(a.x, b.x, f), lerp_float(a.y, b.y, f), lerp_float(a.z, b.z, f));
+}
+
 namespace random_cache
 {
   template<typename T, int N>
@@ -161,7 +183,7 @@ namespace random_cache
 
   int32_t get_int_0_N(int32_t N)
   {
-    return (int32_t)(get_float_0_1() * N);
+    return round(get_float_0_1() * N);
   }
 }
 
