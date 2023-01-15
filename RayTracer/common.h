@@ -26,21 +26,19 @@ constexpr float epsilon = std::numeric_limits<float>::epsilon();
 namespace random_cache
 {
   template<typename T, int N>
-  struct uniform_cache
+  struct cache
   {
-    void init(float min, float max);
-    float get();
+    T get();
+    void add(T value);
+    int32_t len();
 
   private:
-    int num = 500000;
     int last_index = 0;
-    std::vector<T> cache;
-    std::uniform_real_distribution<T> distribution;
+    std::vector<T> storage;
   };
 
-  // Range: [-1, 1]
-  static uniform_cache<float, 500000> f_cache;
-
+  static cache<float, 500000> float_cache; // Range: [-1, 1]
+  static cache<vec3, 50000> cosine_direction_cache;
   void init();
 
   float get_float();
@@ -52,6 +50,8 @@ namespace random_cache
   vec3 get_vec3_0_1();
 
   int32_t get_int_0_N(int32_t N);
+
+  vec3 get_cosine_direction();
 }
 
 inline float degrees_to_radians(float degrees)

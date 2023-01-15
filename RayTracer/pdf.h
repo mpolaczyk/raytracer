@@ -39,7 +39,7 @@ struct cosine_pdf : public pdf
 
   virtual vec3 get_direction() const override
   {
-    return uvw.local(random_cosine_direction());
+    return uvw.local(random_cache::get_cosine_direction());
   }
 
   virtual float get_value(const vec3& direction) const override

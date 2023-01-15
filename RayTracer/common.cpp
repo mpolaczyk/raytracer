@@ -81,67 +81,86 @@ vec3 lerp_vec3(vec3 a, vec3 b, float f)
 namespace random_cache
 {
   template<typename T, int N>
-  void uniform_cache<T, N>::init(float min, float max)
+  T cache<T, N>::get()
   {
-    distribution = std::uniform_real_distribution<T>(min, max);
-    uint32_t seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::mt19937 generator(seed);
-    for (int s = 0; s < num; s++)
-    {
-      cache.push_back(distribution(generator));
-    }
+    assert(last_index >= 0 && last_index < N);
+    last_index = (last_index + 1) % N;
+    return storage[last_index];
   }
 
   template<typename T, int N>
-  float uniform_cache<T, N>::get()
+  void cache<T, N>::add(T value)
   {
-    assert(last_index >= 0 && last_index < num);
-    last_index = (last_index + 1) % num;
-    return cache[last_index];
+    storage.push_back(value);
+  }
+
+  template<typename T, int N>
+  int32_t cache<T, N>::len()
+  {
+    return N;
   }
 
   void init()
   {
-    f_cache.init(-1.0f, 1.0f);
-  }
-  
-  vec3 get_vec3()
-  {
-    return vec3(f_cache.get(), f_cache.get(), f_cache.get());
+    // Fill float cache
+    std::uniform_real_distribution<float> distribution;
+    distribution = std::uniform_real_distribution<float>(-1.0f, 1.0f);
+    uint32_t seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 generator(seed);
+    for (int s = 0; s < float_cache.len(); s++)
+    {
+      float_cache.add(distribution(generator));
+    }
+
+    // Fill cosine direction cache
+    for (int s = 0; s < cosine_direction_cache.len(); s++)
+    {
+     cosine_direction_cache.add(random_cosine_direction());
+    } 
   }
 
   float get_float()
   {
-    return f_cache.get();
+    return float_cache.get();
   }
 
   float get_float_0_1()
   {
-    return fabs(f_cache.get());
+    return fabs(float_cache.get());
   }
 
   float get_float_0_N(float N)
   {
-    return fabs(f_cache.get()) * N;
+    return fabs(float_cache.get()) * N;
   }
 
   float get_float_M_N(float M, float N)
   {
     if (M < N)
     {
-      return M + fabs(f_cache.get()) * (N - M);
+      return M + fabs(float_cache.get()) * (N - M);
     }
-    return N + fabs(f_cache.get()) * (M - N);
+    return N + fabs(float_cache.get()) * (M - N);
+  }
+
+  vec3 get_vec3()
+  {
+    return vec3(float_cache.get(), float_cache.get(), float_cache.get());
   }
 
   vec3 get_vec3_0_1()
   {
-    return vec3(fabs(f_cache.get()), fabs(f_cache.get()), fabs(f_cache.get()));
+    return vec3(fabs(float_cache.get()), fabs(float_cache.get()), fabs(float_cache.get()));
   }
 
   int32_t get_int_0_N(int32_t N)
   {
     return round(get_float_0_1() * N);
+  }
+
+  vec3 get_cosine_direction()
+  {
+    return cosine_direction_cache.get();
   }
 }
 
