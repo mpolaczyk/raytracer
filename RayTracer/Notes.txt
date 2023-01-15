@@ -1,5 +1,5 @@
 ﻿
-TODO list:
+# TODO list:
  x spawn new objeects in front of the camera
  x real time update, auto rendering with low quality profile, no texture cleanup at the beginning of the frame
  x app state serialization (camera, renderer, world, materials) to json, each json as a scene file
@@ -23,7 +23,7 @@ TODO list:
  - DXR tutorials and integration
  x new GPU
 
-Scene ideas:
+# Scene ideas:
  - light bend by a sphere, focus in a spot
  - light bend by a prism (to implement: index of refraction depends on the wave length(color))
  - green light focused by sphere is mixed with red light focused by a sphere, both produce yellow
@@ -41,13 +41,18 @@ Scene ideas:
  - scale all vectors until you get out of floating point precision
  - grid of square glass tiles surface/texture behind it, lots of caustics
  - rotating split screen dynamically creating one screen
+ 
+ # Optim ideas:
+ - Use depth field, trace pixels close to the camera, first.
+ - Probe scene with low resolution or even ray cast, calculate the difference from previous scene. Next frame renders only the diff areas.
+ - Anti Aliasing done at the ray level - do we need the same amount for each part of the scene? (dark areas less?)
 
-Problems with imgui (immediate UI paradigm):
+# Problems with imgui (immediate UI paradigm):
  - Input widget setting new value every character instead of when pressed enter or focus left
  - No panels nesting, drag and drop, snapping to window
  - Minimal input validation, post edit actions
 
-Dictionary:
+# Dictionary:
  - specular, specularly - calculated based on angle of incidence, surface reflecting rays in one direction (mirrrors, metal etc.)
  - diffuse, diffusely - calculater based on the surface and angle of incidence, reflecting rays in multiple directions
  - emissive - calculated based on emission
@@ -89,3 +94,67 @@ Dictionary:
  - orthogonal - when two vectors are perpendicular
  - orthonormal - when two unit vectors are perpendicular
  - collinear - two vectors parallel to each other (same or opposite direction)
+
+
+
+ ## Lecture 
+ https://www.youtube.com/watch?v=Q1cuuepVNoY&ab_channel=ACMSIGGRAPH
+ http://intro-to-dxr.cwyman.org/
+
+ # Raytracing history:
+
+ 1. Whitted 1980 (shiny stuff)
+ - specular reflections and refractions
+ - perfect surfaces
+ - hard shadows, shadow rays to point lights
+ - no random function
+
+ 2. Cook 1984 (fuzzy stuff, distribution raytracing)
+ - reflection rays randomly perturbed off specular direction
+ - soft shadows, rays to random point on the light area
+ - perfect surfaces
+ - more than one ray per pixel
+
+ 3. Kajiya 1986 (path tracing)
+ - diffuse surfaces (rand diffuse bounces)
+ - a lot of rays per pixel
+ - huge demand on denoising
+
+
+ # Raytracing vs rasterization
+ 
+ Raytracing - stream pixels to triagle buffer to see what triangles cover them
+ Rasterization - stream triangles to pixel buffer to see what pixels they cover
+
+ Duals of each other. Computantionally quite diferent. 
+
+ Fundamental question:
+ Raytracing - What is visible along this ray?
+ Rasterization - What pixels does geometry cover?
+ 
+ Key operation:
+ Raytracing - Ray-triangle intersection
+ Rasterization - Test if pixel is inside triangle.
+ 
+ How streaming works:
+ Raytracing - Stream rays (each tests intersections)
+ Rasterization - Stream triangles (each tests pixels)
+ 
+ Ineficiencies:
+ Raytracing - Test many intersections per ray.
+ Rasterization - Shade many tris per pixel (overdraw)
+ 
+ Acceleration structure:
+ Raytracing - Bounding Volume Hierarchies
+ Rasterization - Z-buffering (hierarchical)
+ 
+ Drawbacks:
+ Raytracing - Traverses memory incoherently
+ Rasterization - Oncoherent queries difficult to make
+ 
+
+ # Bounding Volume Hierarchy
+ for N triangles
+ Building   O(N log N)
+ Updating   O(N)
+ Traversing O(log N)

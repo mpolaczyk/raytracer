@@ -6,49 +6,6 @@
 
 #include "common.h"
 
-float degrees_to_radians(float degrees)
-{
-  return degrees * pi / 180.0f;
-}
-
-float sign(float value)
-{
-  return value >= 0.0f ? 1.0f : -1.0f;  //  Assume 0 is positive
-}
-
-bool is_almost_zero(float value)
-{
-  return value <= epsilon && value >= -epsilon;
-}
-
-bool is_almost_equal(float a, float b)
-{
-  return fabs(a - b) <= epsilon;
-}
-
-vec3 random_in_unit_disk() 
-{
-  vec3 random_unit = unit_vector(random_cache::get_vec3());
-  return random_unit * random_cache::get_float();
-}
-
-vec3 random_unit_in_hemisphere(const vec3& normal)
-{
-  vec3 random_unit = unit_vector(random_cache::get_vec3());
-  // Invert random_unit if dot product is negative
-  return sign(dot(random_unit, normal)) * random_unit;
-}
-
-vec3 random_in_unit_sphere()
-{
-  while (true) 
-  {
-    vec3 p = random_cache::get_vec3();
-    if (p.length_squared() >= 1) continue;
-    return p;
-  }
-}
-
 vec3 random_cosine_direction()
 {
   // Cosine distribution around positive z axis
@@ -124,7 +81,7 @@ vec3 lerp_vec3(vec3 a, vec3 b, float f)
 namespace random_cache
 {
   template<typename T, int N>
-  void cache_internal<T,N>::init(float min, float max)
+  void uniform_cache<T, N>::init(float min, float max)
   {
     distribution = std::uniform_real_distribution<T>(min, max);
     uint32_t seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -136,8 +93,9 @@ namespace random_cache
   }
 
   template<typename T, int N>
-  float cache_internal<T, N>::get()
+  float uniform_cache<T, N>::get()
   {
+    assert(last_index >= 0 && last_index < num);
     last_index = (last_index + 1) % num;
     return cache[last_index];
   }
@@ -146,15 +104,15 @@ namespace random_cache
   {
     f_cache.init(-1.0f, 1.0f);
   }
+  
+  vec3 get_vec3()
+  {
+    return vec3(f_cache.get(), f_cache.get(), f_cache.get());
+  }
 
   float get_float()
   {
     return f_cache.get();
-  }
-
-  vec3 get_vec3()
-  {
-    return vec3(f_cache.get(), f_cache.get(), f_cache.get());
   }
 
   float get_float_0_1()
@@ -173,7 +131,7 @@ namespace random_cache
     {
       return M + fabs(f_cache.get()) * (N - M);
     }
-    return N + fabs(f_cache.get()) * (M-N);
+    return N + fabs(f_cache.get()) * (M - N);
   }
 
   vec3 get_vec3_0_1()

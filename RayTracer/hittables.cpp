@@ -75,22 +75,29 @@ void scene::override_texture_material(material* texture)
 
 void scene::query_lights()
 {
-  lights.clear();
+  lights_num = 0;
   for (hittable* object : objects)
   {
     if (object->material_ptr != nullptr 
       && object->material_ptr->type == material_class::diffuse_light)
     {
-      lights.push_back(object);
+      lights[lights_num] = object;
+      lights_num++;
+      assert(lights_num < MAX_LIGHTS);
     }
   }
-  assert(lights.size() > 0);
+  assert(lights_num > 0);
 }
 
 hittable* scene::get_random_light()
 {
-  assert(lights.size() > 0);
-  return lights[random_cache::get_int_0_N(lights.size() - 1)];
+  assert(lights_num < MAX_LIGHTS);
+  // Get next light millions of times gives the same distribution as get true random light, but is 5 times cheaper
+  static int32_t last_light = 0;
+  last_light = (last_light + 1) % lights_num;
+  hittable* light = lights[last_light];
+  assert(light != nullptr);
+  return light;
 }
 
 

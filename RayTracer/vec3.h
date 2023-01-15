@@ -46,6 +46,9 @@ public:
   vec3& operator *= (float t) { return *this *= t; }
   vec3& operator /= (float t) { return *this /= t; }
 #endif
+  bool operator==(const vec3& v) { return e == v.e; }
+  bool operator!=(const vec3& v) { return e == v.e; }
+
 
   inline float length() const
   {

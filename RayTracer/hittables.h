@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <string>
 
 #include "ray.h"
@@ -10,6 +11,8 @@
 
 class material;
 class material_instances;
+
+constexpr int32_t MAX_LIGHTS = 50;
 
 struct hit_record
 {
@@ -146,7 +149,8 @@ public:
   hittable* get_random_light();
 
   std::vector<hittable*> objects;
-  std::vector<hittable*> lights;
+  int32_t lights_num = 0;
+  std::array<hittable*, MAX_LIGHTS> lights;
 };
 
 

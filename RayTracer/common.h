@@ -23,13 +23,68 @@ const float pi = 3.1415926535897932385f;
 const float small_number = 0.00000001f;
 constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
-float degrees_to_radians(float degrees);
-float sign(float value);
-bool is_almost_zero(float value);
-bool is_almost_equal(float a, float b);
-vec3 random_in_unit_disk();
-vec3 random_unit_in_hemisphere(const vec3& normal);
-vec3 random_in_unit_sphere();
+namespace random_cache
+{
+  template<typename T, int N>
+  struct uniform_cache
+  {
+    void init(float min, float max);
+    float get();
+
+  private:
+    int num = 500000;
+    int last_index = 0;
+    std::vector<T> cache;
+    std::uniform_real_distribution<T> distribution;
+  };
+
+  // Range: [-1, 1]
+  static uniform_cache<float, 500000> f_cache;
+
+  void init();
+
+  float get_float();
+  float get_float_0_1();
+  float get_float_0_N(float N);
+  float get_float_M_N(float M, float N);
+
+  vec3 get_vec3();
+  vec3 get_vec3_0_1();
+
+  int32_t get_int_0_N(int32_t N);
+}
+
+inline float degrees_to_radians(float degrees)
+{
+  return degrees * pi / 180.0f;
+}
+inline float sign(float value)
+{
+  return value >= 0.0f ? 1.0f : -1.0f;  //  Assume 0 is positive
+}
+inline bool is_almost_zero(float value)
+{
+  return value <= epsilon && value >= -epsilon;
+}
+inline bool is_almost_equal(float a, float b)
+{
+  return fabs(a - b) <= epsilon;
+}
+inline vec3 random_in_unit_disk()
+{
+  vec3 random_unit = unit_vector(random_cache::get_vec3());
+  return random_unit * random_cache::get_float();
+}
+inline vec3 random_unit_in_hemisphere(const vec3& normal)
+{
+  vec3 random_unit = unit_vector(random_cache::get_vec3());
+  // Invert random_unit if dot product is negative
+  return sign(dot(random_unit, normal)) * random_unit;
+}
+inline vec3 random_in_unit_sphere()
+{
+  return unit_vector(random_cache::get_vec3());
+}
 vec3 random_cosine_direction();
 vec3 random_to_sphere(float radius, float distance_squared);
 bool is_near_zero(vec3& value);
@@ -65,36 +120,7 @@ inline void get_sphere_uv(const vec3& p, float& out_u, float& out_v)
   out_v = theta / pi;
 }
 
-namespace random_cache
-{
-  template<typename T, int N>
-  struct cache_internal
-  {
-    void init(float min, float max);
-    float get();
 
-  private:
-    int num = 500000;
-    int last_index = 0;
-    std::vector<T> cache;
-    std::uniform_real_distribution<T> distribution;
-  };
-  
-  // Range: [-1, 1]
-  static cache_internal<float, 500000> f_cache;
-
-  void init();
-
-  float get_float();
-  float get_float_0_1();
-  float get_float_0_N(float N);
-  float get_float_M_N(float M, float N);
-
-  vec3 get_vec3();
-  vec3 get_vec3_0_1();
-
-  int32_t get_int_0_N(int32_t N);
-}
 
 inline uint32_t hash_combine(uint32_t A, uint32_t C)
 {
