@@ -12,7 +12,6 @@
 *.idb
 *.iobj
 *.ipdb
-*.ini
-*.bmp
 Archive/*
 Intermediate/*
+Project/*.bmp
