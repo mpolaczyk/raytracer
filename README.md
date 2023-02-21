@@ -1,7 +1,11 @@
 # RayTracer
-**CPU Ray Tracer**
+**CPU Path Tracer (in a Kajiya sense)**
+
 Author: [planet620]
+
 Based on books: [Ray Tracing in One Weekend] by Peter Shirley
+
+![User interface](Screenshot.png)
 
 ### Features
 - Editor UI
@@ -13,8 +17,10 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
 - Renderer variables
     - Resolution
     - Multithreading: thread poll, PLL, none
+	- SIMD
     - Work distribution: stripes, chunks
     - Rays per pixel, ray bounces
+	- Anti aliasing
 - Renderer camera
     - Projections: Perspective/orthografic/blend
     - Focus distance
@@ -32,16 +38,26 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
     -  XZ rectangle
     -  ZY rectangle
 
+![Example output ](Screenshot.png)
+
 ### Build details
 Project file: Visual Studio 2022
+
 Windows SDK: 10.0
+
 Toolset: v143
 
 ### Third party dependencies
 DirectX 11
+
 [ocornut/imgui] v1.87
+
 [nlohmann/json] 3.10.5
+
 [PIX for Windows] 1.0.220124001
+
+
+[//]: # (links)
 
    [planet620]: <https://mpolaczyk.pl>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
