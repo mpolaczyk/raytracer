@@ -38,7 +38,7 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
     -  XZ rectangle
     -  ZY rectangle
 
-![Example output ](Screenshot.png)
+![Example output ](Example output.bmp)
 
 ### Build details
 Project file: Visual Studio 2022
