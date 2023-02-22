@@ -14,14 +14,18 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
     - Settings
     - Real time output update
     - Save output to BMP file
+- Renderer
+	- Monte Carlo based method, mix of light and surface cosine based probability density functions (PDF)
+	- Multithreading: thread poll, PLL, none
+	- Support for SIMD
+    - DirectX 11 based display
+	- Anti aliasing
+	- No denoising
 - Renderer variables
     - Resolution
-    - Multithreading: thread poll, PLL, none
-	- SIMD
     - Work distribution: stripes, chunks
     - Rays per pixel, ray bounces
-	- Anti aliasing
-- Renderer camera
+- Camera setup
     - Projections: Perspective/orthografic/blend
     - Focus distance
     - Aperture

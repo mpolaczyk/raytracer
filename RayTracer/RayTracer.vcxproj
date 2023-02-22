@@ -201,6 +201,13 @@
   <ItemGroup>
     <Text Include="Notes.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Project\imgui.ini" />
+    <None Include="..\Project\rendering.json" />
+    <None Include="..\Project\scene.json" />
+    <None Include="..\Project\window.json" />
+    <None Include="..\README.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

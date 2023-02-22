@@ -1,7 +1,5 @@
 .vs
 
-*.exe
-*.dll
 *.pdb
 *.obj
 *.ilk
@@ -15,3 +13,4 @@
 Archive/*
 Intermediate/*
 Project/*.bmp
+Build/x64_Debug/*

@@ -203,8 +203,26 @@
     <Filter Include="app\ui">
       <UniqueIdentifier>{afa0e002-4770-4072-aca4-7d8df9274bc4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Project">
+      <UniqueIdentifier>{f938f064-b15e-460d-9598-3ed15cb758ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Project\rendering.json">
+      <Filter>Project</Filter>
+    </None>
+    <None Include="..\Project\scene.json">
+      <Filter>Project</Filter>
+    </None>
+    <None Include="..\Project\window.json">
+      <Filter>Project</Filter>
+    </None>
+    <None Include="..\Project\imgui.ini">
+      <Filter>Project</Filter>
+    </None>
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>
