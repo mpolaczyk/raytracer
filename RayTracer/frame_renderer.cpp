@@ -282,7 +282,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, uint32_t depth)
   }
   else if (sr.is_diffuse)
   {
-    int32_t option = 2;
+    int32_t option = -2;
 
     if (option == -2) // FINAL
     {

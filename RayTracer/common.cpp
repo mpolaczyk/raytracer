@@ -8,13 +8,15 @@
 
 vec3 random_cosine_direction()
 {
+  https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
   // Cosine distribution around positive z axis
   float r1 = random_cache::get_float_0_1();
   float r2 = random_cache::get_float_0_1();
-  float phi = 2 * pi * r1;
-  float x = cos(phi) * sqrt(r2);
-  float y = sin(phi) * sqrt(r2);
-  float z = sqrt(1 - r2);
+  //float phi = 2 * pi * r1;
+  float r = 0.5;
+  float x = cos(2 * pi * r1) * sqrt(r);
+  float y = sin(2 * pi * r2) * sqrt(r);
+  float z = sqrt(1 - r);
   return vec3(x, y, z);
 }
 
@@ -115,7 +117,7 @@ namespace random_cache
     // Fill cosine direction cache
     for (int s = 0; s < cosine_direction_cache.len(); s++)
     {
-     cosine_direction_cache.add(random_cosine_direction());
+      cosine_direction_cache.add(random_cosine_direction());
     } 
   }
 
