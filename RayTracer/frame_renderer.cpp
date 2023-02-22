@@ -69,57 +69,6 @@ void frame_renderer::render_single_async()
   worker_semaphore.release();
 }
 
-//void frame_renderer::render_multiple(const scene& in_scene, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states)
-//{
-//  camera cam;
-//  if (in_camera_states.size() < 2)
-//  {
-//    std::cout << "More than two camera states required" << std::endl;
-//    return;
-//  }
-//  for (int setup_id = 0; setup_id < in_camera_states.size() - 1; setup_id++)
-//  {
-//    int frame_begin = in_camera_states[setup_id].first;
-//    int frame_end = in_camera_states[setup_id + 1].first;
-//    camera_config setup_begin = in_camera_states[setup_id].second;
-//    camera_config setup_end = in_camera_states[setup_id + 1].second;
-//
-//    for (int frame_id = frame_begin; frame_id < frame_end; frame_id++)
-//    {
-//      char name[100];
-//      std::sprintf(name, "setup_id=%d frame_id=%d", setup_id, frame_id);
-//      std::cout << name << std::endl;
-//
-//      float f = (float)(frame_id - frame_begin) / (float)(frame_end - frame_begin);
-//      render_single(in_scene, camera_config::lerp(setup_begin, setup_end, f), frame_id);
-//    }
-//  }
-//}
-//
-//void frame_renderer::render_single(const scene& in_scene, const camera_config& in_camera_state, int frame_id)
-//{
-//  cam.set_camera(in_camera_state);
-//  {
-//    benchmark::instance benchmark_render;
-//    benchmark_render.start("Render");
-//
-//    render(in_scene);
-//
-//    benchmark_render_time = benchmark_render.stop();
-//  }
-//
-//  char image_file_name[100];
-//  std::sprintf(image_file_name, "image_%d.bmp", frame_id);
-//  {
-//    benchmark::instance benchmark_save;
-//    benchmark_save.start("Save");
-//
-//    save(image_file_name);
-//
-//    benchmark_save_time = benchmark_save.stop();
-//  }
-//}
-
 bool frame_renderer::is_world_dirty(const scene& in_scene)
 {
   return ajs.scene_root.get_type_hash() != in_scene.get_type_hash();
@@ -404,9 +353,6 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, uint32_t depth)
       return c_diffuse;
     }
     assert(false);
-    // edit: scatter_pdf and pdf.value do the same thing! no sense
-    //float scattering_pdf =  hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
-    //vec3 c_scatter = (sr.attenuation * scattering_pdf * ray_color(scattered, in_background, depth - 1)) / pdf_val;  // divide by zero causes black screen!
   }
 }
 

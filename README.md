@@ -21,6 +21,7 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
     - DirectX 11 based display
 	- Anti aliasing
 	- No denoising
+    - Starting code for the review: frame_renderer::render() and frame_renderer::ray_color()
 - Renderer variables
     - Resolution
     - Work distribution: stripes, chunks
@@ -56,10 +57,11 @@ DirectX 11
 
 [ocornut/imgui] v1.87
 
-[nlohmann/json] 3.10.5
+[nlohmann/json] v3.10.5
 
-[PIX for Windows] 1.0.220124001
+[PIX for Windows] v1.0.220124001
 
+[STB Image] v2.27
 
 [//]: # (links)
 
@@ -67,4 +69,5 @@ DirectX 11
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>
+   [STB Image]: <http://nothings.org/stb>
    [Ray Tracing in One Weekend]: <https://raytracing.github.io>
