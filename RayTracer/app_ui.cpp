@@ -100,13 +100,23 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   {
     model.render_pressed = true;
   }
-  if (state.renderer.is_working())
+  if (state.renderer != nullptr)
+  {
+    if (state.renderer->is_working())
+    {
+      ImGui::SameLine();
+      char name[20];
+      std::sprintf(name, "Rendering with %s", state.renderer->get_name().c_str());
+      ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
+    }
+    ImGui::Text("Last render time = %lld [ms]", state.renderer->get_render_time() / 1000);
+    ImGui::Text("Last save time = %lld [ms]", state.renderer->get_save_time() / 1000);
+  }
+  else
   {
     ImGui::SameLine();
-    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "WORKING");
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.5f, 1.0f), "No renderer active");
   }
-  ImGui::Text("Last render time = %lld [ms]", state.renderer.get_render_time() / 1000);
-  ImGui::Text("Last save time = %lld [ms]", state.renderer.get_save_time() / 1000);
 }
 
 void draw_output_window(output_window_model& model, app_state& state)

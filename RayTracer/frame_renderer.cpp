@@ -11,11 +11,11 @@
 #include "materials.h"
 #include "pdf.h"
 
-frame_renderer::frame_renderer()
+async_renderer_base::async_renderer_base()
 {
-  worker_thread = std::thread(&frame_renderer::async_job, this);
+  worker_thread = std::thread(&async_renderer_base::async_job, this);
 }
-frame_renderer::~frame_renderer()
+async_renderer_base::~async_renderer_base()
 {
   ajs.requested_stop = true;
   worker_semaphore.release();
@@ -24,7 +24,7 @@ frame_renderer::~frame_renderer()
   if (ajs.img_bgr != nullptr) delete ajs.img_bgr;
 }
 
-void frame_renderer::set_config(const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state)
+void async_renderer_base::set_config(const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state)
 {
   if (ajs.is_working) return;
 
@@ -61,7 +61,7 @@ void frame_renderer::set_config(const renderer_config& in_settings, const scene&
   std::cout << "Frame renderer: " << ajs.image_width << "x" << ajs.image_height << std::endl;
 }
 
-void frame_renderer::render_single_async()
+void async_renderer_base::render_single_async()
 {
   if (ajs.is_working) return;
   
@@ -69,22 +69,22 @@ void frame_renderer::render_single_async()
   worker_semaphore.release();
 }
 
-bool frame_renderer::is_world_dirty(const scene& in_scene)
+bool async_renderer_base::is_world_dirty(const scene& in_scene)
 {
   return ajs.scene_root.get_type_hash() != in_scene.get_type_hash();
 }
 
-bool frame_renderer::is_renderer_setting_dirty(const renderer_config& in_settings)
+bool async_renderer_base::is_renderer_setting_dirty(const renderer_config& in_settings)
 {
   return ajs.settings.get_type_hash() != in_settings.get_type_hash();
 }
 
-bool frame_renderer::is_camera_setting_dirty(const camera_config& in_camera_state)
+bool async_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_state)
 {
   return ajs.cam.get_type_hash() != in_camera_state.get_type_hash();
 }
 
-void frame_renderer::async_job()
+void async_renderer_base::async_job()
 {
   while (true)
   {
@@ -108,7 +108,20 @@ void frame_renderer::async_job()
   }
 }
 
-void frame_renderer::render()
+void async_renderer_base::save(const char* file_name)
+{
+  ajs.img_bgr->save_to_file(file_name);
+}
+
+
+
+
+std::string shirley_renderer::get_name() const
+{
+    return "Shirley";
+}
+
+void shirley_renderer::render()
 {
   // Build chunks of work
   std::vector<chunk> chunks;
@@ -121,11 +134,6 @@ void frame_renderer::render()
     std::shuffle(chunks.begin(), chunks.end(), g);
   }
 
-  //for (const auto& ch : chunks)
-  //{
-  //  std::cout << "Chunk=" << ch.id << " x=" << ch.x << " y=" << ch.y << " size_x=" << ch.size_x << " size_y=" << ch.size_y << std::endl;
-  //}
-  
   // Process chunks on parallel
   if (ajs.settings.threading_strategy == threading_strategy_type::none)
   {
@@ -143,16 +151,16 @@ void frame_renderer::render()
       pool.queue_job([&]() { render_chunk(ch); });
     }
     pool.start(ajs.settings.threads_num > 0 ? ajs.settings.threads_num : std::thread::hardware_concurrency());
-    while (pool.is_busy()) { }
+    while (pool.is_busy()) {}
     pool.stop();
   }
   else if (ajs.settings.threading_strategy == threading_strategy_type::pll_for_each)
   {
     concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
-  }  
+  }
 }
 
-void frame_renderer::render_chunk(const chunk& in_chunk)
+void shirley_renderer::render_chunk(const chunk& in_chunk)
 {
   std::thread::id thread_id = std::this_thread::get_id();
 
@@ -204,7 +212,7 @@ void frame_renderer::render_chunk(const chunk& in_chunk)
   }
 }
 
-vec3 inline frame_renderer::ray_color(const ray& in_ray, uint32_t depth)
+vec3 inline shirley_renderer::ray_color(const ray& in_ray, uint32_t depth)
 {
   if (depth <= 0)
   {
@@ -271,7 +279,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, uint32_t depth)
           pdf_direction = light_pdf.get_direction();
           pdf_val = light_pdf.get_value(pdf_direction);
         }
-        else if(is_almost_equal(1.0f, ajs.settings.pdf_ratio) || random_cache::get_float_0_1() < ajs.settings.pdf_ratio)
+        else if (is_almost_equal(1.0f, ajs.settings.pdf_ratio) || random_cache::get_float_0_1() < ajs.settings.pdf_ratio)
         {
           pdf_direction = material_pdf.get_direction();
           pdf_val = material_pdf.get_value(pdf_direction);
@@ -325,7 +333,7 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, uint32_t depth)
 
       return c_emissive + color_from_scatter;
     }
-    else if (option==1)
+    else if (option == 1)
     {
       // light ray only
       hittable* light = ajs.scene_root.get_random_light();
@@ -339,24 +347,19 @@ vec3 inline frame_renderer::ray_color(const ray& in_ray, uint32_t depth)
       vec3 c_diffuse = sr.attenuation * scattering_pdf * ray_color(light_ray, depth - 1) / light_pdf_val;
       return c_diffuse;
     }
-    else if (option==2)
+    else if (option == 2)
     {
       // material ray only
       cosine_pdf material_pdf = cosine_pdf(hit.normal);
       vec3 pdf_direction = material_pdf.get_direction();
       float pdf_val = material_pdf.get_value(pdf_direction);
       ray scattered = ray(hit.p, pdf_direction);
-      
+
       float scattering_pdf = hit.material_ptr->scatter_pdf(in_ray, hit, scattered);
-      
+
       vec3 c_diffuse = sr.attenuation * scattering_pdf * ray_color(scattered, depth - 1) / pdf_val;
       return c_diffuse;
     }
     assert(false);
   }
-}
-
-void frame_renderer::save(const char* file_name)
-{
-  ajs.img_bgr->save_to_file(file_name);
 }

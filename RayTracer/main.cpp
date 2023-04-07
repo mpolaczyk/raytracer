@@ -149,51 +149,54 @@ int main(int, char**)
       draw_scene_editor_window(state.sew_model, state);
     
       // Check if rendering is needed and do it 
-      if (!state.renderer.is_working() && (state.rw_model.rp_model.render_pressed || state.ow_model.auto_render))
+      if (state.renderer != nullptr)
       {
-        if (state.output_width != state.renderer_setting.resolution_horizontal || state.output_height != state.renderer_setting.resolution_vertical)
+        bool is_working = state.renderer->is_working();
+        if (!is_working && (state.rw_model.rp_model.render_pressed || state.ow_model.auto_render))
         {
-          state.output_force_recreate = true;
-        }
-    
-        bool do_render = state.rw_model.rp_model.render_pressed
-          || state.output_force_recreate
-          || state.renderer.is_world_dirty(state.scene_root)
-          || state.renderer.is_renderer_setting_dirty(state.renderer_setting)
-          || state.renderer.is_camera_setting_dirty(state.camera_setting);
-    
-        if (do_render)
-        {
-          state.scene_root.build_boxes();
-          state.scene_root.update_materials(&state.materials);
-          state.scene_root.override_texture_material(state.default_material);
-          state.scene_root.query_lights();
-    
-          update_default_spawn_position(state);
-    
-          state.output_width = state.renderer_setting.resolution_horizontal;
-          state.output_height = state.renderer_setting.resolution_vertical;
-    
-          state.renderer.set_config(state.renderer_setting, state.scene_root, state.camera_setting);
-          state.renderer.render_single_async();
-    
-          if (state.output_force_recreate)
+          if (state.output_width != state.renderer_setting.resolution_horizontal || state.output_height != state.renderer_setting.resolution_vertical)
           {
-            bool ret = dx11::LoadTextureFromBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
-            IM_ASSERT(ret);
-            state.output_force_recreate = false;
+            state.output_force_recreate = true;
           }
-    
-          state.rw_model.rp_model.render_pressed = false;
+
+          bool do_render = state.rw_model.rp_model.render_pressed
+            || state.output_force_recreate
+            || state.renderer->is_world_dirty(state.scene_root)
+            || state.renderer->is_renderer_setting_dirty(state.renderer_setting)
+            || state.renderer->is_camera_setting_dirty(state.camera_setting);
+
+          if (do_render)
+          {
+            state.scene_root.build_boxes();
+            state.scene_root.update_materials(&state.materials);
+            state.scene_root.override_texture_material(state.default_material);
+            state.scene_root.query_lights();
+
+            update_default_spawn_position(state);
+
+            state.output_width = state.renderer_setting.resolution_horizontal;
+            state.output_height = state.renderer_setting.resolution_vertical;
+
+            state.renderer->set_config(state.renderer_setting, state.scene_root, state.camera_setting);
+            state.renderer->render_single_async();
+
+            if (state.output_force_recreate)
+            {
+              bool ret = dx11::LoadTextureFromBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
+              IM_ASSERT(ret);
+              state.output_force_recreate = false;
+            }
+
+            state.rw_model.rp_model.render_pressed = false;
+          }
         }
-      }
-    
-      // Update the output panel while rendering
-      bool is_working = state.renderer.is_working();
-      if (is_working || (!is_working && renderer_worked_last_frame))
-      {
-        dx11::UpdateTextureBuffer(state.renderer.get_img_rgb(), state.output_width, state.output_height, state.output_texture);
-        renderer_worked_last_frame = is_working;
+
+        // Update the output panel while rendering
+        if (is_working || (!is_working && renderer_worked_last_frame))
+        {
+          dx11::UpdateTextureBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, state.output_texture);
+          renderer_worked_last_frame = is_working;
+        }
       }
             
       // UI rendering

@@ -86,6 +86,15 @@ struct scene_editor_window_model
 class app_state
 {
 public:
+
+  app_state()
+  {
+    renderer = new shirley_renderer();
+  }
+  ~app_state()
+  {
+    delete renderer;
+  }
   // Scene state
   scene scene_root;
   camera_config camera_setting;
@@ -108,7 +117,7 @@ public:
   struct ID3D11ShaderResourceView* output_srv = nullptr;
   struct ID3D11Texture2D* output_texture = nullptr;
   bool output_force_recreate = true;
-  frame_renderer renderer;
+  async_renderer_base* renderer;
   material* default_material = nullptr;
   vec3 center_of_scene;
   float distance_to_center_of_scene = 0.0f;

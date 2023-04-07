@@ -77,41 +77,34 @@ public:
   }
 };
 
-class frame_renderer
+class async_renderer_base
 {
 public:
-  frame_renderer();
-  ~frame_renderer();
+  async_renderer_base();
+  ~async_renderer_base();
 
-  // Only allowed when worker thread is not running
+  // Renderer instance interface
+  virtual std::string get_name() const = 0;
+  virtual void render() = 0;
+
+  // Renderer public interface. Usage:
+  // 1. Set scene, camera and settings first
   void set_config(const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state);
+  // 2. Request work
   void render_single_async();
+  
+  // State checks
   bool is_world_dirty(const scene& in_scene);
   bool is_renderer_setting_dirty(const renderer_config& in_settings);
   bool is_camera_setting_dirty(const camera_config& in_camera_state);
-
-  // Allowed when worker thread is running
   bool is_working() const { return ajs.is_working; }
+
   uint64_t get_render_time() const { return ajs.benchmark_render_time; }
   uint64_t get_save_time() const { return ajs.benchmark_save_time; }
   uint8_t* get_img_bgr() { return ajs.img_bgr->get_buffer(); }
   uint8_t* get_img_rgb() { return ajs.img_rgb->get_buffer(); }
 
-  //void render_multiple(const scene& in_scene, const std::vector<std::pair<uint32_t, camera_config>>& in_camera_states);
-  //void render_single(const scene& in_scene, const camera_config& in_camera_state, int frame_id = 0);
-
-private:
-  void render();
-  void render_chunk(const chunk& in_chunk);
-  vec3 ray_color(const ray& in_ray, uint32_t depth);
-  void save(const char* file_name);
-
-  // Synchronization - fire and forget
-  // No job cancellation
-  std::thread worker_thread;
-  std::binary_semaphore worker_semaphore{ 0 };
-  void async_job();
-
+protected:
   // Data assess pattern for async job state
   // - RW for job thread
   // - R for main thread while processing, only through const getters
@@ -134,4 +127,25 @@ private:
     uint64_t benchmark_render_time = 0;
     uint64_t benchmark_save_time = 0;
   } ajs; 
+
+private:
+  // Synchronization - fire and forget
+  // No job cancellation
+  std::thread worker_thread;
+  std::binary_semaphore worker_semaphore{ 0 };
+  void async_job();
+  void save(const char* file_name);
+};
+
+// Based on https://raytracing.github.io/ by Peter Shirley
+class shirley_renderer : public async_renderer_base
+{
+public:
+  virtual std::string get_name() const override;
+
+private:
+  virtual void render() override;
+
+  void render_chunk(const chunk& in_chunk);
+  vec3 ray_color(const ray& in_ray, uint32_t depth);
 };
