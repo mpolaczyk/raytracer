@@ -3,11 +3,17 @@
 
 Author: [planet620]
 
-Based on books: [Ray Tracing in One Weekend] by Peter Shirley
-
 ![User interface](Screenshot.png)
 
-### Features
+
+## Releases
+
+### [2.0]
+- TBA
+
+### [1.0]
+Based on books: [Ray Tracing in One Weekend] by Peter Shirley
+
 - Editor UI
     - Scene setup: spawn/delete/move/edit object properties
     - Render parameters
@@ -66,6 +72,7 @@ DirectX 11
 [//]: # (links)
 
    [planet620]: <https://mpolaczyk.pl>
+   [1.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_1.0>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>
