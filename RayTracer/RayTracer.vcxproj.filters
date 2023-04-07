@@ -24,29 +24,75 @@
     <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="processing\async_renderer_base.cpp" />
-    <ClCompile Include="processing\benchmark.cpp" />
-    <ClCompile Include="processing\chunk_generator.cpp" />
-    <ClCompile Include="processing\thread_pool.cpp" />
-    <ClCompile Include="renderers\rtow_renderer.cpp" />
-    <ClCompile Include="math\aabb.cpp" />
-    <ClCompile Include="math\common.cpp" />
-    <ClCompile Include="math\hittables.cpp" />
-    <ClCompile Include="math\materials.cpp" />
-    <ClCompile Include="math\vec3.cpp" />
-    <ClCompile Include="gfx\bmp.cpp" />
-    <ClCompile Include="gfx\dx11_helper.cpp" />
-    <ClCompile Include="app\app.cpp" />
-    <ClCompile Include="app\exceptions.cpp" />
-    <ClCompile Include="app\json\app_json.cpp" />
-    <ClCompile Include="app\json\camera_json.cpp" />
-    <ClCompile Include="app\json\frame_renderer_json.cpp" />
-    <ClCompile Include="app\json\hittables_json.cpp" />
-    <ClCompile Include="app\json\materials_json.cpp" />
-    <ClCompile Include="app\json\vec3_json.cpp" />
-    <ClCompile Include="app\ui\app_ui.cpp" />
-    <ClCompile Include="app\ui\hittables_ui.cpp" />
-    <ClCompile Include="app\ui\materials_ui.cpp" />
+    <ClCompile Include="gfx\bmp.cpp">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\dx11_helper.cpp">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="processing\async_renderer_base.cpp">
+      <Filter>processing</Filter>
+    </ClCompile>
+    <ClCompile Include="processing\benchmark.cpp">
+      <Filter>processing</Filter>
+    </ClCompile>
+    <ClCompile Include="processing\chunk_generator.cpp">
+      <Filter>processing</Filter>
+    </ClCompile>
+    <ClCompile Include="processing\thread_pool.cpp">
+      <Filter>processing</Filter>
+    </ClCompile>
+    <ClCompile Include="app\app.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="app\exceptions.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="app\ui\app_ui.cpp">
+      <Filter>app\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="app\ui\hittables_ui.cpp">
+      <Filter>app\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="app\ui\materials_ui.cpp">
+      <Filter>app\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="app\json\app_json.cpp">
+      <Filter>app\json</Filter>
+    </ClCompile>
+    <ClCompile Include="app\json\camera_json.cpp">
+      <Filter>app\json</Filter>
+    </ClCompile>
+    <ClCompile Include="app\json\frame_renderer_json.cpp">
+      <Filter>app\json</Filter>
+    </ClCompile>
+    <ClCompile Include="app\json\hittables_json.cpp">
+      <Filter>app\json</Filter>
+    </ClCompile>
+    <ClCompile Include="app\json\materials_json.cpp">
+      <Filter>app\json</Filter>
+    </ClCompile>
+    <ClCompile Include="app\json\vec3_json.cpp">
+      <Filter>app\json</Filter>
+    </ClCompile>
+    <ClCompile Include="renderers\rtow_renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="math\aabb.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\common.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\hittables.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\materials.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\vec3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -74,71 +120,103 @@
     <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="processing\async_renderer_base.h" />
-    <ClInclude Include="processing\benchmark.h" />
-    <ClInclude Include="processing\chunk_generator.h" />
-    <ClInclude Include="processing\thread_pool.h" />
-    <ClInclude Include="renderers\rtow_renderer.h" />
-    <ClInclude Include="math\aabb.h" />
-    <ClInclude Include="math\camera.h" />
-    <ClInclude Include="math\common.h" />
-    <ClInclude Include="math\fpexcept.h" />
-    <ClInclude Include="math\hittables.h" />
-    <ClInclude Include="math\materials.h" />
-    <ClInclude Include="math\onb.h" />
-    <ClInclude Include="math\pdf.h" />
-    <ClInclude Include="math\ray.h" />
-    <ClInclude Include="math\textures.h" />
-    <ClInclude Include="math\vec3.h" />
-    <ClInclude Include="gfx\bmp.h" />
-    <ClInclude Include="gfx\dx11_helper.h" />
-    <ClInclude Include="gfx\stb_image.h" />
-    <ClInclude Include="app\app.h" />
-    <ClInclude Include="app\exceptions.h" />
-    <ClInclude Include="app\json\serializable.h" />
+    <ClInclude Include="gfx\bmp.h">
+      <Filter>gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="gfx\dx11_helper.h">
+      <Filter>gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="gfx\stb_image.h">
+      <Filter>gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="processing\async_renderer_base.h">
+      <Filter>processing</Filter>
+    </ClInclude>
+    <ClInclude Include="processing\benchmark.h">
+      <Filter>processing</Filter>
+    </ClInclude>
+    <ClInclude Include="processing\chunk_generator.h">
+      <Filter>processing</Filter>
+    </ClInclude>
+    <ClInclude Include="processing\thread_pool.h">
+      <Filter>processing</Filter>
+    </ClInclude>
+    <ClInclude Include="app\app.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="app\exceptions.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="app\json\serializable.h">
+      <Filter>app\json</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers\rtow_renderer.h">
+      <Filter>renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\aabb.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\camera.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\common.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\fpexcept.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\hittables.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\materials.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\onb.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\pdf.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\ray.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\textures.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\vec3.h">
+      <Filter>math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
       <UniqueIdentifier>{f5bcb8ed-7e79-47a2-8101-c72f6f11618b}</UniqueIdentifier>
     </Filter>
     <Filter Include="gfx">
-      <UniqueIdentifier>{6634c2ce-df53-41da-b630-a8150de3856e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="app">
-      <UniqueIdentifier>{aa90aa1e-0c9a-4fbc-9b5f-b7af4c45a09f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="math">
-      <UniqueIdentifier>{02ce4a4f-4175-4e95-bbab-11cc90f822e7}</UniqueIdentifier>
+      <UniqueIdentifier>{f3a219ff-2773-4511-96db-7a99edbb2a8a}</UniqueIdentifier>
     </Filter>
     <Filter Include="processing">
-      <UniqueIdentifier>{e03e927c-53a4-4fd8-b5a7-be63b02733a8}</UniqueIdentifier>
+      <UniqueIdentifier>{41cda635-464e-493b-889e-dee157ce371c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app">
+      <UniqueIdentifier>{3409d441-34d2-487e-b09f-150b0062d9d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="app\json">
-      <UniqueIdentifier>{c991e542-b0a4-43d5-b2fa-80568731f0f1}</UniqueIdentifier>
+      <UniqueIdentifier>{43d825a4-06ed-4597-aa25-31b1ab75a5a2}</UniqueIdentifier>
     </Filter>
     <Filter Include="app\ui">
-      <UniqueIdentifier>{afa0e002-4770-4072-aca4-7d8df9274bc4}</UniqueIdentifier>
+      <UniqueIdentifier>{8594a8f2-8463-427c-86ba-f6856f062b5c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Project">
-      <UniqueIdentifier>{f938f064-b15e-460d-9598-3ed15cb758ef}</UniqueIdentifier>
+    <Filter Include="renderers">
+      <UniqueIdentifier>{053f23db-0ee8-4515-80b4-ee8376594f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{baec1bfd-a43e-4749-98b8-f37ed9248f5c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Project\rendering.json">
-      <Filter>Project</Filter>
-    </None>
-    <None Include="..\Project\scene.json">
-      <Filter>Project</Filter>
-    </None>
-    <None Include="..\Project\window.json">
-      <Filter>Project</Filter>
-    </None>
-    <None Include="..\Project\imgui.ini">
-      <Filter>Project</Filter>
-    </None>
     <None Include="..\README.md" />
   </ItemGroup>
 </Project>

@@ -176,35 +176,35 @@ namespace paths
     return oss.str();
   }
 
-  std::string get_project_dir()
+  std::string get_workspace_dir()
   {
     std::string working_dir = get_working_dir();
     std::ostringstream oss;
-    oss << working_dir << "..\\..\\Project\\";
+    oss << working_dir << "..\\..\\Workspace\\";
     return oss.str();
   }
 
-  std::string get_project_file_path(const char* project_file_name)
+  std::string get_workspace_file_path(const char* workspace_file_name)
   {
-    std::string project_dir = get_project_dir();
+    std::string project_dir = get_workspace_dir();
     std::ostringstream oss;
-    oss << project_dir << project_file_name;
+    oss << project_dir << workspace_file_name;
     return oss.str();
   }
 
   std::string get_window_file_path()
   {
-    return get_project_file_path("window.json");
+    return get_workspace_file_path("window.json");
   }
 
   std::string get_scene_file_path()
   {
-    return get_project_file_path("scene.json");
+    return get_workspace_file_path("scene.json");
   }
 
   std::string get_rendering_file_path()
   {
-    return get_project_file_path("rendering.json");
+    return get_workspace_file_path("rendering.json");
   }
 
   std::string get_render_output_file_path()
@@ -212,11 +212,11 @@ namespace paths
     std::time_t result = std::time(nullptr);
     std::ostringstream oss;
     oss << "output_" << result << ".bmp";
-    return get_project_file_path(oss.str().c_str());
+    return get_workspace_file_path(oss.str().c_str());
   }
 
   std::string get_imgui_file_path()
   {
-    return get_project_file_path("imgui.ini");
+    return get_workspace_file_path("imgui.ini");
   }
 }

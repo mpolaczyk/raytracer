@@ -222,10 +222,10 @@ namespace paths
 {
   // Directories
   std::string get_working_dir();
-  std::string get_project_dir();
+  std::string get_workspace_dir();
 
   // Files
-  std::string get_project_file_path(const char* project_file_name);
+  std::string get_workspace_file_path(const char* project_file_name);
   std::string get_window_file_path();
   std::string get_scene_file_path();
   std::string get_rendering_file_path();

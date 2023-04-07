@@ -12,5 +12,5 @@
 *.ipdb
 Archive/*
 Intermediate/*
-Project/*.bmp
+Workspace/*.bmp
 Build/x64_Debug/*

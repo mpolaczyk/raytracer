@@ -56,7 +56,7 @@ int main(int, char**)
   try
   {
     std::cout << "Working dir: " << paths::get_working_dir().c_str() << std::endl;
-    std::cout << "Project dir: " << paths::get_project_dir().c_str() << std::endl;
+    std::cout << "Workspace dir: " << paths::get_workspace_dir().c_str() << std::endl;
 
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
