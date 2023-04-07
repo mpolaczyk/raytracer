@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "camera.h"
+#include "math/camera.h"
 
 
 nlohmann::json camera_config::serialize()

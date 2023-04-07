@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;ImTextureID=ImU64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirtParty\json-3.10.5\include;$(SolutionDir)ThirtParty\imgui_v1.87;$(SolutionDir)ThirtParty\imgui_v1.87\backends;$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirtParty\json-3.10.5\include;$(SolutionDir)ThirtParty\imgui_v1.87;$(SolutionDir)ThirtParty\imgui_v1.87\backends;$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -91,7 +91,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirtParty\json-3.10.5\include;$(SolutionDir)ThirtParty\imgui_v1.87;$(SolutionDir)ThirtParty\imgui_v1.87\backends;$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirtParty\json-3.10.5\include;$(SolutionDir)ThirtParty\imgui_v1.87;$(SolutionDir)ThirtParty\imgui_v1.87\backends;$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -138,34 +138,34 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="aabb.cpp" />
-    <ClCompile Include="app.cpp" />
-    <ClCompile Include="app_json.cpp" />
-    <ClCompile Include="app_ui.cpp" />
-    <ClCompile Include="benchmark.cpp" />
-    <ClCompile Include="bmp.cpp" />
-    <ClCompile Include="camera_json.cpp" />
-    <ClCompile Include="chunk_generator.cpp" />
-    <ClCompile Include="common.cpp" />
-    <ClCompile Include="dx11_helper.cpp" />
-    <ClCompile Include="exceptions.cpp" />
-    <ClCompile Include="async_renderer_base.cpp" />
-    <ClCompile Include="frame_renderer_json.cpp" />
-    <ClCompile Include="hittables_json.cpp" />
-    <ClCompile Include="hittables_ui.cpp" />
-    <ClCompile Include="hittables.cpp" />
+    <ClCompile Include="app\app.cpp" />
+    <ClCompile Include="app\exceptions.cpp" />
+    <ClCompile Include="app\json\app_json.cpp" />
+    <ClCompile Include="app\json\camera_json.cpp" />
+    <ClCompile Include="app\json\frame_renderer_json.cpp" />
+    <ClCompile Include="app\json\hittables_json.cpp" />
+    <ClCompile Include="app\json\materials_json.cpp" />
+    <ClCompile Include="app\json\vec3_json.cpp" />
+    <ClCompile Include="app\ui\app_ui.cpp" />
+    <ClCompile Include="app\ui\hittables_ui.cpp" />
+    <ClCompile Include="app\ui\materials_ui.cpp" />
+    <ClCompile Include="gfx\bmp.cpp" />
+    <ClCompile Include="gfx\dx11_helper.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="materials.cpp" />
-    <ClCompile Include="materials_json.cpp" />
-    <ClCompile Include="materials_ui.cpp" />
-    <ClCompile Include="rtow_renderer.cpp" />
+    <ClCompile Include="math\aabb.cpp" />
+    <ClCompile Include="math\common.cpp" />
+    <ClCompile Include="math\hittables.cpp" />
+    <ClCompile Include="math\materials.cpp" />
+    <ClCompile Include="math\vec3.cpp" />
+    <ClCompile Include="processing\async_renderer_base.cpp" />
+    <ClCompile Include="processing\benchmark.cpp" />
+    <ClCompile Include="processing\chunk_generator.cpp" />
+    <ClCompile Include="processing\thread_pool.cpp" />
+    <ClCompile Include="renderers\rtow_renderer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="thread_pool.cpp" />
-    <ClCompile Include="vec3.cpp" />
-    <ClCompile Include="vec3_json.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx11.h" />
@@ -176,29 +176,29 @@
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imstb_rectpack.h" />
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imstb_textedit.h" />
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imstb_truetype.h" />
-    <ClInclude Include="aabb.h" />
-    <ClInclude Include="benchmark.h" />
-    <ClInclude Include="bmp.h" />
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="chunk_generator.h" />
-    <ClInclude Include="common.h" />
-    <ClInclude Include="dx11_helper.h" />
-    <ClInclude Include="exceptions.h" />
-    <ClInclude Include="fpexcept.h" />
-    <ClInclude Include="async_renderer_base.h" />
-    <ClInclude Include="hittables.h" />
-    <ClInclude Include="materials.h" />
-    <ClInclude Include="onb.h" />
-    <ClInclude Include="pdf.h" />
-    <ClInclude Include="rtow_renderer.h" />
-    <ClInclude Include="serializable.h" />
-    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="app\app.h" />
+    <ClInclude Include="app\exceptions.h" />
+    <ClInclude Include="app\json\serializable.h" />
+    <ClInclude Include="gfx\bmp.h" />
+    <ClInclude Include="gfx\dx11_helper.h" />
+    <ClInclude Include="gfx\stb_image.h" />
+    <ClInclude Include="math\aabb.h" />
+    <ClInclude Include="math\camera.h" />
+    <ClInclude Include="math\common.h" />
+    <ClInclude Include="math\fpexcept.h" />
+    <ClInclude Include="math\hittables.h" />
+    <ClInclude Include="math\materials.h" />
+    <ClInclude Include="math\onb.h" />
+    <ClInclude Include="math\pdf.h" />
+    <ClInclude Include="math\ray.h" />
+    <ClInclude Include="math\textures.h" />
+    <ClInclude Include="math\vec3.h" />
+    <ClInclude Include="processing\async_renderer_base.h" />
+    <ClInclude Include="processing\benchmark.h" />
+    <ClInclude Include="processing\chunk_generator.h" />
+    <ClInclude Include="processing\thread_pool.h" />
+    <ClInclude Include="renderers\rtow_renderer.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="ray.h" />
-    <ClInclude Include="textures.h" />
-    <ClInclude Include="thread_pool.h" />
-    <ClInclude Include="app.h" />
-    <ClInclude Include="vec3.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes.txt" />

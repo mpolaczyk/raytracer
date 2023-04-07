@@ -3,33 +3,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="aabb.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="hittables.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="vec3.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="benchmark.cpp">
-      <Filter>processing</Filter>
-    </ClCompile>
-    <ClCompile Include="chunk_generator.cpp">
-      <Filter>processing</Filter>
-    </ClCompile>
-    <ClCompile Include="async_renderer_base.cpp">
-      <Filter>processing</Filter>
-    </ClCompile>
-    <ClCompile Include="thread_pool.cpp">
-      <Filter>processing</Filter>
-    </ClCompile>
-    <ClCompile Include="materials.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="common.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="..\ThirtParty\imgui_v1.87\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -51,87 +24,32 @@
     <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="dx11_helper.cpp">
-      <Filter>gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="bmp.cpp">
-      <Filter>gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="app.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="camera_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="frame_renderer_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="hittables_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="materials_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="vec3_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="app_ui.cpp">
-      <Filter>app\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="hittables_ui.cpp">
-      <Filter>app\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="materials_ui.cpp">
-      <Filter>app\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="app_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="exceptions.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="rtow_renderer.cpp">
-      <Filter>processing</Filter>
-    </ClCompile>
+    <ClCompile Include="processing\async_renderer_base.cpp" />
+    <ClCompile Include="processing\benchmark.cpp" />
+    <ClCompile Include="processing\chunk_generator.cpp" />
+    <ClCompile Include="processing\thread_pool.cpp" />
+    <ClCompile Include="renderers\rtow_renderer.cpp" />
+    <ClCompile Include="math\aabb.cpp" />
+    <ClCompile Include="math\common.cpp" />
+    <ClCompile Include="math\hittables.cpp" />
+    <ClCompile Include="math\materials.cpp" />
+    <ClCompile Include="math\vec3.cpp" />
+    <ClCompile Include="gfx\bmp.cpp" />
+    <ClCompile Include="gfx\dx11_helper.cpp" />
+    <ClCompile Include="app\app.cpp" />
+    <ClCompile Include="app\exceptions.cpp" />
+    <ClCompile Include="app\json\app_json.cpp" />
+    <ClCompile Include="app\json\camera_json.cpp" />
+    <ClCompile Include="app\json\frame_renderer_json.cpp" />
+    <ClCompile Include="app\json\hittables_json.cpp" />
+    <ClCompile Include="app\json\materials_json.cpp" />
+    <ClCompile Include="app\json\vec3_json.cpp" />
+    <ClCompile Include="app\ui\app_ui.cpp" />
+    <ClCompile Include="app\ui\hittables_ui.cpp" />
+    <ClCompile Include="app\ui\materials_ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="aabb.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="ray.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="hittables.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="textures.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="vec3.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="benchmark.h">
-      <Filter>processing</Filter>
-    </ClInclude>
-    <ClInclude Include="chunk_generator.h">
-      <Filter>processing</Filter>
-    </ClInclude>
-    <ClInclude Include="async_renderer_base.h">
-      <Filter>processing</Filter>
-    </ClInclude>
-    <ClInclude Include="thread_pool.h">
-      <Filter>processing</Filter>
-    </ClInclude>
-    <ClInclude Include="materials.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imconfig.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -156,36 +74,28 @@
     <ClInclude Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_win32.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="dx11_helper.h">
-      <Filter>gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="bmp.h">
-      <Filter>gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="app.h">
-      <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="serializable.h">
-      <Filter>app\json</Filter>
-    </ClInclude>
-    <ClInclude Include="onb.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="fpexcept.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="exceptions.h">
-      <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="pdf.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="rtow_renderer.h">
-      <Filter>processing</Filter>
-    </ClInclude>
+    <ClInclude Include="processing\async_renderer_base.h" />
+    <ClInclude Include="processing\benchmark.h" />
+    <ClInclude Include="processing\chunk_generator.h" />
+    <ClInclude Include="processing\thread_pool.h" />
+    <ClInclude Include="renderers\rtow_renderer.h" />
+    <ClInclude Include="math\aabb.h" />
+    <ClInclude Include="math\camera.h" />
+    <ClInclude Include="math\common.h" />
+    <ClInclude Include="math\fpexcept.h" />
+    <ClInclude Include="math\hittables.h" />
+    <ClInclude Include="math\materials.h" />
+    <ClInclude Include="math\onb.h" />
+    <ClInclude Include="math\pdf.h" />
+    <ClInclude Include="math\ray.h" />
+    <ClInclude Include="math\textures.h" />
+    <ClInclude Include="math\vec3.h" />
+    <ClInclude Include="gfx\bmp.h" />
+    <ClInclude Include="gfx\dx11_helper.h" />
+    <ClInclude Include="gfx\stb_image.h" />
+    <ClInclude Include="app\app.h" />
+    <ClInclude Include="app\exceptions.h" />
+    <ClInclude Include="app\json\serializable.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

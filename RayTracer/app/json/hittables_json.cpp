@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "hittables.h"
+#include "math/hittables.h"
 
 
 nlohmann::json hittable::serialize()

@@ -7,7 +7,7 @@
 #include "hittables.h"
 #include "textures.h"
 #include "pdf.h"
-#include "serializable.h"
+#include "app/json/serializable.h"
 
 enum class material_class  // No RTTI, simple type detection
 {

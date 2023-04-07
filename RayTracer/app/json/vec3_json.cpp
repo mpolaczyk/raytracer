@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "vec3.h"
+#include "math/vec3.h"
 
 
 nlohmann::json vec3::serialize()

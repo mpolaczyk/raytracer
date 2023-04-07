@@ -3,7 +3,7 @@
 #include "vec3.h"
 #include "ray.h"
 
-#include "serializable.h"
+#include "app/json/serializable.h"
 
 struct plane
 {

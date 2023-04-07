@@ -7,7 +7,7 @@
 #include "ray.h"
 #include "aabb.h"
 
-#include "serializable.h"
+#include "app/json/serializable.h"
 
 class material;
 class material_instances;

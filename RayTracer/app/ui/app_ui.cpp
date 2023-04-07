@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
 #include "imgui.h"
-#include "app.h"
-#include "chunk_generator.h"
-#include "async_renderer_base.h"
+#include "app/app.h"
+#include "processing/chunk_generator.h"
+#include "processing/async_renderer_base.h"
 
 void draw_raytracer_window(raytracer_window_model& model, app_state& state)
 {

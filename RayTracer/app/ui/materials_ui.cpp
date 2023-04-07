@@ -2,7 +2,7 @@
 
 #include <iosfwd>
 
-#include "materials.h"
+#include "math/materials.h"
 #include "imgui.h"
 
 bool material_instances::is_id_in_use(const std::string& id) const

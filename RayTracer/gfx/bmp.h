@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "math/common.h"
 
 namespace bmp
 {

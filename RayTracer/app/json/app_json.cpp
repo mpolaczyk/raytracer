@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-#include "app.h"
+#include "app/app.h"
 
 
 nlohmann::json window_config::serialize()

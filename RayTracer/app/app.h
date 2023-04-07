@@ -1,11 +1,11 @@
 #pragma once
 
-#include "camera.h"
-#include "async_renderer_base.h"
-#include "hittables.h"
-#include "materials.h"
+#include "math/camera.h"
+#include "processing/async_renderer_base.h"
+#include "math/hittables.h"
+#include "math/materials.h"
 
-#include "serializable.h"
+#include "app/json/serializable.h"
 
 class window_config : serializable<nlohmann::json>
 {

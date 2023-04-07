@@ -4,9 +4,9 @@
 #include <ppl.h>
 
 #include "rtow_renderer.h"
-#include "thread_pool.h"
+#include "processing/thread_pool.h"
 
-#include "materials.h"
+#include "math/materials.h"
 
 std::string rtow_renderer::get_name() const
 {

@@ -5,11 +5,11 @@
 #include <vector>
 #include <ppl.h>
 
-#include "bmp.h"
+#include "gfx/bmp.h"
 #include "thread_pool.h"
-#include "hittables.h"
-#include "materials.h"
-#include "pdf.h"
+#include "math/hittables.h"
+#include "math/materials.h"
+#include "math/pdf.h"
 
 async_renderer_base::async_renderer_base()
 {

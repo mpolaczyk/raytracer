@@ -3,14 +3,14 @@
 #include <thread>
 #include <semaphore>
 
-#include "vec3.h"
-#include "hittables.h"
-#include "ray.h"
+#include "math/vec3.h"
+#include "math/hittables.h"
+#include "math/ray.h"
 #include "chunk_generator.h"
-#include "camera.h"
-#include "bmp.h"
+#include "math/camera.h"
+#include "gfx/bmp.h"
 
-#include "serializable.h"
+#include "app/json/serializable.h"
 
 namespace bmp
 {
@@ -35,7 +35,7 @@ class renderer_config : serializable<nlohmann::json>
 {
 public:
   // Anti Aliasing oversampling
-  int AA_samples_per_pixel = 20;            
+  int AA_samples_per_pixel = 20;
 
   // Diffuse reflection
   int diffuse_max_bounce_num = 7;
