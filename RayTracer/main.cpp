@@ -1,5 +1,8 @@
 #include "stdafx.h"
 
+#include <chrono>
+#include <thread>
+
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
@@ -11,6 +14,7 @@
 #include "math/materials.h"
 
 #include "renderers/rtow_renderer.h"
+#include "renderers/example_renderer.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
@@ -103,7 +107,7 @@ int main(int, char**)
 
     // Load persistent state
     app_state state;
-    state.renderer = new rtow_renderer();
+    state.renderer = new example_renderer();
     state.load_scene_state();
     state.load_rendering_state();
     state.load_window_state();
@@ -216,8 +220,16 @@ int main(int, char**)
       dx11::g_pd3dDeviceContext->ClearRenderTargetView(dx11::g_mainRenderTargetView, clear_color_with_alpha);
       ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     
-      dx11::g_pSwapChain->Present(1, 0); // Present with vsync
-      //g_pSwapChain->Present(0, 0); // Present without vsync
+      if (false)
+      {
+        dx11::g_pSwapChain->Present(1, 0); // Present with vsync
+      }
+      else
+      {
+        // Hardcoded frame limiter
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        dx11::g_pSwapChain->Present(0, 0); // Present without vsync
+      }
     
       RECT rect;
       ::GetWindowRect(hwnd, &rect);

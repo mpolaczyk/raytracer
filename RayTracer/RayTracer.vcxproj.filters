@@ -93,6 +93,9 @@
     <ClCompile Include="math\vec3.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="renderers\example_renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -185,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="math\vec3.h">
       <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers\example_renderer.h">
+      <Filter>renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
