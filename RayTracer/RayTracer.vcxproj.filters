@@ -18,7 +18,7 @@
     <ClCompile Include="chunk_generator.cpp">
       <Filter>processing</Filter>
     </ClCompile>
-    <ClCompile Include="frame_renderer.cpp">
+    <ClCompile Include="async_renderer_base.cpp">
       <Filter>processing</Filter>
     </ClCompile>
     <ClCompile Include="thread_pool.cpp">
@@ -90,6 +90,9 @@
     <ClCompile Include="exceptions.cpp">
       <Filter>app</Filter>
     </ClCompile>
+    <ClCompile Include="rtow_renderer.cpp">
+      <Filter>processing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -117,7 +120,7 @@
     <ClInclude Include="chunk_generator.h">
       <Filter>processing</Filter>
     </ClInclude>
-    <ClInclude Include="frame_renderer.h">
+    <ClInclude Include="async_renderer_base.h">
       <Filter>processing</Filter>
     </ClInclude>
     <ClInclude Include="thread_pool.h">
@@ -179,6 +182,9 @@
     </ClInclude>
     <ClInclude Include="pdf.h">
       <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="rtow_renderer.h">
+      <Filter>processing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

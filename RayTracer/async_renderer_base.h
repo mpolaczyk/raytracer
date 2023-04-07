@@ -136,16 +136,3 @@ private:
   void async_job();
   void save(const char* file_name);
 };
-
-// Based on https://raytracing.github.io/ by Peter Shirley
-class shirley_renderer : public async_renderer_base
-{
-public:
-  virtual std::string get_name() const override;
-
-private:
-  virtual void render() override;
-
-  void render_chunk(const chunk& in_chunk);
-  vec3 ray_color(const ray& in_ray, uint32_t depth);
-};

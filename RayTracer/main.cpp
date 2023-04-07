@@ -10,6 +10,8 @@
 #include "dx11_helper.h"
 #include "materials.h"
 
+#include "rtow_renderer.h"
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
 
@@ -101,6 +103,7 @@ int main(int, char**)
 
     // Load persistent state
     app_state state;
+    state.renderer = new rtow_renderer();
     state.load_scene_state();
     state.load_rendering_state();
     state.load_window_state();

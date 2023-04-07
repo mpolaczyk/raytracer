@@ -3,7 +3,7 @@
 #include "imgui.h"
 #include "app.h"
 #include "chunk_generator.h"
-#include "frame_renderer.h"
+#include "async_renderer_base.h"
 
 void draw_raytracer_window(raytracer_window_model& model, app_state& state)
 {
@@ -105,7 +105,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
     if (state.renderer->is_working())
     {
       ImGui::SameLine();
-      char name[20];
+      char name[50];
       std::sprintf(name, "Rendering with %s", state.renderer->get_name().c_str());
       ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
     }

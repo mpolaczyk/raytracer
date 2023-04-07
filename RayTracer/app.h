@@ -1,7 +1,7 @@
 #pragma once
 
 #include "camera.h"
-#include "frame_renderer.h"
+#include "async_renderer_base.h"
 #include "hittables.h"
 #include "materials.h"
 
@@ -89,11 +89,13 @@ public:
 
   app_state()
   {
-    renderer = new shirley_renderer();
   }
   ~app_state()
   {
-    delete renderer;
+    if (renderer != nullptr)
+    {
+      delete renderer;
+    }
   }
   // Scene state
   scene scene_root;

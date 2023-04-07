@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "frame_renderer.h"
+#include "async_renderer_base.h"
 
 
 nlohmann::json renderer_config::serialize()
