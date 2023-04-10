@@ -44,7 +44,7 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
       float u = float(x) / (w - 1);
       float v = float(y) / (h - 1);
       vec3 pixel_coord = vec3(u, v, 0.0f) * res;
-      uint32_t seed = uint32_t(pixel_coord.y * res.x + pixel_coord.x);
+      uint32_t seed = uint32_t(pixel_coord.y * res.x + pixel_coord.x);  // Each pixel has a unique seed, gradient from white to black
 
       vec3 pixel_color = fragment(u, v, seed);
 
