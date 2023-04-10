@@ -2,7 +2,7 @@
 
 #include "processing/async_renderer_base.h"
 
-class x_renderer : public async_renderer_base
+class reference_renderer : public async_renderer_base
 {
 public:
   virtual std::string get_name() const override;

@@ -5,14 +5,14 @@
 
 #include "math/materials.h"
 
-#include "x_renderer.h"
+#include "reference_renderer.h"
 
-std::string x_renderer::get_name() const
+std::string reference_renderer::get_name() const
 {
-  return "Example";
+  return "Reference";
 }
 
-void x_renderer::render()
+void reference_renderer::render()
 {
   save_output = true;
 
@@ -24,7 +24,7 @@ void x_renderer::render()
 }
 
 
-void x_renderer::render_chunk(const chunk& in_chunk)
+void reference_renderer::render_chunk(const chunk& in_chunk)
 {
   std::thread::id thread_id = std::this_thread::get_id();
 
@@ -63,7 +63,7 @@ void x_renderer::render_chunk(const chunk& in_chunk)
   }
 }
 
-vec3 x_renderer::fragment(float u, float v, uint32_t seed)
+vec3 reference_renderer::fragment(float u, float v, uint32_t seed)
 {
   ray r = ajs.cam.get_ray(u, v);
 
@@ -78,7 +78,7 @@ vec3 x_renderer::fragment(float u, float v, uint32_t seed)
   return pixel_color / (float)rays_per_pixel;
 }
 
-vec3 x_renderer::enviroment_light(const ray& in_ray)
+vec3 reference_renderer::enviroment_light(const ray& in_ray)
 {
   static const vec3 sky_color_zenith = c_white_blue;
   static const vec3 sky_color_horizon = c_white;
@@ -87,7 +87,7 @@ vec3 x_renderer::enviroment_light(const ray& in_ray)
   return lerp_vec3(sky_color_horizon, sky_color_zenith, t);
 }
 
-vec3 x_renderer::ray_color(ray in_ray, uint32_t seed)
+vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
 {
   vec3 incoming_light = vec3(0.0f);
   vec3 color = vec3(1.0f);

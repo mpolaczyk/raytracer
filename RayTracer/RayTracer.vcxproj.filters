@@ -96,7 +96,7 @@
     <ClCompile Include="renderers\example_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
-    <ClCompile Include="renderers\x_renderer.cpp">
+    <ClCompile Include="renderers\reference_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -195,7 +195,7 @@
     <ClInclude Include="renderers\example_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
-    <ClInclude Include="renderers\x_renderer.h">
+    <ClInclude Include="renderers\reference_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
   </ItemGroup>

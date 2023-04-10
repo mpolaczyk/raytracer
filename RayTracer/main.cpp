@@ -15,7 +15,7 @@
 
 #include "renderers/rtow_renderer.h"
 #include "renderers/example_renderer.h"
-#include "renderers/x_renderer.h"
+#include "renderers/reference_renderer.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
@@ -108,7 +108,7 @@ int main(int, char**)
 
     // Load persistent state
     app_state state;
-    state.renderer = new x_renderer();
+    state.renderer = new reference_renderer();
     state.load_scene_state();
     state.load_rendering_state();
     state.load_window_state();
