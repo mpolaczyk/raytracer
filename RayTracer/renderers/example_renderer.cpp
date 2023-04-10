@@ -34,8 +34,11 @@ void example_renderer::render_chunk(const chunk& in_chunk)
       vec3 pixel_color(abs(sin(x/50.0f)), abs(sin(y / 300.0f)), 0.5f);
 
       bmp::bmp_pixel p(pixel_color);
-      ajs.img_bgr->draw_pixel(x, y, &p);
-      ajs.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba); 
+      ajs.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
+      if (save_output)
+      {
+        ajs.img_bgr->draw_pixel(x, y, &p);
+      }
     }
   }
 }

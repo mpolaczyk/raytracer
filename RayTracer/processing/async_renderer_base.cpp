@@ -96,13 +96,16 @@ void async_renderer_base::async_job()
     render();
     ajs.benchmark_render_time = benchmark_render.stop();
 
-    char image_file_name[100];
-    std::sprintf(image_file_name, paths::get_render_output_file_path().c_str());
+    if (save_output)
+    {
+      char image_file_name[100];
+      std::sprintf(image_file_name, paths::get_render_output_file_path().c_str());
 
-    benchmark::instance benchmark_save;
-    benchmark_save.start("Save");
-    save(image_file_name);
-    ajs.benchmark_save_time = benchmark_save.stop();
+      benchmark::instance benchmark_save;
+      benchmark_save.start("Save");
+      save(image_file_name);
+      ajs.benchmark_save_time = benchmark_save.stop();
+    }
 
     ajs.is_working = false;
   }

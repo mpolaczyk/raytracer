@@ -104,6 +104,8 @@ public:
   uint8_t* get_img_bgr() { return ajs.img_bgr->get_buffer(); }
   uint8_t* get_img_rgb() { return ajs.img_rgb->get_buffer(); }
 
+  bool save_output = true;
+
 protected:
   // Data assess pattern for async job state
   // - RW for job thread

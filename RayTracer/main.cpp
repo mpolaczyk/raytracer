@@ -15,6 +15,7 @@
 
 #include "renderers/rtow_renderer.h"
 #include "renderers/example_renderer.h"
+#include "renderers/x_renderer.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
@@ -107,7 +108,7 @@ int main(int, char**)
 
     // Load persistent state
     app_state state;
-    state.renderer = new example_renderer();
+    state.renderer = new x_renderer();
     state.load_scene_state();
     state.load_rendering_state();
     state.load_window_state();
@@ -120,8 +121,8 @@ int main(int, char**)
     texture_material* texture_default = new texture_material("default", t_checker);
     state.default_material = texture_default;
     state.materials.try_add(texture_default);
-    
-    bool renderer_worked_last_frame = false;
+
+    state.rw_model.rp_model.render_pressed = true;
 
     // Main loop
     bool done = false;
@@ -161,13 +162,7 @@ int main(int, char**)
         bool is_working = state.renderer->is_working();
         if (!is_working && (state.rw_model.rp_model.render_pressed || state.ow_model.auto_render))
         {
-          if (state.output_width != state.renderer_setting.resolution_horizontal || state.output_height != state.renderer_setting.resolution_vertical)
-          {
-            state.output_force_recreate = true;
-          }
-
           bool do_render = state.rw_model.rp_model.render_pressed
-            || state.output_force_recreate
             || state.renderer->is_world_dirty(state.scene_root)
             || state.renderer->is_renderer_setting_dirty(state.renderer_setting)
             || state.renderer->is_camera_setting_dirty(state.camera_setting);
@@ -187,22 +182,17 @@ int main(int, char**)
             state.renderer->set_config(state.renderer_setting, state.scene_root, state.camera_setting);
             state.renderer->render_single_async();
 
-            if (state.output_force_recreate)
-            {
-              bool ret = dx11::LoadTextureFromBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
-              IM_ASSERT(ret);
-              state.output_force_recreate = false;
-            }
+            bool ret = dx11::LoadTextureFromBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
+            IM_ASSERT(ret);
 
             state.rw_model.rp_model.render_pressed = false;
           }
         }
 
-        // Update the output panel while rendering
-        if (is_working || (!is_working && renderer_worked_last_frame))
+        // Update the output panel
+        if (state.output_texture)
         {
           dx11::UpdateTextureBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, state.output_texture);
-          renderer_worked_last_frame = is_working;
         }
       }
             
@@ -227,7 +217,7 @@ int main(int, char**)
       else
       {
         // Hardcoded frame limiter
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
         dx11::g_pSwapChain->Present(0, 0); // Present without vsync
       }
     

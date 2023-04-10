@@ -81,6 +81,8 @@ public:
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const;
   virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const;
   virtual vec3 emitted(const hit_record& in_hit) const;
+  virtual vec3 color() const;
+
   virtual void get_name(std::string& out_name, bool with_params=true) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize();
@@ -103,6 +105,8 @@ public:
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const override;
   virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
+  virtual vec3 color() const override;
+
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;
@@ -120,6 +124,8 @@ public:
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const override;
   virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const override;
+  virtual vec3 color() const override;
+
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;
@@ -136,6 +142,8 @@ public:
   metal_material(std::string&& id, const vec3& albedo, float fuzz) : albedo(albedo), fuzz(fuzz), material(std::move(id), material_class::metal) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_rec, scatter_record& out_sr) const override;
+  virtual vec3 color() const override;
+
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;
@@ -155,6 +163,8 @@ public:
   dialectric_material(std::string&& id, float index_of_refraction) : index_of_refraction(index_of_refraction), material(std::move(id), material_class::dialectric) {}
 
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const override;
+  virtual vec3 color() const override;
+
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;
@@ -173,6 +183,8 @@ public:
   diffuse_light_material(std::string&& id, vec3 albedo) : albedo(albedo), material(std::move(id), material_class::diffuse_light) {}
 
   virtual vec3 emitted(const hit_record& in_hit) const override;
+  virtual vec3 color() const override;
+
   virtual void get_name(std::string& out_name, bool with_params) const;
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize() override;

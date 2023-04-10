@@ -16,9 +16,9 @@ constexpr int32_t MAX_LIGHTS = 50;
 
 struct hit_record
 {
-  vec3 p;
+  vec3 p;         // hit point
   vec3 normal;
-  float t;
+  float t;        // distance to hit point
   float u;
   float v;
   material* material_ptr = nullptr;

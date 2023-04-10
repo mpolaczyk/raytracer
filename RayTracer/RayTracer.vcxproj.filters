@@ -96,6 +96,9 @@
     <ClCompile Include="renderers\example_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
+    <ClCompile Include="renderers\x_renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -190,6 +193,9 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="renderers\example_renderer.h">
+      <Filter>renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers\x_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -129,6 +129,11 @@ inline vec3 unit_vector(const vec3& v)
 #endif
 }
 
+inline vec3 normalize(const vec3& v)
+{
+  return unit_vector(v);
+}
+
 inline float dot(const vec3& u, const vec3& v) 
 { 
 #if USE_SIMD 

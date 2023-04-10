@@ -31,6 +31,13 @@ vec3 material::emitted(const hit_record& in_hit) const
   return vec3(0.0f, 0.0f, 0.0f);
 }
 
+vec3 material::color() const
+{
+  return c_black;
+}
+
+
+
 bool lambertian_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
 {
   out_sr.attenuation = albedo;
@@ -43,6 +50,13 @@ float lambertian_material::scatter_pdf(const ray& in_ray, const hit_record& in_h
   float cosine = dot(in_hit.normal, unit_vector(in_scattered.direction));
   return cosine < 0.0f ? 0.0f : cosine / pi;
 }
+
+vec3 lambertian_material::color() const
+{
+  return albedo;
+}
+
+
 
 bool texture_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
 {
@@ -57,16 +71,30 @@ float texture_material::scatter_pdf(const ray& in_ray, const hit_record& in_hit,
   return cosine < 0.0f ? 0.0f : cosine / pi;
 }
 
+vec3 texture_material::color() const
+{
+  return c_white_blue;  // TODO read uv
+}
+
+
+
 bool metal_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
 {
   out_sr.attenuation = albedo;
   out_sr.is_specular = true;
   vec3 reflected = reflect(unit_vector(in_ray.direction), in_hit.normal);
-  out_sr.specular_ray = ray(in_hit.p, reflected + fuzz * random_in_unit_sphere());
+  out_sr.specular_ray = ray(in_hit.p, reflected + fuzz * random_unit_in_sphere());
   
   //return (dot(out_sr.specular_ray.direction, in_hit.normal) > 0);
   return true;
 }
+
+vec3 metal_material::color() const
+{
+  return albedo;
+}
+
+
 
 bool dialectric_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
 {
@@ -95,6 +123,13 @@ bool dialectric_material::scatter(const ray& in_ray, const hit_record& in_hit, s
   return true;
 }
 
+vec3 dialectric_material::color() const
+{
+  return c_gold;
+}
+
+
+
 vec3 diffuse_light_material::emitted(const hit_record& in_hit) const
 {
   if (sides == (int)surface_side_type::aligned_to_normal && in_hit.front_face)
@@ -104,4 +139,9 @@ vec3 diffuse_light_material::emitted(const hit_record& in_hit) const
   if (sides == (int)surface_side_type::both)
     return albedo;
   return c_black;
+}
+
+vec3 diffuse_light_material::color() const
+{
+  return albedo;
 }

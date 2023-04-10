@@ -28,9 +28,9 @@ namespace bmp
       assert(!isnan(color.x));
       assert(!isnan(color.y));
       assert(!isnan(color.z));
-      r = static_cast<uint8_t>(clamp(0.0f, 255.0f, color.x * 255.0f));
-      g = static_cast<uint8_t>(clamp(0.0f, 255.0f, color.y * 255.0f));
-      b = static_cast<uint8_t>(clamp(0.0f, 255.0f, color.z * 255.0f));
+      r = static_cast<uint8_t>(clamp(color.x * 255.0f, 0.0f, 255.0f));
+      g = static_cast<uint8_t>(clamp(color.y * 255.0f, 0.0f, 255.0f));
+      b = static_cast<uint8_t>(clamp(color.z * 255.0f, 0.0f, 255.0f));
     }
   };
 

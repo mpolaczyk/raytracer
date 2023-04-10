@@ -1,17 +1,17 @@
 {
   "camera_setting": {
-    "aperture": 0.0,
-    "aspect_ratio_h": 1.0,
-    "aspect_ratio_w": 1.0,
-    "dist_to_focus": 800.0,
-    "field_of_view": 35.0,
+    "aperture": 1.4901161193847656e-08,
+    "aspect_ratio_h": 9.0,
+    "aspect_ratio_w": 16.0,
+    "dist_to_focus": 800.9019775390625,
+    "field_of_view": 50.0,
     "look_at": {
-      "x": 278.0,
-      "y": 278.0,
+      "x": 0.0,
+      "y": 240.0,
       "z": 0.0
     },
     "look_from": {
-      "x": 278.0,
+      "x": 0.0,
       "y": 278.0,
       "z": -800.0
     },
@@ -21,127 +21,73 @@
     "material_id": "",
     "objects": [
       {
-        "material_id": "lambertian_green",
-        "type": 4,
-        "x": 555.0,
-        "y0": 0.0,
-        "y1": 555.0,
-        "z0": 0.0,
-        "z1": 555.0
-      },
-      {
-        "material_id": "lambertian_red",
-        "type": 4,
-        "x": 0.0,
-        "y0": 0.0,
-        "y1": 555.0,
-        "z0": 0.0,
-        "z1": 555.0
-      },
-      {
-        "material_id": "light_strong3_opposite",
-        "type": 3,
-        "x0": 203.0,
-        "x1": 347.0,
-        "y": 462.0,
-        "z0": 221.0,
-        "z1": 363.0
-      },
-      {
-        "material_id": "default",
-        "type": 3,
-        "x0": 0.0,
-        "x1": 555.0,
-        "y": 1.0,
-        "z0": 0.0,
-        "z1": 555.0
-      },
-      {
-        "material_id": "lambertian_white",
-        "type": 3,
-        "x0": 0.0,
-        "x1": 555.0,
-        "y": 555.0,
-        "z0": 0.0,
-        "z1": 555.0
-      },
-      {
-        "material_id": "copper",
-        "type": 2,
-        "x0": 0.0,
-        "x1": 555.0,
-        "y0": 0.0,
-        "y1": 555.0,
-        "z": 555.0
-      },
-      {
         "material_id": "lambertian_red",
         "origin": {
-          "x": 443.0,
-          "y": 70.0,
-          "z": 260.0
+          "x": -115.0,
+          "y": 115.0,
+          "z": 63.0
         },
-        "radius": 55.0,
-        "type": 1
-      },
-      {
-        "material_id": "lambertian_green",
-        "origin": {
-          "x": 115.0,
-          "y": 238.0,
-          "z": 260.0
-        },
-        "radius": 107.0,
-        "type": 1
-      },
-      {
-        "material_id": "glass",
-        "origin": {
-          "x": 448.0,
-          "y": 283.0,
-          "z": 229.0
-        },
-        "radius": 80.0,
-        "type": 1
-      },
-      {
-        "material_id": "metal_shiny",
-        "origin": {
-          "x": 278.0,
-          "y": 143.0,
-          "z": 597.0
-        },
-        "radius": 132.0,
+        "radius": 147.0,
         "type": 1
       },
       {
         "material_id": "lambertian_white",
         "origin": {
-          "x": 340.0,
-          "y": 414.0,
-          "z": -817.0
+          "x": -487.0,
+          "y": 208.0,
+          "z": 155.0
         },
-        "radius": 134.0,
+        "radius": 223.0,
         "type": 1
       },
       {
-        "material_id": "glass",
+        "material_id": "light_strong3",
         "origin": {
-          "x": 493.0,
-          "y": 404.0,
-          "z": 177.0
+          "x": 503.0,
+          "y": 782.0,
+          "z": 364.0
         },
-        "radius": 50.0,
+        "radius": 126.0,
         "type": 1
       },
       {
-        "material_id": "light_strong2",
+        "material_id": "lambertian_white",
         "origin": {
-          "x": 59.0,
-          "y": 52.0,
-          "z": 467.0
+          "x": 0.0,
+          "y": -8000.0,
+          "z": 290.0
         },
-        "radius": 23.0,
+        "radius": 8000.0,
+        "type": 1
+      },
+      {
+        "material_id": "lambertian_green",
+        "origin": {
+          "x": 169.0,
+          "y": 100.0,
+          "z": 0.0
+        },
+        "radius": 96.0,
+        "type": 1
+      },
+      {
+        "material_id": "lambertian_blue",
+        "origin": {
+          "x": 382.0,
+          "y": 62.0,
+          "z": 0.0
+        },
+        "radius": 69.0,
+        "type": 1
+      },
+      {
+        "material_id": "lambertian_yellow",
+        "origin": {
+          "x": 552.0,
+          "y": 33.0,
+          "z": 0.0
+        },
+        "radius": 53.0,
         "type": 1
       }
     ],

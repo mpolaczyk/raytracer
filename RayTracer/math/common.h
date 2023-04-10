@@ -23,6 +23,27 @@ const float pi = 3.1415926535897932385f;
 const float small_number = 0.00000001f;
 constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
+inline float sign(float value)
+{
+  return value >= 0.0f ? 1.0f : -1.0f;  //  Assume 0 is positive
+}
+inline float degrees_to_radians(float degrees)
+{
+  return degrees * pi / 180.0f;
+}
+inline bool is_almost_zero(float value)
+{
+  return value <= epsilon && value >= -epsilon;
+}
+inline bool is_almost_equal(float a, float b)
+{
+  return fabs(a - b) <= epsilon;
+}
+inline bool is_near_zero(vec3& value)
+{
+  return (fabs(value[0]) < small_number) && (fabs(value[1]) < small_number) && (fabs(value[2]) < small_number);
+}
+
 namespace random_cache
 {
   template<typename T, int N>
@@ -54,40 +75,37 @@ namespace random_cache
   vec3 get_cosine_direction();
 }
 
-inline float degrees_to_radians(float degrees)
-{
-  return degrees * pi / 180.0f;
-}
-inline float sign(float value)
-{
-  return value >= 0.0f ? 1.0f : -1.0f;  //  Assume 0 is positive
-}
-inline bool is_almost_zero(float value)
-{
-  return value <= epsilon && value >= -epsilon;
-}
-inline bool is_almost_equal(float a, float b)
-{
-  return fabs(a - b) <= epsilon;
-}
+// Random function compendium: https://www.shadertoy.com/view/XlGcRh
+float rand_iqint1(uint32_t n);
+
+vec3 rand_direction(uint32_t seed);    // change to random_unit_in_sphere
+float rand_normal_distribution(uint32_t seed);
+
 inline vec3 random_in_unit_disk()
 {
-  vec3 random_unit = unit_vector(random_cache::get_vec3());
-  return random_unit * random_cache::get_float();
+  vec3 dir = normalize(random_cache::get_vec3());
+  return dir * random_cache::get_float();
 }
 inline vec3 random_unit_in_hemisphere(const vec3& normal)
 {
-  vec3 random_unit = unit_vector(random_cache::get_vec3());
-  // Invert random_unit if dot product is negative
-  return sign(dot(random_unit, normal)) * random_unit;
+  vec3 dir = normalize(random_cache::get_vec3());
+  return dir * sign(dot(dir, normal));
 }
-inline vec3 random_in_unit_sphere()
+inline vec3 random_unit_in_hemisphere(const vec3& normal, uint32_t seed)
 {
-  return unit_vector(random_cache::get_vec3());
+  vec3 dir = rand_direction(seed);
+  return dir * sign(dot(normal, dir));
 }
+inline vec3 random_unit_in_sphere()
+{
+  return normalize(random_cache::get_vec3());
+}
+
+
 vec3 random_cosine_direction();
 vec3 random_to_sphere(float radius, float distance_squared);
-bool is_near_zero(vec3& value);
+
+
 vec3 reflect(const vec3& v, const vec3& n);
 vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
 float reflectance(float cosine, float ref_idx);
@@ -96,7 +114,13 @@ inline float lerp_float(float a, float b, float f) { return a + f * (b - a); }
 vec3 lerp_vec3(vec3 a, vec3 b, float f);
 inline float min1(float a, float b) { return a < b ? a : b; }
 inline float max1(float a, float b) { return a < b ? b : a; }
-inline float clamp(float a, float b, float f) { return  min1(b, max1(a, f)); }
+inline float clamp(float f, float a, float b) { return  min1(b, max1(a, f)); }
+inline float smoothstep(float a, float b, float x)
+{
+  // https://thebookofshaders.com/glossary/?search=smoothstep
+  float t = clamp(0.0f, 1.0f, (x - a) / (b - a));
+  return t * t * (3.0f - 2.0f * t);
+}
 inline vec3 min3(const vec3& a, const vec3& b)
 {
   return vec3(min1(a[0], b[0]), min1(a[1], b[1]), min1(a[2], b[2]));

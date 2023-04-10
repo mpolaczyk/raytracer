@@ -98,8 +98,11 @@ void rtow_renderer::render_chunk(const chunk& in_chunk)
       {
         p = bmp::bmp_pixel(pixel_color / (float)ajs.settings.AA_samples_per_pixel);
       }
-      ajs.img_bgr->draw_pixel(x, y, &p);
       ajs.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
+      if (save_output)
+      {
+        ajs.img_bgr->draw_pixel(x, y, &p);
+      }
     }
   }
 }
@@ -131,7 +134,7 @@ vec3 inline rtow_renderer::ray_color(const ray& in_ray, uint32_t depth)
   }
   else if (sr.is_diffuse)
   {
-    int32_t option = -2;
+    int32_t option = 2;
 
     if (option == -2) // FINAL
     {

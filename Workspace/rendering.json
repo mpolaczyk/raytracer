@@ -216,17 +216,17 @@
     }
   ],
   "renderer_setting": {
-    "AA_samples_per_pixel": 500,
+    "AA_samples_per_pixel": 250,
     "chunks_num": 400,
     "chunks_strategy": 3,
-    "diffuse_max_bounce_num": 7,
+    "diffuse_max_bounce_num": 4,
     "pdf_mix_type": 1,
     "pdf_ratio": 0.49000000953674316,
     "pixel_time_coloring": false,
     "pixel_time_coloring_scale": 0.059999994933605194,
-    "resolution_horizontal": 400,
+    "resolution_horizontal": 711,
     "resolution_vertical": 400,
-    "reuse_buffer": true,
+    "reuse_buffer": false,
     "shuffle_chunks": true,
     "threading_strategy": 2,
     "threads_num": 0

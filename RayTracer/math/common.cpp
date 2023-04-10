@@ -33,9 +33,30 @@ vec3 random_to_sphere(float radius, float distance_squared)
   return vec3(x, y, z);
 }
 
-bool is_near_zero(vec3& value)
+float rand_iqint1(uint32_t seed)
 {
-  return (fabs(value[0]) < small_number) && (fabs(value[1]) < small_number) && (fabs(value[2]) < small_number);
+  static uint32_t last = 0;
+  uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
+  state = (state << 13U) ^ state;
+  state = state * (state * state * 15731U + 789221U) + 1376312589U;
+  last = state;
+  return (float)state / (float)UINT_MAX;   // [0.0f, 1.0f]
+}
+
+float rand_normal_distribution(uint32_t seed)
+{ 
+  float theta = 2.0f * 3.1415926f * rand_iqint1(seed);
+  float rho = sqrt(-2.0f * log(rand_iqint1(seed)));
+  assert(!isnan(rho));
+  return rho * cos(theta);  // [-1.0f, 1.0f]
+}
+
+vec3 rand_direction(uint32_t seed)
+{
+  float x = rand_normal_distribution(seed);
+  float y = rand_normal_distribution(seed);
+  float z = rand_normal_distribution(seed);
+  return normalize(vec3(x, y, z));
 }
 
 vec3 reflect(const vec3& vec, const vec3& normal) 
@@ -145,7 +166,7 @@ namespace random_cache
     return N + fabs(float_cache.get()) * (M - N);
   }
 
-  vec3 get_vec3()
+  vec3 get_vec3() // [-1,1]
   {
     return vec3(float_cache.get(), float_cache.get(), float_cache.get());
   }
