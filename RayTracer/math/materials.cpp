@@ -38,10 +38,26 @@ vec3 material::color() const
 
 float material::smoothness() const
 {
-  return 0.4f;
+  return 0.5f;  // More smoothness -> more shiny, more specular
 }
 
+bool material::gloss_enabled() const
+{
+  return false;
+}
 
+float material::gloss_probability() const
+{
+  return 0.2;
+}
+vec3 material::gloss_color() const
+{
+  return color();
+}
+// Nice settings
+// gloss enabled, smoothness 0.9, gloss probability 0.2 - bilard ball
+// gloss disabled, smoothness 0.7-0.5                   - metal
+// gloss disabled, smoothness 1.0-0.9                   - mirror
 
 bool lambertian_material::scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const
 {

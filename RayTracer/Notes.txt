@@ -101,6 +101,12 @@
  https://www.youtube.com/watch?v=Q1cuuepVNoY&ab_channel=ACMSIGGRAPH
  http://intro-to-dxr.cwyman.org/
 
+ # Tips and tricks
+ 1. Noisy image?
+ - Make sure all lights and colors are within [0,1] range.
+ - Make sure bounce rays don't start inside the material (offset them 0.1f off the surface).
+ - nan and inf can burn the whole pixel, assert with isfinite() very often.
+
  # Raytracing history:
 
  1. Whitted 1980 (shiny stuff)

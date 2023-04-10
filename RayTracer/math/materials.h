@@ -81,8 +81,12 @@ public:
   virtual bool scatter(const ray& in_ray, const hit_record& in_hit, scatter_record& out_sr) const;
   virtual float scatter_pdf(const ray& in_ray, const hit_record& in_hit, const ray& in_scattered) const;
   virtual vec3 emitted(const hit_record& in_hit) const;
+
   virtual vec3 color() const;
   virtual float smoothness() const;
+  virtual bool gloss_enabled() const;
+  virtual float gloss_probability() const;
+  virtual vec3 gloss_color() const;
 
   virtual void get_name(std::string& out_name, bool with_params=true) const;
   virtual void draw_edit_panel();

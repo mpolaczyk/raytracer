@@ -67,7 +67,7 @@ vec3 x_renderer::fragment(float u, float v, uint32_t seed)
 {
   ray r = ajs.cam.get_ray(u, v);
 
-  const int rays_per_pixel = 1000;
+  const int rays_per_pixel = 100;
   vec3 pixel_color;
   for (int i = 0; i < rays_per_pixel; ++i)
   {
@@ -102,17 +102,39 @@ vec3 x_renderer::ray_color(ray in_ray, uint32_t seed)
       float mat_smoothness = hit.material_ptr->smoothness();
       vec3 mat_emitted = hit.material_ptr->emitted(hit);
       vec3 mat_color = hit.material_ptr->color();
-
-      // Define next bounce
+      bool mat_gloss_enabled = hit.material_ptr->gloss_enabled();
+      float mat_gloss_probability = hit.material_ptr->gloss_probability();
+      vec3 mat_gloss_color = hit.material_ptr->gloss_color();
+      // TODO: Refraction enabled
+      // TODO: Refraction probability
+      
+      // Bounce directions
       vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
       vec3 specular_dir = reflect(in_ray.direction, hit.normal);
-      in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat_smoothness);
-      in_ray.origin = hit.p;
+      // TODO: Refraction direction
+      // TODO: Blend all of them xD!
 
-      // Calculate color for this hit
-      incoming_light += mat_emitted * color;
-      color *= mat_color;
-      
+      if (mat_gloss_enabled)
+      {
+        // Define next bounce
+        bool is_gloss_bounce = mat_gloss_probability >= rand_pcg(seed);
+        in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat_smoothness * is_gloss_bounce);
+        in_ray.origin = hit.p;
+
+        // Calculate color for this hit
+        incoming_light += mat_emitted * color;
+        color *= lerp_vec3(mat_color, mat_gloss_color, is_gloss_bounce);
+      }
+      else
+      {
+        // Define next bounce
+        in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat_smoothness);
+        in_ray.origin = hit.p;
+
+        // Calculate color for this hit
+        incoming_light += mat_emitted * color;
+        color *= mat_color;
+      }
     }
     else
     {

@@ -73,6 +73,19 @@ https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
   float z = sqrt(1 - r);
   return vec3(x, y, z);
 }
+vec3 random_cosine_direction(uint32_t seed)
+{
+https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
+  // Cosine distribution around positive z axis
+  float r1 = RAND_SEED_FUNC(seed);
+  float r2 = RAND_SEED_FUNC(seed);
+  //float phi = 2 * pi * r1;
+  float r = 0.5;
+  float x = cos(2 * pi * r1) * sqrt(r);
+  float y = sin(2 * pi * r2) * sqrt(r);
+  float z = sqrt(1 - r);
+  return vec3(x, y, z);
+}
 
 vec3 random_to_sphere(float radius, float distance_squared)
 {

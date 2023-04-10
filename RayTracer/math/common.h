@@ -76,8 +76,8 @@ namespace random_cache
 }
 
 // Random function compendium: https://www.shadertoy.com/view/XlGcRh
-float rand_iqint1(uint32_t n);
-float rand_pcg(uint32_t v);
+float rand_iqint1(uint32_t seed);
+float rand_pcg(uint32_t seed);
 
 #define RAND_SEED_FUNC(seed) rand_pcg(seed)
 
@@ -109,8 +109,9 @@ inline vec3 random_unit_in_hemisphere(const vec3& normal, uint32_t seed)
   return dir * sign(dot(normal, dir));
 }
 
-
 vec3 random_cosine_direction();
+vec3 random_cosine_direction(uint32_t seed);
+
 vec3 random_to_sphere(float radius, float distance_squared);
 
 
