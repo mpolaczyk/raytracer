@@ -6,9 +6,63 @@
 
 #include "common.h"
 
+
+float rand_iqint1(uint32_t seed)
+{
+  static uint32_t last = 0;
+  uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
+  state = (state << 13U) ^ state;
+  state = state * (state * state * 15731U + 789221U) + 1376312589U;
+  last = state;
+  return (float)state / (float)UINT_MAX;   // [0.0f, 1.0f]
+}
+
+float rand_pcg(uint32_t seed)
+{
+  static uint32_t last = 0;
+  uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
+  state = state * 747796405U + 2891336453U;
+  uint32_t word = ((state >> ((state >> 28U) + 4U)) ^ state) * 277803737U;
+  float result = (float)((word >> 22U) ^ word);
+  last = result;
+  return result / (float)UINT_MAX;   // [0.0f, 1.0f]
+}
+
+float rand_normal_distribution()
+{
+  float theta = 2.0f * 3.1415926f * random_cache::get_float_0_1();
+  float rho = sqrt(-2.0f * log(random_cache::get_float_0_1()));
+  assert(isfinite(rho));
+  return rho * cos(theta);  // [-1.0f, 1.0f]
+}
+
+float rand_normal_distribution(uint32_t seed)
+{ 
+  float theta = 2.0f * 3.1415926f * RAND_SEED_FUNC(seed);
+  float rho = sqrt(-2.0f * log(RAND_SEED_FUNC(seed)));
+  assert(isfinite(rho));
+  return rho * cos(theta);  // [-1.0f, 1.0f]
+}
+
+vec3 rand_direction()
+{
+  float x = rand_normal_distribution();
+  float y = rand_normal_distribution();
+  float z = rand_normal_distribution();
+  return normalize(vec3(x, y, z));
+}
+
+vec3 rand_direction(uint32_t seed)
+{
+  float x = rand_normal_distribution(seed);
+  float y = rand_normal_distribution(seed);
+  float z = rand_normal_distribution(seed);
+  return normalize(vec3(x, y, z));
+}
+
 vec3 random_cosine_direction()
 {
-  https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
+https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
   // Cosine distribution around positive z axis
   float r1 = random_cache::get_float_0_1();
   float r2 = random_cache::get_float_0_1();
@@ -33,31 +87,6 @@ vec3 random_to_sphere(float radius, float distance_squared)
   return vec3(x, y, z);
 }
 
-float rand_iqint1(uint32_t seed)
-{
-  static uint32_t last = 0;
-  uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
-  state = (state << 13U) ^ state;
-  state = state * (state * state * 15731U + 789221U) + 1376312589U;
-  last = state;
-  return (float)state / (float)UINT_MAX;   // [0.0f, 1.0f]
-}
-
-float rand_normal_distribution(uint32_t seed)
-{ 
-  float theta = 2.0f * 3.1415926f * rand_iqint1(seed);
-  float rho = sqrt(-2.0f * log(rand_iqint1(seed)));
-  assert(!isnan(rho));
-  return rho * cos(theta);  // [-1.0f, 1.0f]
-}
-
-vec3 rand_direction(uint32_t seed)
-{
-  float x = rand_normal_distribution(seed);
-  float y = rand_normal_distribution(seed);
-  float z = rand_normal_distribution(seed);
-  return normalize(vec3(x, y, z));
-}
 
 vec3 reflect(const vec3& vec, const vec3& normal) 
 {

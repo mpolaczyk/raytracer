@@ -77,8 +77,14 @@ namespace random_cache
 
 // Random function compendium: https://www.shadertoy.com/view/XlGcRh
 float rand_iqint1(uint32_t n);
+float rand_pcg(uint32_t v);
 
-vec3 rand_direction(uint32_t seed);    // change to random_unit_in_sphere
+#define RAND_SEED_FUNC(seed) rand_pcg(seed)
+
+vec3 rand_direction();
+vec3 rand_direction(uint32_t seed);
+
+float rand_normal_distribution();
 float rand_normal_distribution(uint32_t seed);
 
 inline vec3 random_in_unit_disk()
@@ -86,6 +92,12 @@ inline vec3 random_in_unit_disk()
   vec3 dir = normalize(random_cache::get_vec3());
   return dir * random_cache::get_float();
 }
+inline vec3 random_in_unit_disk(uint32_t seed)
+{
+  vec3 dir = normalize(RAND_SEED_FUNC(seed));
+  return dir * RAND_SEED_FUNC(seed);
+}
+
 inline vec3 random_unit_in_hemisphere(const vec3& normal)
 {
   vec3 dir = normalize(random_cache::get_vec3());
@@ -95,10 +107,6 @@ inline vec3 random_unit_in_hemisphere(const vec3& normal, uint32_t seed)
 {
   vec3 dir = rand_direction(seed);
   return dir * sign(dot(normal, dir));
-}
-inline vec3 random_unit_in_sphere()
-{
-  return normalize(random_cache::get_vec3());
 }
 
 

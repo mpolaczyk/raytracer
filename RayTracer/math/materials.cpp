@@ -28,12 +28,17 @@ float material::scatter_pdf(const ray& in_ray, const hit_record& in_rec, const r
 
 vec3 material::emitted(const hit_record& in_hit) const
 {
-  return vec3(0.0f, 0.0f, 0.0f);
+  return vec3(0.0f, 0.0f, 0.0f);  // vector [0.0f,1.0f]
 }
 
 vec3 material::color() const
 {
   return c_black;
+}
+
+float material::smoothness() const
+{
+  return 0.4f;
 }
 
 
@@ -83,7 +88,7 @@ bool metal_material::scatter(const ray& in_ray, const hit_record& in_hit, scatte
   out_sr.attenuation = albedo;
   out_sr.is_specular = true;
   vec3 reflected = reflect(unit_vector(in_ray.direction), in_hit.normal);
-  out_sr.specular_ray = ray(in_hit.p, reflected + fuzz * random_unit_in_sphere());
+  out_sr.specular_ray = ray(in_hit.p, reflected + fuzz * rand_normal_distribution());
   
   //return (dot(out_sr.specular_ray.direction, in_hit.normal) > 0);
   return true;

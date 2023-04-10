@@ -48,12 +48,9 @@ void x_renderer::render_chunk(const chunk& in_chunk)
 
       vec3 pixel_color = fragment(u, v, seed);
 
-      assert(!isnan(pixel_color.x));
-      assert(!isnan(pixel_color.y));
-      assert(!isnan(pixel_color.z));
-      if (isnan(pixel_color.x)) pixel_color.x = 0.0f;
-      if (isnan(pixel_color.y)) pixel_color.y = 0.0f;
-      if (isnan(pixel_color.z)) pixel_color.z = 0.0f;
+      assert(isfinite(pixel_color.x));
+      assert(isfinite(pixel_color.y));
+      assert(isfinite(pixel_color.z));
 
       bmp::bmp_pixel p(pixel_color);
       ajs.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
@@ -70,11 +67,12 @@ vec3 x_renderer::fragment(float u, float v, uint32_t seed)
 {
   ray r = ajs.cam.get_ray(u, v);
 
-  const int rays_per_pixel = 600;
+  const int rays_per_pixel = 1000;
   vec3 pixel_color;
   for (int i = 0; i < rays_per_pixel; ++i)
   {
-    pixel_color += ray_color(r, seed);
+    vec3 color = ray_color(r, seed);
+    pixel_color += color;
   }
   
   return pixel_color / (float)rays_per_pixel;
@@ -98,19 +96,22 @@ vec3 x_renderer::ray_color(ray in_ray, uint32_t seed)
   for (int i = 0; i < max_bounces; ++i)
   {
     hit_record hit;
-    if (ajs.scene_root.hit(in_ray, 0.001f, infinity, hit))  // potential work to save, first hit always the same
+    if (ajs.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same
     {
-      // Define next bounce
-      in_ray.origin = hit.p;
-      //in_ray.direction = random_unit_in_hemisphere(hit.normal, seed);
-      in_ray.direction = normalize(hit.normal + rand_direction(seed));
+      // Read material
+      float mat_smoothness = hit.material_ptr->smoothness();
+      vec3 mat_emitted = hit.material_ptr->emitted(hit);
+      vec3 mat_color = hit.material_ptr->color();
 
-      // Calculate color for this bounce
-      vec3 emitted_light = hit.material_ptr->emitted(hit);
-      //float light_strength = dot(hit.normal, in_ray.direction);
-      incoming_light += emitted_light * color;
-      //color *= hit.material_ptr->color() * light_strength * 2.0f;
-      color *= hit.material_ptr->color();
+      // Define next bounce
+      vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
+      vec3 specular_dir = reflect(in_ray.direction, hit.normal);
+      in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat_smoothness);
+      in_ray.origin = hit.p;
+
+      // Calculate color for this hit
+      incoming_light += mat_emitted * color;
+      color *= mat_color;
       
     }
     else

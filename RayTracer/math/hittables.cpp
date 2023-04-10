@@ -217,7 +217,7 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
 
 vec3 sphere::get_random_point() const
 {
-  return random_unit_in_sphere() * radius;
+  return rand_normal_distribution() * radius;
 }
 
 vec3 xy_rect::get_random_point() const
