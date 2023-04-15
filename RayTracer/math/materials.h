@@ -8,20 +8,7 @@
 #include "textures.h"
 #include "pdf.h"
 #include "app/json/serializable.h"
-
-enum class material_class  // No RTTI, simple type detection
-{
-  none = 0,
-  universal,
-  light
-};
-static inline const char* material_class_names[] =
-{
-  "None",
-  "Universal",
-  "Light"
-};
-
+#include "app/factories.h"
 
 class material_instances : serializable<nlohmann::json>
 {
@@ -73,6 +60,4 @@ public:
   void deserialize(const nlohmann::json& j);
 
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(material, type, id, smoothness, gloss_enabled, gloss_probability); // to_json only
-
-  static material* spawn_by_type(material_class type);
 };

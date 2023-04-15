@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "math/materials.h"
+#include "app/factories.h"
 
 
 nlohmann::json material_instances::serialize()
@@ -29,7 +30,7 @@ void material_instances::deserialize(const nlohmann::json& j)
 {
   for (auto& element : j)
   {
-    material* obj = material::spawn_by_type(element["type"]);
+    material* obj = object_factory::spawn_material(element["type"]);
     obj->deserialize(element);
     try_add(obj);
   }

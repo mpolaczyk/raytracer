@@ -18,7 +18,7 @@ void reference_renderer::render()
 
   std::vector<chunk> chunks;
   const int chunks_per_thread = 32;
-  chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * chunks_per_thread, ajs.image_width, ajs.image_height, chunks);
+  chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * chunks_per_thread, job_state.image_width, job_state.image_height, chunks);
 
   concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
 }
@@ -33,8 +33,8 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
   const char* name = oss.str().c_str();
   benchmark::scope_counter benchmark_render_chunk(name, false);
 
-  int w = ajs.image_width;
-  int h = ajs.image_height;
+  int w = job_state.image_width;
+  int h = job_state.image_height;
   vec3 res(w, h, 0.0f);
 
   for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
@@ -53,10 +53,10 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
       assert(isfinite(pixel_color.z));
 
       bmp::bmp_pixel p(pixel_color);
-      ajs.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
+      job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
       if (save_output)
       {
-        ajs.img_bgr->draw_pixel(x, y, &p);
+        job_state.img_bgr->draw_pixel(x, y, &p);
         
       }
     }
@@ -65,9 +65,9 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
 
 vec3 reference_renderer::fragment(float u, float v, uint32_t seed)
 {
-  ray r = ajs.cam.get_ray(u, v);
+  ray r = job_state.cam.get_ray(u, v);
 
-  const int rays_per_pixel = ajs.settings.rays_per_pixel;
+  const int rays_per_pixel = job_state.settings.rays_per_pixel;
   vec3 pixel_color;
   for (int i = 0; i < rays_per_pixel; ++i)
   {
@@ -92,10 +92,10 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
   vec3 incoming_light = vec3(0.0f);
   vec3 color = vec3(1.0f);
 
-  for (int i = 0; i < ajs.settings.ray_bounces; ++i)
+  for (int i = 0; i < job_state.settings.ray_bounces; ++i)
   {
     hit_record hit;
-    if (ajs.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same
+    if (job_state.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same
     {
       // Read material
       float mat_smoothness = hit.material_ptr->smoothness;

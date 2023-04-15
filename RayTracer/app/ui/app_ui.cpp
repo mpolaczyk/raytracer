@@ -62,9 +62,9 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   ImGui::Text("Resolution h = %d", state.renderer_setting.resolution_horizontal);
 
   ImGui::Separator();
-  int threading_strategy = (int)state.renderer_setting.threading_strategy;
-  ImGui::Combo("Threading strategy", &threading_strategy, threading_strategy_names, IM_ARRAYSIZE(threading_strategy_names));
-  state.renderer_setting.threading_strategy = (threading_strategy_type)threading_strategy;
+  int renderer = (int)state.renderer_setting.renderer;
+  ImGui::Combo("Renderer", &renderer, renderer_names, IM_ARRAYSIZE(renderer_names));
+  state.renderer_setting.renderer = (renderer_type)renderer;
 
   ImGui::Separator();
   ImGui::InputInt("Rays per pixel", &state.renderer_setting.rays_per_pixel, 1, 10);
@@ -81,7 +81,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
     {
       ImGui::SameLine();
       char name[50];
-      std::sprintf(name, "Rendering with %s", state.renderer->get_name().c_str());
+      std::sprintf(name, "Rendering with %s renderer", state.renderer->get_name().c_str());
       ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
     }
     ImGui::Text("Last render time = %lld [ms]", state.renderer->get_render_time() / 1000);

@@ -13,8 +13,7 @@
 #include "gfx/dx11_helper.h"
 #include "math/materials.h"
 
-#include "renderers/example_renderer.h"
-#include "renderers/reference_renderer.h"
+#include "app/factories.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
@@ -107,12 +106,13 @@ int main(int, char**)
 
     // Load persistent state
     app_state state;
-    state.renderer = new reference_renderer();
     state.load_scene_state();
     state.load_rendering_state();
     state.load_window_state();
+    state.renderer = object_factory::spawn_renderer(state.renderer_setting.renderer);
     ::SetWindowPos(hwnd, NULL, state.window.x, state.window.y, state.window.w, state.window.h, NULL);
     
+    // Auto render on startup
     state.rw_model.rp_model.render_pressed = true;
 
     // Main loop
@@ -157,9 +157,15 @@ int main(int, char**)
             || state.renderer->is_world_dirty(state.scene_root)
             || state.renderer->is_renderer_setting_dirty(state.renderer_setting)
             || state.renderer->is_camera_setting_dirty(state.camera_setting);
-
+          
           if (do_render)
           {
+            if (state.renderer->is_renderer_type_different(state.renderer_setting))
+            {
+              delete state.renderer;
+              state.renderer = object_factory::spawn_renderer(state.renderer_setting.renderer);
+            }
+
             state.scene_root.build_boxes();
             state.scene_root.update_materials(&state.materials);
             state.scene_root.query_lights();

@@ -11,25 +11,13 @@
 #include "gfx/bmp.h"
 
 #include "app/json/serializable.h"
+#include "app/factories.h"
 
 namespace bmp
 {
   struct bmp_image;
 }
 class camera;
-
-enum class threading_strategy_type
-{
-  none = 0,
-  pll_for_each,
-  thread_pool
-};
-static inline const char* threading_strategy_names[] =
-{
-  "None",
-  "PLL for each",
-  "Thread poll"
-};
 
 class renderer_config : serializable<nlohmann::json>
 {
@@ -41,7 +29,7 @@ public:
   int ray_bounces = 7;
 
   // How work is processed
-  threading_strategy_type threading_strategy = threading_strategy_type::thread_pool;
+  renderer_type renderer = renderer_type::reference;
     
   // Draw in the same memory - real time update
   bool reuse_buffer = true;
@@ -52,11 +40,11 @@ public:
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, rays_per_pixel, ray_bounces, threading_strategy, reuse_buffer, resolution_vertical, resolution_horizontal); // to_json only
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, rays_per_pixel, ray_bounces, renderer, reuse_buffer, resolution_vertical, resolution_horizontal); // to_json only
 
   inline uint32_t get_type_hash() const
   {
-    return hash_combine(rays_per_pixel, ray_bounces);
+    return hash_combine(rays_per_pixel, ray_bounces, (int)renderer, (int)renderer);
   }
 };
 
@@ -79,13 +67,14 @@ public:
   // State checks
   bool is_world_dirty(const scene& in_scene);
   bool is_renderer_setting_dirty(const renderer_config& in_settings);
+  bool is_renderer_type_different(const renderer_config& in_settings);
   bool is_camera_setting_dirty(const camera_config& in_camera_state);
-  bool is_working() const { return ajs.is_working; }
+  bool is_working() const { return job_state.is_working; }
 
-  uint64_t get_render_time() const { return ajs.benchmark_render_time; }
-  uint64_t get_save_time() const { return ajs.benchmark_save_time; }
-  uint8_t* get_img_bgr() { return ajs.img_bgr->get_buffer(); }
-  uint8_t* get_img_rgb() { return ajs.img_rgb->get_buffer(); }
+  uint64_t get_render_time() const { return job_state.benchmark_render_time; }
+  uint64_t get_save_time() const { return job_state.benchmark_save_time; }
+  uint8_t* get_img_bgr() { return job_state.img_bgr->get_buffer(); }
+  uint8_t* get_img_rgb() { return job_state.img_rgb->get_buffer(); }
 
   bool save_output = true;
 
@@ -111,7 +100,7 @@ protected:
 
     uint64_t benchmark_render_time = 0;
     uint64_t benchmark_save_time = 0;
-  } ajs; 
+  } job_state; 
 
 private:
   // Synchronization - fire and forget

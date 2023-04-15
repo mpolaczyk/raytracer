@@ -1,70 +1,188 @@
 {
   "materials": [
     {
-      "id": "metal_white",
-	  "type": 1,
-	  "color": { "x": 0.73, "y": 0.73, "z": 0.73 },
-	  "smoothness": 0.6,
-	  "gloss_enabled": false
-    },
-	{
-      "id": "metal_gold",
-	  "type": 1,
-	  "color": { "x": 1.00, "y": 0.84, "z": 0.00 },
-	  "smoothness": 0.6
-    },
-	{
-      "id": "metal_copper",
-	  "type": 1,
-	  "color": { "x": 0.72, "y": 0.44, "z": 0.20 },
-	  "smoothness": 0.6,
-	  "gloss_enabled": false
-    },
-	{
-      "id": "mirror",
-	  "type": 1,
-	  "color": { "x": 1.0, "y": 1.0, "z": 1.0 },
-	  "smoothness": 1.0
-    },
-	{
-      "id": "glossy_white",
-	  "type": 1,
-	  "color": { "x": 0.73, "y": 0.73, "z": 0.73 },
-	  "smoothness": 0.9,
-	  "gloss_enabled": true,
-	  "gloss_probability": 0.2,
-	  "gloss_color": { "x": 0.73, "y": 0.73, "z": 0.73 }
-    },
-	{
+      "color": {
+        "x": 0.10999999940395355,
+        "y": 0.4399999976158142,
+        "z": 0.15000000596046448
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.7300000190734863,
+        "y": 0.7300000190734863,
+        "z": 0.7300000190734863
+      },
+      "gloss_enabled": true,
+      "gloss_probability": 0.20000000298023224,
       "id": "glossy_green",
-	  "type": 1,
-	  "color": { "x": 0.11, "y": 0.44, "z": 0.15 },
-	  "smoothness": 0.9,
-	  "gloss_enabled": true,
-	  "gloss_probability": 0.2,
-	  "gloss_color": { "x": 0.73, "y": 0.73, "z": 0.73 }
+      "smoothness": 0.8999999761581421,
+      "type": 1
     },
-	{
+    {
+      "color": {
+        "x": 0.6399999856948853,
+        "y": 0.05000000074505806,
+        "z": 0.05000000074505806
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.7300000190734863,
+        "y": 0.7300000190734863,
+        "z": 0.7300000190734863
+      },
+      "gloss_enabled": true,
+      "gloss_probability": 0.20000000298023224,
       "id": "glossy_red",
-	  "type": 1,
-	  "color": { "x": 0.64, "y": 0.05, "z": 0.05 },
-	  "smoothness": 0.9,
-	  "gloss_enabled": true,
-	  "gloss_probability": 0.2,
-	  "gloss_color": { "x": 0.73, "y": 0.73, "z": 0.73 }
+      "smoothness": 0.8999999761581421,
+      "type": 1
     },
-	{
+    {
+      "color": {
+        "x": 0.7300000190734863,
+        "y": 0.7300000190734863,
+        "z": 0.7300000190734863
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.7300000190734863,
+        "y": 0.7300000190734863,
+        "z": 0.7300000190734863
+      },
+      "gloss_enabled": true,
+      "gloss_probability": 0.20000000298023224,
+      "id": "glossy_white",
+      "smoothness": 0.8999999761581421,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "emitted_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.0,
       "id": "light",
-	  "type": 2,
-	  "emitted_color": { "x": 1.00, "y": 1.00, "z": 1.00 }
+      "smoothness": 0.0,
+      "type": 2
+    },
+    {
+      "color": {
+        "x": 0.7200000286102295,
+        "y": 0.4399999976158142,
+        "z": 0.20000000298023224
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.0,
+      "id": "metal_copper",
+      "smoothness": 0.6000000238418579,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 1.0,
+        "y": 0.8399999737739563,
+        "z": 0.0
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.0,
+      "id": "metal_gold",
+      "smoothness": 0.6000000238418579,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.7300000190734863,
+        "y": 0.7300000190734863,
+        "z": 0.7300000190734863
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.0,
+      "id": "metal_white",
+      "smoothness": 0.6000000238418579,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.0,
+      "id": "mirror",
+      "smoothness": 1.0,
+      "type": 1
     }
   ],
   "renderer_setting": {
-    "rays_per_pixel": 250,
     "ray_bounces": 4,
-    "resolution_horizontal": 711,
+    "rays_per_pixel": 250,
+    "renderer": 1,
+    "resolution_horizontal": 400,
     "resolution_vertical": 400,
-    "reuse_buffer": false,
-    "threading_strategy": 2
+    "reuse_buffer": false
   }
 }

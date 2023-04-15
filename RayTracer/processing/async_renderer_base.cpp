@@ -16,71 +16,76 @@ async_renderer_base::async_renderer_base()
 }
 async_renderer_base::~async_renderer_base()
 {
-  ajs.requested_stop = true;
+  job_state.requested_stop = true;
   worker_semaphore.release();
   worker_thread.join();
-  if (ajs.img_rgb != nullptr) delete ajs.img_rgb;
-  if (ajs.img_bgr != nullptr) delete ajs.img_bgr;
+  if (job_state.img_rgb != nullptr) delete job_state.img_rgb;
+  if (job_state.img_bgr != nullptr) delete job_state.img_bgr;
 }
 
 void async_renderer_base::set_config(const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state)
 {
-  if (ajs.is_working) return;
+  if (job_state.is_working) return;
 
-  bool force_recreate_buffers = ajs.image_width != in_settings.resolution_horizontal || ajs.image_height != in_settings.resolution_vertical;
+  bool force_recreate_buffers = job_state.image_width != in_settings.resolution_horizontal || job_state.image_height != in_settings.resolution_vertical;
 
   // Copy all objects on purpose
   // - allows original scene to be edited while this one is rendering
   // - allows to detect if existing is dirty
-  ajs.image_width = in_settings.resolution_horizontal;
-  ajs.image_height = in_settings.resolution_vertical;
-  ajs.settings = in_settings;
-  ajs.scene_root = *in_scene.clone();
-  ajs.cam.set_camera(in_camera_state);
+  job_state.image_width = in_settings.resolution_horizontal;
+  job_state.image_height = in_settings.resolution_vertical;
+  job_state.settings = in_settings;
+  job_state.scene_root = *in_scene.clone();
+  job_state.cam.set_camera(in_camera_state);
 
   // Delete buffers 
-  if (ajs.img_rgb != nullptr)
+  if (job_state.img_rgb != nullptr)
   {
-    if (force_recreate_buffers || !ajs.settings.reuse_buffer)
+    if (force_recreate_buffers || !job_state.settings.reuse_buffer)
     {
-      delete ajs.img_rgb;
-      delete ajs.img_bgr;
-      ajs.img_rgb = nullptr;
-      ajs.img_bgr = nullptr;
+      delete job_state.img_rgb;
+      delete job_state.img_bgr;
+      job_state.img_rgb = nullptr;
+      job_state.img_bgr = nullptr;
     }
   }
 
   // Create new buffers if they are missing
-  if (ajs.img_rgb == nullptr)
+  if (job_state.img_rgb == nullptr)
   {
-    ajs.img_rgb = new bmp::bmp_image(ajs.image_width, ajs.image_height);
-    ajs.img_bgr = new bmp::bmp_image(ajs.image_width, ajs.image_height);
+    job_state.img_rgb = new bmp::bmp_image(job_state.image_width, job_state.image_height);
+    job_state.img_bgr = new bmp::bmp_image(job_state.image_width, job_state.image_height);
   }
 
-  std::cout << "Frame renderer: " << ajs.image_width << "x" << ajs.image_height << std::endl;
+  std::cout << "Frame renderer: " << job_state.image_width << "x" << job_state.image_height << std::endl;
 }
 
 void async_renderer_base::render_single_async()
 {
-  if (ajs.is_working) return;
+  if (job_state.is_working) return;
   
-  ajs.is_working = true;
+  job_state.is_working = true;
   worker_semaphore.release();
 }
 
 bool async_renderer_base::is_world_dirty(const scene& in_scene)
 {
-  return ajs.scene_root.get_type_hash() != in_scene.get_type_hash();
+  return job_state.scene_root.get_type_hash() != in_scene.get_type_hash();
 }
 
 bool async_renderer_base::is_renderer_setting_dirty(const renderer_config& in_settings)
 {
-  return ajs.settings.get_type_hash() != in_settings.get_type_hash();
+  return job_state.settings.get_type_hash() != in_settings.get_type_hash();
+}
+
+bool async_renderer_base::is_renderer_type_different(const renderer_config& in_settings)
+{
+  return job_state.settings.renderer != in_settings.renderer;
 }
 
 bool async_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_state)
 {
-  return ajs.cam.get_type_hash() != in_camera_state.get_type_hash();
+  return job_state.cam.get_type_hash() != in_camera_state.get_type_hash();
 }
 
 void async_renderer_base::async_job()
@@ -88,12 +93,12 @@ void async_renderer_base::async_job()
   while (true)
   {
     worker_semaphore.acquire();
-    if(ajs.requested_stop) { break; }
+    if(job_state.requested_stop) { break; }
 
     benchmark::instance benchmark_render;
     benchmark_render.start("Render");
     render();
-    ajs.benchmark_render_time = benchmark_render.stop();
+    job_state.benchmark_render_time = benchmark_render.stop();
 
     if (save_output)
     {
@@ -103,14 +108,14 @@ void async_renderer_base::async_job()
       benchmark::instance benchmark_save;
       benchmark_save.start("Save");
       save(image_file_name);
-      ajs.benchmark_save_time = benchmark_save.stop();
+      job_state.benchmark_save_time = benchmark_save.stop();
     }
 
-    ajs.is_working = false;
+    job_state.is_working = false;
   }
 }
 
 void async_renderer_base::save(const char* file_name)
 {
-  ajs.img_bgr->save_to_file(file_name);
+  job_state.img_bgr->save_to_file(file_name);
 }

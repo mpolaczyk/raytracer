@@ -12,7 +12,7 @@ std::string example_renderer::get_name() const
 void example_renderer::render()
 {
   std::vector<chunk> chunks;
-  chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency(), ajs.image_width, ajs.image_height, chunks);
+  chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency(), job_state.image_width, job_state.image_height, chunks);
 
   concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
 }
@@ -36,8 +36,8 @@ void example_renderer::render_chunk(const chunk& in_chunk)
       int option = 3;
       if (option == 1)
       {
-        float u = float(x) / (ajs.image_width - 1);
-        float v = float(y) / (ajs.image_height - 1);
+        float u = float(x) / (job_state.image_width - 1);
+        float v = float(y) / (job_state.image_height - 1);
         pixel_color = vec3(u, v, 0.3f);
       }
       else if (option == 2)
@@ -46,7 +46,7 @@ void example_renderer::render_chunk(const chunk& in_chunk)
       }
       else if (option == 3)
       {
-        if (x < ajs.image_width / 2)
+        if (x < job_state.image_width / 2)
         {
           // Cached noise
           pixel_color = rand_direction();
@@ -54,15 +54,15 @@ void example_renderer::render_chunk(const chunk& in_chunk)
         else
         {
           // Runtime noise
-          pixel_color = rand_direction(ajs.image_width * ajs.image_height);
+          pixel_color = rand_direction(job_state.image_width * job_state.image_height);
         }
       }
 
       bmp::bmp_pixel p(pixel_color);
-      ajs.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
+      job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
       if (save_output)
       {
-        ajs.img_bgr->draw_pixel(x, y, &p);
+        job_state.img_bgr->draw_pixel(x, y, &p);
       }
     }
   }

@@ -96,6 +96,10 @@ public:
     {
       delete renderer;
     }
+    if (default_material != nullptr)
+    {
+      delete default_material;
+    }
   }
   // Scene state
   scene scene_root;

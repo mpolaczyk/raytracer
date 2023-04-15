@@ -39,9 +39,6 @@
     <ClCompile Include="processing\chunk_generator.cpp">
       <Filter>processing</Filter>
     </ClCompile>
-    <ClCompile Include="processing\thread_pool.cpp">
-      <Filter>processing</Filter>
-    </ClCompile>
     <ClCompile Include="app\app.cpp">
       <Filter>app</Filter>
     </ClCompile>
@@ -96,6 +93,9 @@
     <ClCompile Include="renderers\reference_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
+    <ClCompile Include="app\factories.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -139,9 +139,6 @@
       <Filter>processing</Filter>
     </ClInclude>
     <ClInclude Include="processing\chunk_generator.h">
-      <Filter>processing</Filter>
-    </ClInclude>
-    <ClInclude Include="processing\thread_pool.h">
       <Filter>processing</Filter>
     </ClInclude>
     <ClInclude Include="app\app.h">
@@ -191,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="math\pdf.h">
       <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="app\factories.h">
+      <Filter>app</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

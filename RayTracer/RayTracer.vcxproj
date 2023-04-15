@@ -149,6 +149,7 @@
     <ClCompile Include="app\ui\app_ui.cpp" />
     <ClCompile Include="app\ui\hittables_ui.cpp" />
     <ClCompile Include="app\ui\materials_ui.cpp" />
+    <ClCompile Include="app\factories.cpp" />
     <ClCompile Include="gfx\bmp.cpp" />
     <ClCompile Include="gfx\dx11_helper.cpp" />
     <ClCompile Include="main.cpp" />
@@ -160,7 +161,6 @@
     <ClCompile Include="processing\async_renderer_base.cpp" />
     <ClCompile Include="processing\benchmark.cpp" />
     <ClCompile Include="processing\chunk_generator.cpp" />
-    <ClCompile Include="processing\thread_pool.cpp" />
     <ClCompile Include="renderers\example_renderer.cpp" />
     <ClCompile Include="renderers\reference_renderer.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -180,6 +180,7 @@
     <ClInclude Include="app\app.h" />
     <ClInclude Include="app\exceptions.h" />
     <ClInclude Include="app\json\serializable.h" />
+    <ClInclude Include="app\factories.h" />
     <ClInclude Include="gfx\bmp.h" />
     <ClInclude Include="gfx\dx11_helper.h" />
     <ClInclude Include="gfx\stb_image.h" />
@@ -197,7 +198,6 @@
     <ClInclude Include="processing\async_renderer_base.h" />
     <ClInclude Include="processing\benchmark.h" />
     <ClInclude Include="processing\chunk_generator.h" />
-    <ClInclude Include="processing\thread_pool.h" />
     <ClInclude Include="renderers\example_renderer.h" />
     <ClInclude Include="renderers\reference_renderer.h" />
     <ClInclude Include="stdafx.h" />
