@@ -35,45 +35,28 @@ class renderer_config : serializable<nlohmann::json>
 {
 public:
   // Anti Aliasing oversampling
-  int AA_samples_per_pixel = 20;
+  int rays_per_pixel = 20;
 
   // Diffuse reflection
-  int diffuse_max_bounce_num = 7;
-
-  // How work is split
-  int chunks_num = 512;
-  chunk_strategy_type chunks_strategy = chunk_strategy_type::rectangles;
-  bool shuffle_chunks = true;
+  int ray_bounces = 7;
 
   // How work is processed
   threading_strategy_type threading_strategy = threading_strategy_type::thread_pool;
-  int threads_num = 0; // Apples only to thread pool strategy, 0 enforces std::thread::hardware_concurrency()
     
-  // Color by processing time per pixel
-  bool pixel_time_coloring = false;
-  float pixel_time_coloring_scale = 0.01f;
-
   // Draw in the same memory - real time update
   bool reuse_buffer = true;
 
   int resolution_vertical = 0;
   int resolution_horizontal = 0;
 
-  float pdf_ratio = 0.5f;
-  int pdf_mix_type = 0;
-
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, AA_samples_per_pixel, diffuse_max_bounce_num, chunks_num, chunks_strategy, threading_strategy, threads_num, shuffle_chunks, pixel_time_coloring, pixel_time_coloring_scale, reuse_buffer, resolution_vertical, resolution_horizontal, pdf_ratio, pdf_mix_type); // to_json only
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, rays_per_pixel, ray_bounces, threading_strategy, reuse_buffer, resolution_vertical, resolution_horizontal); // to_json only
 
   inline uint32_t get_type_hash() const
   {
-    uint32_t a = hash_combine(AA_samples_per_pixel, diffuse_max_bounce_num, pdf_mix_type);
-    uint32_t b = hash_combine(chunks_num, (int)chunks_strategy, (int)threading_strategy, threads_num);
-    uint32_t c = hash_combine(::get_type_hash(shuffle_chunks), ::get_type_hash(pixel_time_coloring), ::get_type_hash(pixel_time_coloring_scale), ::get_type_hash(pixel_time_coloring_scale));
-    uint32_t d = ::get_type_hash(pdf_ratio);
-    return hash_combine(a, b, c, d);
+    return hash_combine(rays_per_pixel, ray_bounces);
   }
 };
 

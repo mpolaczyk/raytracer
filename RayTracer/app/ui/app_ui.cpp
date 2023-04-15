@@ -62,39 +62,14 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   ImGui::Text("Resolution h = %d", state.renderer_setting.resolution_horizontal);
 
   ImGui::Separator();
-  int chunk_strategy = (int)state.renderer_setting.chunks_strategy;
-  ImGui::Combo("Chunk strategy", &chunk_strategy, chunk_strategy_names, IM_ARRAYSIZE(chunk_strategy_names));
-  state.renderer_setting.chunks_strategy = (chunk_strategy_type)chunk_strategy;
-  if (state.renderer_setting.chunks_strategy != chunk_strategy_type::none)
-  {
-    ImGui::InputInt("Chunks", &state.renderer_setting.chunks_num);
-  }
-  ImGui::Checkbox("Shuffle chunks", &state.renderer_setting.shuffle_chunks);
-
-  ImGui::Separator();
   int threading_strategy = (int)state.renderer_setting.threading_strategy;
   ImGui::Combo("Threading strategy", &threading_strategy, threading_strategy_names, IM_ARRAYSIZE(threading_strategy_names));
   state.renderer_setting.threading_strategy = (threading_strategy_type)threading_strategy;
-  if (state.renderer_setting.threading_strategy == threading_strategy_type::thread_pool)
-  {
-    ImGui::InputInt("Threads", &state.renderer_setting.threads_num);
-    ImGui::Text("0 enforces std::thread::hardware_concurrency");
-  }
 
   ImGui::Separator();
-  ImGui::InputInt("Rays per pixel", &state.renderer_setting.AA_samples_per_pixel, 1, 10);
-  ImGui::InputInt("Ray bounces", &state.renderer_setting.diffuse_max_bounce_num, 1);
-  ImGui::SliderFloat("PDF ratio", &state.renderer_setting.pdf_ratio, 0.0f, 1.0f, "%.2f");
-  ImGui::SliderInt("PDF mix type", &state.renderer_setting.pdf_mix_type, 0, 1);
+  ImGui::InputInt("Rays per pixel", &state.renderer_setting.rays_per_pixel, 1, 10);
+  ImGui::InputInt("Ray bounces", &state.renderer_setting.ray_bounces, 1);
   
-  ImGui::Separator();
-  ImGui::Checkbox("Show time per pixel", &state.renderer_setting.pixel_time_coloring);
-  if (state.renderer_setting.pixel_time_coloring)
-  {
-    ImGui::InputFloat("Scale", &state.renderer_setting.pixel_time_coloring_scale, 0.01f);
-  }
-  ImGui::Separator();
-
   ImGui::Checkbox("Reuse buffers", &state.renderer_setting.reuse_buffer);
   if (ImGui::Button("Render"))
   {

@@ -174,9 +174,6 @@
     <ClInclude Include="math\onb.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="math\pdf.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="math\ray.h">
       <Filter>math</Filter>
     </ClInclude>
@@ -191,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="renderers\reference_renderer.h">
       <Filter>renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\pdf.h">
+      <Filter>math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

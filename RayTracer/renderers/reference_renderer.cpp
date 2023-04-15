@@ -67,7 +67,7 @@ vec3 reference_renderer::fragment(float u, float v, uint32_t seed)
 {
   ray r = ajs.cam.get_ray(u, v);
 
-  const int rays_per_pixel = ajs.settings.AA_samples_per_pixel;
+  const int rays_per_pixel = ajs.settings.rays_per_pixel;
   vec3 pixel_color;
   for (int i = 0; i < rays_per_pixel; ++i)
   {
@@ -92,7 +92,7 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
   vec3 incoming_light = vec3(0.0f);
   vec3 color = vec3(1.0f);
 
-  for (int i = 0; i < ajs.settings.diffuse_max_bounce_num; ++i)
+  for (int i = 0; i < ajs.settings.ray_bounces; ++i)
   {
     hit_record hit;
     if (ajs.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same

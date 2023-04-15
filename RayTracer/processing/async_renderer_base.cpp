@@ -6,7 +6,6 @@
 #include <ppl.h>
 
 #include "gfx/bmp.h"
-#include "thread_pool.h"
 #include "math/hittables.h"
 #include "math/materials.h"
 #include "math/pdf.h"
