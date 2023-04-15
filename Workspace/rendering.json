@@ -175,14 +175,39 @@
       "id": "mirror",
       "smoothness": 1.0,
       "type": 1
+    },
+    {
+      "color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.0,
+      "id": "glass",
+      "smoothness": 1.0,
+      "type": 1,
+	  "refraction_enabled": true,
+	  "refraction_index": 1.5
     }
+	
   ],
   "renderer_config": {
     "ray_bounces": 4,
-    "rays_per_pixel": 250,
-    "type": 1,
+    "rays_per_pixel": 10,
     "resolution_horizontal": 400,
     "resolution_vertical": 400,
-    "reuse_buffer": false
+    "reuse_buffer": false,
+    "type": 1
   }
 }

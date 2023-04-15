@@ -48,9 +48,12 @@ void material::deserialize(const nlohmann::json& j)
   if (TRY_PARSE(nlohmann::json, j, "emitted_color", jemitted_color)) { emitted_color.deserialize(jemitted_color); }
 
   TRY_PARSE(float, j, "smoothness", smoothness);
+
   TRY_PARSE(bool, j, "gloss_enabled", gloss_enabled);
   TRY_PARSE(float, j, "gloss_probability", gloss_probability);
-
   nlohmann::json jgloss_color;
   if (TRY_PARSE(nlohmann::json, j, "gloss_color", jgloss_color)) { gloss_color.deserialize(jgloss_color); }
+
+  TRY_PARSE(bool, j, "refraction_enabled", refraction_enabled);
+  TRY_PARSE(float, j, "refraction_index", refraction_index);
 }

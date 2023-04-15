@@ -111,4 +111,6 @@ void material::draw_edit_panel()
   ImGui::Checkbox("Gloss enabled", &gloss_enabled);
   ImGui::InputFloat("Gloss probability", &smoothness, 1);
   ImGui::ColorEdit3("Gloss color", color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+  ImGui::Checkbox("Refraction enabled", &refraction_enabled);
+  ImGui::InputFloat("Refraction index", &refraction_index, 1);
 }

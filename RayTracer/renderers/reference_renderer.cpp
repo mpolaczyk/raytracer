@@ -96,20 +96,24 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
     if (job_state.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same
     {
       // Read material
-      float mat_smoothness = hit.material_ptr->smoothness;
-      vec3 mat_emitted = hit.material_ptr->emitted_color;
-      vec3 mat_color = hit.material_ptr->color;
-      bool mat_gloss_enabled = hit.material_ptr->gloss_enabled;
-      float mat_gloss_probability = hit.material_ptr->gloss_probability;
-      vec3 mat_gloss_color = hit.material_ptr->gloss_color;
-      // TODO: Refraction enabled
-      // TODO: Refraction probability
+      material* mat = hit.material_ptr;
       
-      // Bounce directions
+      float mat_smoothness = mat->smoothness;
+      vec3 mat_emitted = mat->emitted_color;
+      vec3 mat_color = mat->color;
+
+      bool mat_gloss_enabled = mat->gloss_enabled;
+      float mat_gloss_probability = mat->gloss_probability;
+      vec3 mat_gloss_color = mat->gloss_color;
+      
+      bool mat_refraction_enabled = mat->refraction_enabled;
+      float mat_refraction_index = mat->refraction_index;
+      
+      // New directions
       vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
       vec3 specular_dir = reflect(in_ray.direction, hit.normal);
-      // TODO: Refraction direction
-      // TODO: Blend all of them xD!
+      float refraction_ratio = hit.front_face ? (1.0f / mat_refraction_index) : mat_refraction_index;
+      vec3 refraction_dir = refract(in_ray.direction, hit.normal, refraction_ratio);
 
       if (mat_gloss_enabled)
       {
@@ -121,6 +125,15 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
         // Calculate color for this hit
         incoming_light += mat_emitted * color;
         color *= lerp_vec3(mat_color, mat_gloss_color, is_gloss_bounce);
+      }
+      else if (mat_refraction_enabled)
+      {
+        // Define next bounce
+        in_ray.direction = refraction_dir;
+        in_ray.origin = hit.p;
+
+        // refraction color ?
+        // refraction probability ?
       }
       else
       {
