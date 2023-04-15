@@ -83,14 +83,14 @@ struct scene_editor_window_model
    - holds resources
    - persistent
 */
-class app_state
+class app_instance
 {
 public:
 
-  app_state()
+  app_instance()
   {
   }
-  ~app_state()
+  ~app_instance()
   {
     if (renderer != nullptr)
     {
@@ -103,14 +103,14 @@ public:
   }
   // Scene state
   scene scene_root;
-  camera_config camera_setting;
+  camera_config camera_conf;
 
   // Rendering state
-  renderer_config renderer_setting;
+  renderer_config renderer_conf;
   material_instances materials;
   
   // OS window state
-  window_config window;
+  window_config window_conf;
 
   // Imgui window states
   raytracer_window_model rw_model;
@@ -135,13 +135,13 @@ public:
   void save_window_state();
 };
 
-void draw_camera_panel(camera_panel_model& model, app_state& state);
-void draw_renderer_panel(renderer_panel_model& model, app_state& state);
-void draw_raytracer_window(raytracer_window_model& model, app_state& state);
-void draw_output_window(output_window_model& model, app_state& state);
-void draw_scene_editor_window(scene_editor_window_model& model, app_state& state);
-void draw_new_object_panel(new_object_panel_model& model, app_state& state);
-void draw_material_selection_combo(material_selection_combo_model& model, app_state& state);
-void draw_delete_object_panel(delete_object_panel_model& model, app_state& state);
+void draw_camera_panel(camera_panel_model& model, app_instance& state);
+void draw_renderer_panel(renderer_panel_model& model, app_instance& state);
+void draw_raytracer_window(raytracer_window_model& model, app_instance& state);
+void draw_output_window(output_window_model& model, app_instance& state);
+void draw_scene_editor_window(scene_editor_window_model& model, app_instance& state);
+void draw_new_object_panel(new_object_panel_model& model, app_instance& state);
+void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state);
+void draw_delete_object_panel(delete_object_panel_model& model, app_instance& state);
 
-void update_default_spawn_position(app_state& state);
+void update_default_spawn_position(app_instance& state);

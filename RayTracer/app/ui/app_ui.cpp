@@ -5,7 +5,7 @@
 #include "processing/chunk_generator.h"
 #include "processing/async_renderer_base.h"
 
-void draw_raytracer_window(raytracer_window_model& model, app_state& state)
+void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 {
   ImGui::Begin("RAYTRACER", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
@@ -22,55 +22,53 @@ void draw_raytracer_window(raytracer_window_model& model, app_state& state)
   ImGui::End();
 }
 
-void draw_camera_panel(camera_panel_model& model, app_state& state)
+void draw_camera_panel(camera_panel_model& model, app_instance& state)
 {
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
   ImGui::Separator();
-  float ar[2] = { state.camera_setting.aspect_ratio_w, state.camera_setting.aspect_ratio_h };
+  float ar[2] = { state.camera_conf.aspect_ratio_w, state.camera_conf.aspect_ratio_h };
   ImGui::InputFloat2("Aspect ratio", ar);
-  state.camera_setting.aspect_ratio_w = ar[0];
-  state.camera_setting.aspect_ratio_h = ar[1];
-  ImGui::Text("Aspect ratio = %.3f", state.camera_setting.aspect_ratio_w / state.camera_setting.aspect_ratio_h);
-  ImGui::InputFloat("Field of view", &state.camera_setting.field_of_view, 1.0f, 189.0f, "%.0f");
-  ImGui::InputFloat("Projection", &state.camera_setting.type, 0.1f, 1.0f, "%.2f");
+  state.camera_conf.aspect_ratio_w = ar[0];
+  state.camera_conf.aspect_ratio_h = ar[1];
+  ImGui::Text("Aspect ratio = %.3f", state.camera_conf.aspect_ratio_w / state.camera_conf.aspect_ratio_h);
+  ImGui::InputFloat("Field of view", &state.camera_conf.field_of_view, 1.0f, 189.0f, "%.0f");
+  ImGui::InputFloat("Projection", &state.camera_conf.type, 0.1f, 1.0f, "%.2f");
   ImGui::Text("0 = Perspective; 1 = Orthografic");
   ImGui::Separator();
-  ImGui::InputFloat3("Look from", state.camera_setting.look_from.e, "%.2f");
-  ImGui::InputFloat3("Look at", state.camera_setting.look_at.e, "%.2f");
+  ImGui::InputFloat3("Look from", state.camera_conf.look_from.e, "%.2f");
+  ImGui::InputFloat3("Look at", state.camera_conf.look_at.e, "%.2f");
   ImGui::Separator();
   if (model.use_custom_focus_distance)
   {
-    ImGui::InputFloat("Focus distance", &state.camera_setting.dist_to_focus, 0.0f, 1000.0f, "%.2f");
+    ImGui::InputFloat("Focus distance", &state.camera_conf.dist_to_focus, 0.0f, 1000.0f, "%.2f");
   }
   else
   {
-    state.camera_setting.dist_to_focus = (state.camera_setting.look_from - state.camera_setting.look_at).length();
-    ImGui::Text("Focus distance = %.3f", state.camera_setting.dist_to_focus);
+    state.camera_conf.dist_to_focus = (state.camera_conf.look_from - state.camera_conf.look_at).length();
+    ImGui::Text("Focus distance = %.3f", state.camera_conf.dist_to_focus);
   }
   ImGui::Checkbox("Use custom focus distance", &model.use_custom_focus_distance);
-  ImGui::InputFloat("Aperture", &state.camera_setting.aperture, 0.1f, 1.0f, "%.2f");
+  ImGui::InputFloat("Aperture", &state.camera_conf.aperture, 0.1f, 1.0f, "%.2f");
 }
 
-void draw_renderer_panel(renderer_panel_model& model, app_state& state)
+void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 {
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
   ImGui::Separator();
-  ImGui::InputInt("Resolution v", &state.renderer_setting.resolution_vertical, 1, 2160);
-  state.renderer_setting.resolution_horizontal = (int)((float)state.renderer_setting.resolution_vertical * state.camera_setting.aspect_ratio_w / state.camera_setting.aspect_ratio_h);
-  ImGui::Text("Resolution h = %d", state.renderer_setting.resolution_horizontal);
+  ImGui::InputInt("Resolution v", &state.renderer_conf.resolution_vertical, 1, 2160);
+  state.renderer_conf.resolution_horizontal = (int)((float)state.renderer_conf.resolution_vertical * state.camera_conf.aspect_ratio_w / state.camera_conf.aspect_ratio_h);
+  ImGui::Text("Resolution h = %d", state.renderer_conf.resolution_horizontal);
 
   ImGui::Separator();
-  int renderer = (int)state.renderer_setting.renderer;
-  ImGui::Combo("Renderer", &renderer, renderer_names, IM_ARRAYSIZE(renderer_names));
-  state.renderer_setting.renderer = (renderer_type)renderer;
-
-  ImGui::Separator();
-  ImGui::InputInt("Rays per pixel", &state.renderer_setting.rays_per_pixel, 1, 10);
-  ImGui::InputInt("Ray bounces", &state.renderer_setting.ray_bounces, 1);
+  int renderer = (int)state.renderer_conf.type;
+  ImGui::Combo("Renderer", &renderer, renderer_type_names, IM_ARRAYSIZE(renderer_type_names));
+  state.renderer_conf.type = (renderer_type)renderer;
+  ImGui::InputInt("Rays per pixel", &state.renderer_conf.rays_per_pixel, 1, 10);
+  ImGui::InputInt("Ray bounces", &state.renderer_conf.ray_bounces, 1);
   
-  ImGui::Checkbox("Reuse buffers", &state.renderer_setting.reuse_buffer);
+  ImGui::Checkbox("Reuse buffers", &state.renderer_conf.reuse_buffer);
   if (ImGui::Button("Render"))
   {
     model.render_pressed = true;
@@ -94,7 +92,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_state& state)
   }
 }
 
-void draw_output_window(output_window_model& model, app_state& state)
+void draw_output_window(output_window_model& model, app_instance& state)
 {
   if (state.output_texture != nullptr)
   {
@@ -106,7 +104,7 @@ void draw_output_window(output_window_model& model, app_state& state)
   }
 }
 
-void draw_scene_editor_window(scene_editor_window_model& model, app_state& state)
+void draw_scene_editor_window(scene_editor_window_model& model, app_instance& state)
 {
   ImGui::Begin("SCENE", nullptr);
   
@@ -167,7 +165,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_state& state
   ImGui::End();
 }
 
-void draw_new_object_panel(new_object_panel_model& model, app_state& state)
+void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 {
   if (ImGui::Button("Add new"))
   {
@@ -221,7 +219,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_state& state)
   }
 }
 
-void draw_material_selection_combo(material_selection_combo_model& model, app_state& state)
+void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state)
 {
   std::vector<std::string> material_names = state.materials.get_material_names();
   if (material_names.size() > 0)
@@ -250,7 +248,7 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_st
   }
 }
 
-void draw_delete_object_panel(delete_object_panel_model& model, app_state& state)
+void draw_delete_object_panel(delete_object_panel_model& model, app_instance& state)
 {
   if (ImGui::Button("Delete selected"))
   {

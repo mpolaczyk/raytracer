@@ -21,14 +21,14 @@ void window_config::deserialize(const nlohmann::json& j)
 }
 
 
-void app_state::load_scene_state()
+void app_instance::load_scene_state()
 {
   std::ifstream input_stream(paths::get_scene_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
 
-  nlohmann::json jcamera_setting;
-  if (TRY_PARSE(nlohmann::json, j, "camera_setting", jcamera_setting)) { camera_setting.deserialize(jcamera_setting); }
+  nlohmann::json jcamera_conf;
+  if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { camera_conf.deserialize(jcamera_conf); }
 
   nlohmann::json jscene_root;
   if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_root.deserialize(jscene_root); }
@@ -36,14 +36,14 @@ void app_state::load_scene_state()
   input_stream.close();
 }
 
-void app_state::load_rendering_state()
+void app_instance::load_rendering_state()
 {
   std::ifstream input_stream(paths::get_rendering_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
 
-  nlohmann::json jrenderer_setting;
-  if (TRY_PARSE(nlohmann::json, j, "renderer_setting", jrenderer_setting)) { renderer_setting.deserialize(jrenderer_setting); }
+  nlohmann::json jrenderer_conf;
+  if (TRY_PARSE(nlohmann::json, j, "renderer_config", jrenderer_conf)) { renderer_conf.deserialize(jrenderer_conf); }
 
   nlohmann::json jmaterials;
   if (TRY_PARSE(nlohmann::json, j, "materials", jmaterials)) { materials.deserialize(jmaterials); }
@@ -51,14 +51,14 @@ void app_state::load_rendering_state()
   input_stream.close();
 }
 
-void app_state::load_window_state()
+void app_instance::load_window_state()
 {
   std::ifstream input_stream(paths::get_window_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
 
   nlohmann::json jwindow;
-  if (TRY_PARSE(nlohmann::json, j, "window", jwindow)) { window.deserialize(jwindow); }
+  if (TRY_PARSE(nlohmann::json, j, "window", jwindow)) { window_conf.deserialize(jwindow); }
 
   TRY_PARSE(bool, j, "auto_render", ow_model.auto_render);
   TRY_PARSE(float, j, "zoom", ow_model.zoom);
@@ -67,10 +67,10 @@ void app_state::load_window_state()
 }
 
 
-void app_state::save_scene_state()
+void app_instance::save_scene_state()
 {
   nlohmann::json j;
-  j["camera_setting"] = camera_setting.serialize();
+  j["camera_config"] = camera_conf.serialize();
   j["scene"] = scene_root.serialize();
   std::ofstream o(paths::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
@@ -81,10 +81,10 @@ void app_state::save_scene_state()
   o.close();
 }
 
-void app_state::save_rendering_state()
+void app_instance::save_rendering_state()
 {
   nlohmann::json j;
-  j["renderer_setting"] = renderer_setting.serialize();
+  j["renderer_config"] = renderer_conf.serialize();
   j["materials"] = materials.serialize();
   std::ofstream o(paths::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
@@ -95,10 +95,10 @@ void app_state::save_rendering_state()
   o.close();
 }
 
-void app_state::save_window_state()
+void app_instance::save_window_state()
 {
   nlohmann::json j;
-  j["window"] = window.serialize();
+  j["window"] = window_conf.serialize();
   j["auto_render"] = ow_model.auto_render;
   j["zoom"] = ow_model.zoom;
   std::ofstream o(paths::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);

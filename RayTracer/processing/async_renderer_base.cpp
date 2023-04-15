@@ -23,25 +23,25 @@ async_renderer_base::~async_renderer_base()
   if (job_state.img_bgr != nullptr) delete job_state.img_bgr;
 }
 
-void async_renderer_base::set_config(const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state)
+void async_renderer_base::set_config(const renderer_config& in_renderer_config, const scene& in_scene, const camera_config& in_camera_config)
 {
   if (job_state.is_working) return;
 
-  bool force_recreate_buffers = job_state.image_width != in_settings.resolution_horizontal || job_state.image_height != in_settings.resolution_vertical;
+  bool force_recreate_buffers = job_state.image_width != in_renderer_config.resolution_horizontal || job_state.image_height != in_renderer_config.resolution_vertical;
 
   // Copy all objects on purpose
   // - allows original scene to be edited while this one is rendering
   // - allows to detect if existing is dirty
-  job_state.image_width = in_settings.resolution_horizontal;
-  job_state.image_height = in_settings.resolution_vertical;
-  job_state.settings = in_settings;
+  job_state.image_width = in_renderer_config.resolution_horizontal;
+  job_state.image_height = in_renderer_config.resolution_vertical;
+  job_state.renderer_conf = in_renderer_config;
   job_state.scene_root = *in_scene.clone();
-  job_state.cam.set_camera(in_camera_state);
+  job_state.cam.set_camera(in_camera_config);
 
   // Delete buffers 
   if (job_state.img_rgb != nullptr)
   {
-    if (force_recreate_buffers || !job_state.settings.reuse_buffer)
+    if (force_recreate_buffers || !job_state.renderer_conf.reuse_buffer)
     {
       delete job_state.img_rgb;
       delete job_state.img_bgr;
@@ -73,19 +73,19 @@ bool async_renderer_base::is_world_dirty(const scene& in_scene)
   return job_state.scene_root.get_type_hash() != in_scene.get_type_hash();
 }
 
-bool async_renderer_base::is_renderer_setting_dirty(const renderer_config& in_settings)
+bool async_renderer_base::is_renderer_setting_dirty(const renderer_config& in_renderer_config)
 {
-  return job_state.settings.get_type_hash() != in_settings.get_type_hash();
+  return job_state.renderer_conf.get_type_hash() != in_renderer_config.get_type_hash();
 }
 
-bool async_renderer_base::is_renderer_type_different(const renderer_config& in_settings)
+bool async_renderer_base::is_renderer_type_different(const renderer_config& in_renderer_config)
 {
-  return job_state.settings.renderer != in_settings.renderer;
+  return job_state.renderer_conf.type != in_renderer_config.type;
 }
 
-bool async_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_state)
+bool async_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_config)
 {
-  return job_state.cam.get_type_hash() != in_camera_state.get_type_hash();
+  return job_state.cam.get_type_hash() != in_camera_config.get_type_hash();
 }
 
 void async_renderer_base::async_job()

@@ -16,15 +16,15 @@ void reference_renderer::render()
 {
   save_output = true;
 
-  std::vector<chunk> chunks;
+  std::vector<tchunk> chunks;
   const int chunks_per_thread = 32;
-  chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * chunks_per_thread, job_state.image_width, job_state.image_height, chunks);
+  tchunk_generator::generate_chunks(tchunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * chunks_per_thread, job_state.image_width, job_state.image_height, chunks);
 
-  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
+  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](tchunk ch) { render_chunk(ch); });
 }
 
 
-void reference_renderer::render_chunk(const chunk& in_chunk)
+void reference_renderer::render_chunk(const tchunk& in_chunk)
 {
   std::thread::id thread_id = std::this_thread::get_id();
 
@@ -67,7 +67,7 @@ vec3 reference_renderer::fragment(float u, float v, uint32_t seed)
 {
   ray r = job_state.cam.get_ray(u, v);
 
-  const int rays_per_pixel = job_state.settings.rays_per_pixel;
+  const int rays_per_pixel = job_state.renderer_conf.rays_per_pixel;
   vec3 pixel_color;
   for (int i = 0; i < rays_per_pixel; ++i)
   {
@@ -92,7 +92,7 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
   vec3 incoming_light = vec3(0.0f);
   vec3 color = vec3(1.0f);
 
-  for (int i = 0; i < job_state.settings.ray_bounces; ++i)
+  for (int i = 0; i < job_state.renderer_conf.ray_bounces; ++i)
   {
     hit_record hit;
     if (job_state.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same

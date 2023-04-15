@@ -93,7 +93,7 @@ int material_instances::get_index_by_id(const std::string& id) const
 void material::get_name(std::string& out_name, bool with_params) const
 {
   std::ostringstream oss;
-  oss << "/" << material_class_names[(int)type] << "/" << id;
+  oss << "/" << material_type_names[(int)type] << "/" << id;
   out_name = oss.str();
 }
 

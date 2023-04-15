@@ -29,7 +29,7 @@ public:
   int ray_bounces = 7;
 
   // How work is processed
-  renderer_type renderer = renderer_type::reference;
+  renderer_type type = renderer_type::reference;
     
   // Draw in the same memory - real time update
   bool reuse_buffer = true;
@@ -40,11 +40,11 @@ public:
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, rays_per_pixel, ray_bounces, renderer, reuse_buffer, resolution_vertical, resolution_horizontal); // to_json only
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, rays_per_pixel, ray_bounces, type, reuse_buffer, resolution_vertical, resolution_horizontal); // to_json only
 
   inline uint32_t get_type_hash() const
   {
-    return hash_combine(rays_per_pixel, ray_bounces, (int)renderer, (int)renderer);
+    return hash_combine(rays_per_pixel, ray_bounces, (int)type, (int)type);
   }
 };
 
@@ -60,15 +60,15 @@ public:
 
   // Renderer public interface. Usage:
   // 1. Set scene, camera and settings first
-  void set_config(const renderer_config& in_settings, const scene& in_scene, const camera_config& in_camera_state);
+  void set_config(const renderer_config& in_renderer_config, const scene& in_scene, const camera_config& in_camera_config);
   // 2. Request work
   void render_single_async();
   
   // State checks
   bool is_world_dirty(const scene& in_scene);
-  bool is_renderer_setting_dirty(const renderer_config& in_settings);
-  bool is_renderer_type_different(const renderer_config& in_settings);
-  bool is_camera_setting_dirty(const camera_config& in_camera_state);
+  bool is_renderer_setting_dirty(const renderer_config& in_renderer_config);
+  bool is_renderer_type_different(const renderer_config& in_renderer_config);
+  bool is_camera_setting_dirty(const camera_config& in_camera_config);
   bool is_working() const { return job_state.is_working; }
 
   uint64_t get_render_time() const { return job_state.benchmark_render_time; }
@@ -91,7 +91,7 @@ protected:
     uint32_t image_height = 0;
     uint32_t image_width = 0;
 
-    renderer_config settings;
+    renderer_config renderer_conf;
     camera cam;
     scene scene_root;
     

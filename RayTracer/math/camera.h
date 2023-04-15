@@ -60,31 +60,31 @@ class camera
 {
 public:
 
-  void set_camera(const camera_config& in_setup)
+  void set_camera(const camera_config& in_camera_config)
   {
-    setup = in_setup;
+    camera_conf = in_camera_config;
 
-    float theta = degrees_to_radians(setup.field_of_view);
+    float theta = degrees_to_radians(camera_conf.field_of_view);
     float h = tan(theta / 2.0f);
     viewport_height = 2.0f * h;                       // viewport size at the distance 1
-    viewport_width = setup.aspect_ratio_w / setup.aspect_ratio_h * viewport_height;
+    viewport_width = camera_conf.aspect_ratio_w / camera_conf.aspect_ratio_h * viewport_height;
 
     const vec3 view_up(0.0f, 1.0f, 0.0f);
-    w = unit_vector(setup.look_from - setup.look_at);   
+    w = unit_vector(camera_conf.look_from - camera_conf.look_at);   
     u = unit_vector(cross(view_up, w));     
     v = cross(w, u);                        
 
     // Focus plane at origin (size of the frustum at the focus distance)
-    f.horizontal = viewport_width * u * setup.dist_to_focus;
-    f.vertical = viewport_height * v * setup.dist_to_focus;
-    f.lower_left_corner = setup.look_from - f.horizontal / 2.0f - f.vertical / 2.0f;
+    f.horizontal = viewport_width * u * camera_conf.dist_to_focus;
+    f.vertical = viewport_height * v * camera_conf.dist_to_focus;
+    f.lower_left_corner = camera_conf.look_from - f.horizontal / 2.0f - f.vertical / 2.0f;
 
     // Camera plane at origin (proportional to type)
-    c.horizontal = f.horizontal * setup.type;
-    c.vertical = f.vertical * setup.type;
-    c.lower_left_corner = setup.look_from - c.horizontal / 2.0f - c.vertical / 2.0f;
+    c.horizontal = f.horizontal * camera_conf.type;
+    c.vertical = f.vertical * camera_conf.type;
+    c.lower_left_corner = camera_conf.look_from - c.horizontal / 2.0f - c.vertical / 2.0f;
 
-    lens_radius = setup.aperture / 2.0f;
+    lens_radius = camera_conf.aperture / 2.0f;
   }
 
   ray inline get_ray(float uu, float vv) const 
@@ -92,30 +92,30 @@ public:
     vec3 rd = lens_radius * random_in_unit_disk();
     vec3 offset = u * rd.x + v * rd.y;
 
-    if (setup.type == 0.0f)
+    if (camera_conf.type == 0.0f)
     {
       // Shoot rays from the point to the focus plane - perspective camera
       vec3 fpo = f.get_point(uu, vv);                     // point on the focus plane at origin
-      vec3 fpf = fpo - w * setup.dist_to_focus;           // point on the focus plane at the focus distance forward camera
-      return ray(setup.look_from - offset, unit_vector(fpf - setup.look_from + offset));
+      vec3 fpf = fpo - w * camera_conf.dist_to_focus;           // point on the focus plane at the focus distance forward camera
+      return ray(camera_conf.look_from - offset, unit_vector(fpf - camera_conf.look_from + offset));
     }
     else
     {
       // Don't shoot rays from the point, shoot from the plane that is proportionally smaller to focus plane
       vec3 cpo = c.get_point(uu, vv);             // point on the camera plane at origin
       vec3 fpo = f.get_point(uu, vv);               // point on the focus plane at origin
-      vec3 fpf = fpo - w * setup.dist_to_focus;     // point on the plane crossing frustum, forward camera
+      vec3 fpf = fpo - w * camera_conf.dist_to_focus;     // point on the plane crossing frustum, forward camera
       return ray(cpo - offset, unit_vector(fpf - cpo + offset)); 
     }
   }
 
   inline uint32_t get_type_hash()
   {
-    return setup.get_type_hash();
+    return camera_conf.get_type_hash();
   }
 
 private:
-  camera_config setup;
+  camera_config camera_conf;
   float lens_radius = 0.0f;
   float viewport_height = 2.0f;
   float viewport_width = 3.5f;

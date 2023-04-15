@@ -32,20 +32,20 @@ class material : serializable<nlohmann::json>
 {
 public:
   material() {}
-  material(material_class type) : type(type) 
+  material(material_type type) : type(type) 
   {
-    if (type == material_class::light)
+    if (type == material_type::light)
     {
       emitted_color = vec3(1.0f, 1.0f, 1.0f);
     }
   }
-  material(std::string&& id, material_class type) : material(type)
+  material(std::string&& id, material_type type) : material(type)
   {
     id = std::move(id);
   }
 
   std::string id;
-  material_class type = material_class::none;
+  material_type type = material_type::none;
   
   vec3 color;
   vec3 emitted_color;

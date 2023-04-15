@@ -10,7 +10,7 @@ public:
 private:
   virtual void render() override;
 
-  void render_chunk(const chunk& in_chunk);
+  void render_chunk(const tchunk& in_chunk);
 
   vec3 fragment(float u, float v, uint32_t seed);
 

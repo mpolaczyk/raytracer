@@ -2,12 +2,12 @@
 
 #include "app.h"
 
-void update_default_spawn_position(app_state& state)
+void update_default_spawn_position(app_instance& state)
 {
   // Find center of the scene, new objects scan be spawned there
-  vec3 look_from = state.camera_setting.look_from;
-  vec3 look_at = state.camera_setting.look_at;
-  float dist_to_focus = state.camera_setting.dist_to_focus;
+  vec3 look_from = state.camera_conf.look_from;
+  vec3 look_at = state.camera_conf.look_at;
+  float dist_to_focus = state.camera_conf.dist_to_focus;
   // Ray to the look at position to find non colliding spawn point
   ray center_of_scene_ray(look_from, look_at - look_from);
   hit_record center_of_scene_hit;

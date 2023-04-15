@@ -105,12 +105,12 @@ int main(int, char**)
     random_cache::init();
 
     // Load persistent state
-    app_state state;
+    app_instance state;
     state.load_scene_state();
     state.load_rendering_state();
     state.load_window_state();
-    state.renderer = object_factory::spawn_renderer(state.renderer_setting.renderer);
-    ::SetWindowPos(hwnd, NULL, state.window.x, state.window.y, state.window.w, state.window.h, NULL);
+    state.renderer = object_factory::spawn_renderer(state.renderer_conf.type);
+    ::SetWindowPos(hwnd, NULL, state.window_conf.x, state.window_conf.y, state.window_conf.w, state.window_conf.h, NULL);
     
     // Auto render on startup
     state.rw_model.rp_model.render_pressed = true;
@@ -155,15 +155,15 @@ int main(int, char**)
         {
           bool do_render = state.rw_model.rp_model.render_pressed
             || state.renderer->is_world_dirty(state.scene_root)
-            || state.renderer->is_renderer_setting_dirty(state.renderer_setting)
-            || state.renderer->is_camera_setting_dirty(state.camera_setting);
+            || state.renderer->is_renderer_setting_dirty(state.renderer_conf)
+            || state.renderer->is_camera_setting_dirty(state.camera_conf);
           
           if (do_render)
           {
-            if (state.renderer->is_renderer_type_different(state.renderer_setting))
+            if (state.renderer->is_renderer_type_different(state.renderer_conf))
             {
               delete state.renderer;
-              state.renderer = object_factory::spawn_renderer(state.renderer_setting.renderer);
+              state.renderer = object_factory::spawn_renderer(state.renderer_conf.type);
             }
 
             state.scene_root.build_boxes();
@@ -172,10 +172,10 @@ int main(int, char**)
 
             update_default_spawn_position(state);
 
-            state.output_width = state.renderer_setting.resolution_horizontal;
-            state.output_height = state.renderer_setting.resolution_vertical;
+            state.output_width = state.renderer_conf.resolution_horizontal;
+            state.output_height = state.renderer_conf.resolution_vertical;
 
-            state.renderer->set_config(state.renderer_setting, state.scene_root, state.camera_setting);
+            state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
             state.renderer->render_single_async();
 
             bool ret = dx11::LoadTextureFromBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
@@ -219,10 +219,10 @@ int main(int, char**)
     
       RECT rect;
       ::GetWindowRect(hwnd, &rect);
-      state.window.x = rect.left;
-      state.window.y = rect.top;
-      state.window.w = rect.right - rect.left;
-      state.window.h = rect.bottom - rect.top;
+      state.window_conf.x = rect.left;
+      state.window_conf.y = rect.top;
+      state.window_conf.w = rect.right - rect.left;
+      state.window_conf.h = rect.bottom - rect.top;
     }
     
     state.save_window_state();

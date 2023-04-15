@@ -1,15 +1,17 @@
 #include "stdafx.h"
 
 #include "factories.h"
+
 #include "math/materials.h"
+
 #include "processing/async_renderer_base.h"
 #include "renderers/example_renderer.h"
 #include "renderers/reference_renderer.h"
 
-material* object_factory::spawn_material(material_class type)
+material* object_factory::spawn_material(material_type type)
 {
-  if (type == material_class::universal) { return new material(material_class::universal); }
-  else if (type == material_class::light) { return new material(material_class::light); }
+  if (type == material_type::universal) { return new material(material_type::universal); }
+  else if (type == material_type::light) { return new material(material_type::light); }
   return nullptr;
 }
 

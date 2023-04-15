@@ -177,10 +177,10 @@
       "type": 1
     }
   ],
-  "renderer_setting": {
+  "renderer_config": {
     "ray_bounces": 4,
     "rays_per_pixel": 250,
-    "renderer": 1,
+    "type": 1,
     "resolution_horizontal": 400,
     "resolution_vertical": 400,
     "reuse_buffer": false

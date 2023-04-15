@@ -38,7 +38,7 @@ void material_instances::deserialize(const nlohmann::json& j)
 
 void material::deserialize(const nlohmann::json& j)
 {
-  TRY_PARSE(material_class, j, "type", type);
+  TRY_PARSE(material_type, j, "type", type);
   TRY_PARSE(std::string, j, "id", id);
 
   nlohmann::json jcolor;
