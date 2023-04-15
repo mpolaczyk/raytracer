@@ -37,7 +37,7 @@ float rand_normal_distribution()
 }
 
 float rand_normal_distribution(uint32_t seed)
-{ 
+{
   float theta = 2.0f * 3.1415926f * RAND_SEED_FUNC(seed);
   float rho = sqrt(-2.0f * log(RAND_SEED_FUNC(seed)));
   assert(isfinite(rho));

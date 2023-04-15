@@ -90,7 +90,6 @@ int material_instances::get_index_by_id(const std::string& id) const
   return -1;
 }
 
-
 void material::get_name(std::string& out_name, bool with_params) const
 {
   std::ostringstream oss;
@@ -98,14 +97,14 @@ void material::get_name(std::string& out_name, bool with_params) const
   out_name = oss.str();
 }
 
-void lambertian_material::get_name(std::string& out_name, bool with_params) const
+void universal_material::get_name(std::string& out_name, bool with_params) const
 {
   std::string base_name;
   material::get_name(base_name);
   if (with_params)
   {
     std::ostringstream oss;
-    oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")";
+    oss << base_name << "/" << color;
     out_name = oss.str();
   }
   else
@@ -113,50 +112,6 @@ void lambertian_material::get_name(std::string& out_name, bool with_params) cons
     out_name = base_name;
   }
 }
-
-void texture_material::get_name(std::string& out_name, bool with_params) const
-{
-  material::get_name(out_name);
-}
-
-void metal_material::get_name(std::string& out_name, bool with_params) const
-{
-  std::string base_name;
-  material::get_name(base_name);
-  if (with_params)
-  {
-    std::ostringstream oss;
-    oss << base_name << "/(" << albedo.x << "," << albedo.y << "," << albedo.z << ")," << fuzz;
-    out_name = oss.str();
-  }
-  else
-  {
-    out_name = base_name;
-  }
-}
-
-void dialectric_material::get_name(std::string& out_name, bool with_params) const
-{
-  std::string base_name;
-  material::get_name(base_name);
-  if (with_params)
-  {
-    std::ostringstream oss;
-    oss << base_name << "/" << index_of_refraction;
-    out_name = oss.str();
-  }
-  else
-  {
-    out_name = base_name;
-  }
-}
-
-void diffuse_light_material::get_name(std::string& out_name, bool with_params) const
-{
-  material::get_name(out_name);
-}
-
-
 
 void material::draw_edit_panel()
 {
@@ -167,33 +122,13 @@ void material::draw_edit_panel()
   ImGui::Text(mat_name.c_str());
 }
 
-void lambertian_material::draw_edit_panel()
+void universal_material::draw_edit_panel()
 {
   material::draw_edit_panel();
-  ImGui::ColorEdit3("Albedo", albedo.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-}
-
-void texture_material::draw_edit_panel()
-{
-  material::draw_edit_panel();
-  ImGui::Text("TODO add texture input");
-}
-
-void metal_material::draw_edit_panel()
-{
-  material::draw_edit_panel();
-  ImGui::ColorEdit3("Albedo", albedo.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-  ImGui::InputFloat("Fuzz", &fuzz, 1);
-}
-
-void dialectric_material::draw_edit_panel()
-{
-  material::draw_edit_panel();
-  ImGui::InputFloat("Index of refraction", &index_of_refraction, 1);
-}
-
-void diffuse_light_material::draw_edit_panel()
-{
-  material::draw_edit_panel();
-  ImGui::Combo("Surface side", &sides, surface_side_type_names, IM_ARRAYSIZE(hittable_class_names));
+  ImGui::ColorEdit3("Color", color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+  ImGui::ColorEdit3("Emitted color", emitted_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+  ImGui::InputFloat("Smoothness", &smoothness, 1);
+  ImGui::Checkbox("Gloss enabled", &gloss_enabled);
+  ImGui::InputFloat("Gloss probability", &smoothness, 1);
+  ImGui::ColorEdit3("Gloss color", color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
 }

@@ -162,7 +162,6 @@
     <ClCompile Include="processing\chunk_generator.cpp" />
     <ClCompile Include="processing\thread_pool.cpp" />
     <ClCompile Include="renderers\example_renderer.cpp" />
-    <ClCompile Include="renderers\rtow_renderer.cpp" />
     <ClCompile Include="renderers\reference_renderer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -200,7 +199,6 @@
     <ClInclude Include="processing\chunk_generator.h" />
     <ClInclude Include="processing\thread_pool.h" />
     <ClInclude Include="renderers\example_renderer.h" />
-    <ClInclude Include="renderers\rtow_renderer.h" />
     <ClInclude Include="renderers\reference_renderer.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

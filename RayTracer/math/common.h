@@ -44,6 +44,16 @@ inline bool is_near_zero(vec3& value)
   return (fabs(value[0]) < small_number) && (fabs(value[1]) < small_number) && (fabs(value[2]) < small_number);
 }
 
+inline float inv_sqrt(float x) 
+{
+  float xhalf = 0.5f * x;
+  int i = *(int*)&x;            // store floating-point bits in integer
+  i = 0x5f3759df - (i >> 1);    // initial guess for Newton's method
+  x = *(float*)&i;              // convert new bits into float
+  x = x * (1.5f - xhalf * x * x);     // One round of Newton's method
+  return x;
+}
+
 namespace random_cache
 {
   template<typename T, int N>
@@ -86,6 +96,7 @@ vec3 rand_direction(uint32_t seed);
 
 float rand_normal_distribution();
 float rand_normal_distribution(uint32_t seed);
+
 
 inline vec3 random_in_unit_disk()
 {

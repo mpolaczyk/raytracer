@@ -75,9 +75,6 @@
     <ClCompile Include="app\json\vec3_json.cpp">
       <Filter>app\json</Filter>
     </ClCompile>
-    <ClCompile Include="renderers\rtow_renderer.cpp">
-      <Filter>renderers</Filter>
-    </ClCompile>
     <ClCompile Include="math\aabb.cpp">
       <Filter>math</Filter>
     </ClCompile>
@@ -155,9 +152,6 @@
     </ClInclude>
     <ClInclude Include="app\json\serializable.h">
       <Filter>app\json</Filter>
-    </ClInclude>
-    <ClInclude Include="renderers\rtow_renderer.h">
-      <Filter>renderers</Filter>
     </ClInclude>
     <ClInclude Include="math\aabb.h">
       <Filter>math</Filter>

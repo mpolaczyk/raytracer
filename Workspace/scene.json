@@ -21,7 +21,7 @@
     "material_id": "",
     "objects": [
       {
-        "material_id": "lambertian_green",
+        "material_id": "glossy_green",
         "type": 4,
         "x": 555.0,
         "y0": 0.0,
@@ -30,7 +30,7 @@
         "z1": 555.0
       },
       {
-        "material_id": "lambertian_red",
+        "material_id": "glossy_red",
         "type": 4,
         "x": 0.0,
         "y0": 0.0,
@@ -39,7 +39,7 @@
         "z1": 555.0
       },
       {
-        "material_id": "light_opposite",
+        "material_id": "light",
         "type": 3,
         "x0": 101.0,
         "x1": 445.0,
@@ -48,7 +48,7 @@
         "z1": 363.0
       },
       {
-        "material_id": "lambertian_white",
+        "material_id": "mirror",
         "type": 3,
         "x0": 0.0,
         "x1": 555.0,
@@ -57,7 +57,7 @@
         "z1": 555.0
       },
       {
-        "material_id": "lambertian_white",
+        "material_id": "metal_gold",
         "origin": {
           "x": 443.0,
           "y": 70.0,
@@ -67,7 +67,7 @@
         "type": 1
       },
       {
-        "material_id": "lambertian_white",
+        "material_id": "glossy_white",
         "origin": {
           "x": 115.0,
           "y": 238.0,
@@ -77,7 +77,7 @@
         "type": 1
       },
       {
-        "material_id": "lambertian_white",
+        "material_id": "glossy_white",
         "type": 3,
         "x0": 0.0,
         "x1": 555.0,
@@ -86,7 +86,7 @@
         "z1": 555.0
       },
       {
-        "material_id": "lambertian_white",
+        "material_id": "glossy_white",
         "type": 2,
         "x0": 0.0,
         "x1": 555.0,

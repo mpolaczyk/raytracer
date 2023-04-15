@@ -20,44 +20,13 @@ nlohmann::json material::serialize()
   return j;
 }
 
-nlohmann::json lambertian_material::serialize()
+nlohmann::json universal_material::serialize()
 {
   nlohmann::json j;
   material::to_json(j, *this);
-  j["albedo"] = albedo.serialize();
-  return j;
-}
-
-nlohmann::json texture_material::serialize()
-{
-  nlohmann::json j;
-  material::to_json(j, *this);
-  //texture
-  return j;
-}
-
-nlohmann::json metal_material::serialize()
-{
-  nlohmann::json j;
-  material::to_json(j, *this);
-  to_json(j, *this);
-  j["albedo"] = albedo.serialize();
-  return j;
-}
-
-nlohmann::json dialectric_material::serialize()
-{
-  nlohmann::json j;
-  material::to_json(j, *this);
-  to_json(j, *this);
-  return j;
-}
-
-nlohmann::json diffuse_light_material::serialize()
-{
-  nlohmann::json j;
-  material::to_json(j, *this);
-  j["albedo"] = albedo.serialize();
+  j["color"] = color.serialize();
+  j["emitted_color"] = emitted_color.serialize();
+  j["gloss_color"] = gloss_color.serialize();
   to_json(j, *this);
   return j;
 }
@@ -79,44 +48,20 @@ void material::deserialize(const nlohmann::json& j)
   TRY_PARSE(std::string, j, "id", id);
 }
 
-void lambertian_material::deserialize(const nlohmann::json& j)
+void universal_material::deserialize(const nlohmann::json& j)
 {
   material::from_json(j, *this);
 
-  nlohmann::json jalbedo;
-  if (TRY_PARSE(nlohmann::json, j, "albedo", jalbedo)) { albedo.deserialize(jalbedo); }
+  nlohmann::json jcolor;
+  if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { color.deserialize(jcolor); }
+
+  nlohmann::json jemitted_color;
+  if (TRY_PARSE(nlohmann::json, j, "emitted_color", jemitted_color)) { emitted_color.deserialize(jemitted_color); }
+
+  TRY_PARSE(float, j, "smoothness", smoothness);
+  TRY_PARSE(bool, j, "gloss_enabled", gloss_enabled);
+  TRY_PARSE(float, j, "gloss_probability", gloss_probability);
+
+  nlohmann::json jgloss_color;
+  if (TRY_PARSE(nlohmann::json, j, "gloss_color", jgloss_color)) { gloss_color.deserialize(jgloss_color); }
 }
-
-void texture_material::deserialize(const nlohmann::json& j)
-{
-  material::from_json(j, *this);
-  // texture
-}
-
-void metal_material::deserialize(const nlohmann::json& j)
-{
-  material::from_json(j, *this);
-  
-  TRY_PARSE(float, j, "fuzz", fuzz);
-
-  nlohmann::json jalbedo;
-  if (TRY_PARSE(nlohmann::json, j, "albedo", jalbedo)) { albedo.deserialize(jalbedo); }
-}
-
-void dialectric_material::deserialize(const nlohmann::json& j)
-{
-  material::from_json(j, *this);
-  
-  TRY_PARSE(float, j, "index_of_refraction", index_of_refraction);
-}
-
-void diffuse_light_material::deserialize(const nlohmann::json& j)
-{
-  material::from_json(j, *this);
-
-  TRY_PARSE(int, j, "sides", sides);
-
-  nlohmann::json jalbedo;
-  if (TRY_PARSE(nlohmann::json, j, "albedo", jalbedo)) { albedo.deserialize(jalbedo); }
-}
-

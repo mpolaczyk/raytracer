@@ -13,7 +13,6 @@
 #include "gfx/dx11_helper.h"
 #include "math/materials.h"
 
-#include "renderers/rtow_renderer.h"
 #include "renderers/example_renderer.h"
 #include "renderers/reference_renderer.h"
 
@@ -114,14 +113,6 @@ int main(int, char**)
     state.load_window_state();
     ::SetWindowPos(hwnd, NULL, state.window.x, state.window.y, state.window.w, state.window.h, NULL);
     
-    // Not yet persistent
-    solid_texture*    t_white         = new solid_texture(c_white);
-    solid_texture*    t_grey          = new solid_texture(c_grey/2.0f);
-    checker_texture*  t_checker       = new checker_texture(t_white, t_grey);
-    texture_material* texture_default = new texture_material("default", t_checker);
-    state.default_material = texture_default;
-    state.materials.try_add(texture_default);
-
     state.rw_model.rp_model.render_pressed = true;
 
     // Main loop
@@ -171,7 +162,6 @@ int main(int, char**)
           {
             state.scene_root.build_boxes();
             state.scene_root.update_materials(&state.materials);
-            state.scene_root.override_texture_material(state.default_material);
             state.scene_root.query_lights();
 
             update_default_spawn_position(state);

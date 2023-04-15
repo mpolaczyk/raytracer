@@ -60,26 +60,12 @@ void scene::update_materials(material_instances* materials)
   }
 }
 
-void scene::override_texture_material(material* texture)
-{
-  assert(texture != nullptr);
-  for (hittable* obj : objects)
-  {
-    assert(obj->material_ptr != nullptr);
-    if (obj->material_ptr->type == material_class::texture)
-    {
-      obj->material_ptr = texture;  // TODO No proper texture support, use default for everything!
-    }
-  }
-}
-
 void scene::query_lights()
 {
   lights_num = 0;
   for (hittable* object : objects)
   {
-    if (object->material_ptr != nullptr 
-      && object->material_ptr->type == material_class::diffuse_light)
+    if (object->material_ptr != nullptr && object->material_ptr->get_emitted().length_squared() != 0.0f)
     {
       lights[lights_num] = object;
       lights_num++;

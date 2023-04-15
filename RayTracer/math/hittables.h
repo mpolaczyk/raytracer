@@ -130,7 +130,7 @@ public:
   virtual float get_pdf_value(const vec3& origin, const vec3& v) const override { assert(false); return 0.0f; };
   virtual vec3 get_pdf_direction(const vec3& look_from) const override { assert(false); return vec3(0, 0, 0); };
   virtual vec3 get_random_point() const override { assert(false); return vec3(0, 0, 0); };
-  virtual void set_origin(const vec3& value) override { assert(false); };
+  virtual void set_origin(const vec3& value) override { };
   virtual void set_extent(float value) { assert(false); };
 
   virtual void draw_edit_panel() override;
@@ -144,7 +144,6 @@ public:
 
   void build_boxes();
   void update_materials(material_instances* materials);
-  void override_texture_material(material* texture);
   void query_lights();
   hittable* get_random_light();
 

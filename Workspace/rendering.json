@@ -1,158 +1,84 @@
 {
   "materials": [
     {
-      "albedo": {
-        "x": 0.7200000286102295,
-        "y": 0.44999998807907104,
-        "z": 0.20000000298023224
-      },
-      "fuzz": 0.03999999910593033,
-      "id": "copper",
-      "type": 3
+      "id": "metal_white",
+	  "type": 1,
+	  "color": { "x": 0.73, "y": 0.73, "z": 0.73 },
+	  "emitted_color": { "x": 0.0, "y": 0.0, "z": 0.0 },
+	  "smoothness": 0.6,
+	  "gloss_enabled": false,
+	  "gloss_probability": 0,
+	  "gloss_color": { "x": 0.0, "y": 0.0, "z": 0.0 }
     },
-    {
-      "id": "default",
-      "type": 2
+	{
+      "id": "metal_gold",
+	  "type": 1,
+	  "color": { "x": 1.00, "y": 0.84, "z": 0.00 },
+	  "emitted_color": { "x": 0.0, "y": 0.0, "z": 0.0 },
+	  "smoothness": 0.6,
+	  "gloss_enabled": false,
+	  "gloss_probability": 0,
+	  "gloss_color": { "x": 0.0, "y": 0.0, "z": 0.0 }
     },
-    {
-      "id": "diamond",
-      "index_of_refraction": 2.4000000953674316,
-      "type": 4
+	{
+      "id": "metal_copper",
+	  "type": 1,
+	  "color": { "x": 0.72, "y": 0.44, "z": 0.20 },
+	  "emitted_color": { "x": 0.0, "y": 0.0, "z": 0.0 },
+	  "smoothness": 0.6,
+	  "gloss_enabled": false,
+	  "gloss_probability": 0,
+	  "gloss_color": { "x": 0.0, "y": 0.0, "z": 0.0 }
     },
-    {
-      "id": "glass",
-      "index_of_refraction": 1.5,
-      "type": 4
+	{
+      "id": "mirror",
+	  "type": 1,
+	  "color": { "x": 1.0, "y": 1.0, "z": 1.0 },
+	  "emitted_color": { "x": 0.0, "y": 0.0, "z": 0.0 },
+	  "smoothness": 1.0,
+	  "gloss_enabled": false,
+	  "gloss_probability": 0,
+	  "gloss_color": { "x": 0.0, "y": 0.0, "z": 0.0 }
     },
-    {
-      "albedo": {
-        "x": 1.0,
-        "y": 0.8399999737739563,
-        "z": 0.0
-      },
-      "fuzz": 0.03999999910593033,
-      "id": "gold",
-      "type": 3
+	{
+      "id": "glossy_white",
+	  "type": 1,
+	  "color": { "x": 0.73, "y": 0.73, "z": 0.73 },
+	  "emitted_color": { "x": 0.0, "y": 0.0, "z": 0.0 },
+	  "smoothness": 0.9,
+	  "gloss_enabled": true,
+	  "gloss_probability": 0.2,
+	  "gloss_color": { "x": 0.73, "y": 0.73, "z": 0.73 }
     },
-    {
-      "albedo": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "id": "lambertian_blue",
-      "type": 1
+	{
+      "id": "glossy_green",
+	  "type": 1,
+	  "color": { "x": 0.11, "y": 0.44, "z": 0.15 },
+	  "emitted_color": { "x": 0.0, "y": 0.0, "z": 0.0 },
+	  "smoothness": 0.9,
+	  "gloss_enabled": true,
+	  "gloss_probability": 0.2,
+	  "gloss_color": { "x": 0.73, "y": 0.73, "z": 0.73 }
     },
-    {
-      "albedo": {
-        "x": 0.11999999731779099,
-        "y": 0.44999998807907104,
-        "z": 0.15000000596046448
-      },
-      "id": "lambertian_green",
-      "type": 1
+	{
+      "id": "glossy_red",
+	  "type": 1,
+	  "color": { "x": 0.64, "y": 0.05, "z": 0.05 },
+	  "emitted_color": { "x": 0.0, "y": 0.0, "z": 0.0 },
+	  "smoothness": 0.9,
+	  "gloss_enabled": true,
+	  "gloss_probability": 0.2,
+	  "gloss_color": { "x": 0.73, "y": 0.73, "z": 0.73 }
     },
-    {
-      "albedo": {
-        "x": 0.6499999761581421,
-        "y": 0.05000000074505806,
-        "z": 0.05000000074505806
-      },
-      "id": "lambertian_red",
-      "type": 1
-    },
-    {
-      "albedo": {
-        "x": 0.7300000190734863,
-        "y": 0.7300000190734863,
-        "z": 0.7300000190734863
-      },
-      "id": "lambertian_white",
-      "type": 1
-    },
-    {
-      "albedo": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "id": "lambertian_yellow",
-      "type": 1
-    },
-    {
-      "albedo": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-      },
+	{
       "id": "light",
-      "sides": 0,
-      "type": 5
-    },
-    {
-      "albedo": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-      },
-      "id": "light_opposite",
-      "sides": 1,
-      "type": 5
-    },
-    {
-      "albedo": {
-        "x": 0.6000000238418579,
-        "y": 0.6000000238418579,
-        "z": 0.6000000238418579
-      },
-      "fuzz": 0.019999999552965164,
-      "id": "metal_matt",
-      "type": 3
-    },
-    {
-      "albedo": {
-        "x": 0.6000000238418579,
-        "y": 0.6000000238418579,
-        "z": 0.6000000238418579
-      },
-      "fuzz": 0.0,
-      "id": "metal_shiny",
-      "type": 3
-    },
-    {
-      "id": "moissanite",
-      "index_of_refraction": 2.6500000953674316,
-      "type": 4
-    },
-    {
-      "id": "sapphire",
-      "index_of_refraction": 1.7699999809265137,
-      "type": 4
-    },
-    {
-      "albedo": {
-        "x": 0.3199999928474426,
-        "y": 0.3400000035762787,
-        "z": 0.3400000035762787
-      },
-      "fuzz": 0.03999999910593033,
-      "id": "silver",
-      "type": 3
-    },
-    {
-      "albedo": {
-        "x": 0.4399999976158142,
-        "y": 0.4699999988079071,
-        "z": 0.49000000953674316
-      },
-      "fuzz": 0.03999999910593033,
-      "id": "steel",
-      "type": 3
-    },
-    {
-      "id": "water",
-      "index_of_refraction": 1.3300000429153442,
-      "type": 4
+	  "type": 1,
+	  "color": { "x": 0.00, "y": 0.00, "z": 0.00 },
+	  "emitted_color": { "x": 1.00, "y": 1.00, "z": 1.00 },
+	  "smoothness": 0.0,
+	  "gloss_enabled": false,
+	  "gloss_probability": 0.0,
+	  "gloss_color": { "x": 0.0, "y": 0.0, "z": 0.0 }
     }
   ],
   "renderer_setting": {
