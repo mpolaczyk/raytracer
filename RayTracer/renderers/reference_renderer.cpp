@@ -33,20 +33,13 @@ void reference_renderer::render_chunk(const tchunk& in_chunk)
   const char* name = oss.str().c_str();
   benchmark::scope_counter benchmark_render_chunk(name, false);
 
-  int w = job_state.image_width;
-  int h = job_state.image_height;
-  vec3 res(w, h, 0.0f);
+  vec3 resolution(job_state.image_width, job_state.image_height, 0.0f);
 
   for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
   {
     for (int x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
     {
-      float u = float(x) / (w - 1);
-      float v = float(y) / (h - 1);
-      vec3 pixel_coord = vec3(u, v, 0.0f) * res;
-      uint32_t seed = uint32_t(pixel_coord.y * res.x + pixel_coord.x);  // Each pixel has a unique seed, gradient from white to black
-
-      vec3 pixel_color = fragment(u, v, seed);
+      vec3 pixel_color = fragment(x, y, resolution);
 
       assert(isfinite(pixel_color.x));
       assert(isfinite(pixel_color.y));
@@ -63,19 +56,24 @@ void reference_renderer::render_chunk(const tchunk& in_chunk)
   }
 }
 
-vec3 reference_renderer::fragment(float u, float v, uint32_t seed)
+vec3 reference_renderer::fragment(float x, float y, const vec3& resolution)
 {
-  ray r = job_state.cam.get_ray(u, v);
+  uint32_t seed = uint32_t(y * resolution.x + x);  // Each pixel has a unique seed, gradient from white to black
 
   const int rays_per_pixel = job_state.renderer_conf.rays_per_pixel;
-  vec3 pixel_color;
+  vec3 sum_colors;
+
   for (int i = 0; i < rays_per_pixel; ++i)
   {
-    vec3 color = ray_color(r, seed);
-    pixel_color += color;
+    // Anti aliasing with ray variance
+    float u = (float(x) + rand_pcg(seed)) / (resolution.x - 1);
+    float v = (float(y) + rand_pcg(seed)) / (resolution.y - 1);
+    // Trace the ray
+    ray r = job_state.cam.get_ray(u, v);
+    sum_colors += ray_color(r, seed);
   }
   
-  return pixel_color / (float)rays_per_pixel;
+  return sum_colors / (float)rays_per_pixel;
 }
 
 vec3 reference_renderer::enviroment_light(const ray& in_ray)

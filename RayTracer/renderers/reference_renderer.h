@@ -12,7 +12,7 @@ private:
 
   void render_chunk(const tchunk& in_chunk);
 
-  vec3 fragment(float u, float v, uint32_t seed);
+  vec3 fragment(float x, float y, const vec3& resolution);
 
   vec3 enviroment_light(const ray& in_ray);
 
