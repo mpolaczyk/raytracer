@@ -255,6 +255,22 @@ namespace paths
     return oss.str();
   }
 
+  std::string get_workspace_images_dir()
+  {
+    std::string workspace_dir = get_workspace_dir();
+    std::ostringstream oss;
+    oss << workspace_dir << "\\Images\\";
+    return oss.str();
+  }
+
+  std::string get_workspace_images_file_path(const char* workspace_images_file_name)
+  {
+    std::string workspace_images_dir = get_workspace_images_dir();
+    std::ostringstream oss;
+    oss << workspace_images_dir << workspace_images_file_name;
+    return oss.str();
+  }
+
   std::string get_window_file_path()
   {
     return get_workspace_file_path("window.json");
@@ -275,7 +291,7 @@ namespace paths
     std::time_t result = std::time(nullptr);
     std::ostringstream oss;
     oss << "output_" << result << ".bmp";
-    return get_workspace_file_path(oss.str().c_str());
+    return get_workspace_images_file_path(oss.str().c_str());
   }
 
   std::string get_imgui_file_path()
