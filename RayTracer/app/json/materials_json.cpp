@@ -16,13 +16,6 @@ nlohmann::json material_instances::serialize()
 nlohmann::json material::serialize()
 {
   nlohmann::json j;
-  to_json(j, *this);
-  return j;
-}
-
-nlohmann::json universal_material::serialize()
-{
-  nlohmann::json j;
   material::to_json(j, *this);
   j["color"] = color.serialize();
   j["emitted_color"] = emitted_color.serialize();
@@ -46,11 +39,6 @@ void material::deserialize(const nlohmann::json& j)
 {
   TRY_PARSE(material_class, j, "type", type);
   TRY_PARSE(std::string, j, "id", id);
-}
-
-void universal_material::deserialize(const nlohmann::json& j)
-{
-  material::from_json(j, *this);
 
   nlohmann::json jcolor;
   if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { color.deserialize(jcolor); }

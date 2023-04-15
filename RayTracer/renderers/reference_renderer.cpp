@@ -98,12 +98,12 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
     if (ajs.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same
     {
       // Read material
-      float mat_smoothness = hit.material_ptr->get_smoothness();
-      vec3 mat_emitted = hit.material_ptr->get_emitted();
-      vec3 mat_color = hit.material_ptr->get_color();
-      bool mat_gloss_enabled = hit.material_ptr->get_gloss_enabled();
-      float mat_gloss_probability = hit.material_ptr->get_gloss_probability();
-      vec3 mat_gloss_color = hit.material_ptr->get_gloss_color();
+      float mat_smoothness = hit.material_ptr->smoothness;
+      vec3 mat_emitted = hit.material_ptr->emitted_color;
+      vec3 mat_color = hit.material_ptr->color;
+      bool mat_gloss_enabled = hit.material_ptr->gloss_enabled;
+      float mat_gloss_probability = hit.material_ptr->gloss_probability;
+      vec3 mat_gloss_color = hit.material_ptr->gloss_color;
       // TODO: Refraction enabled
       // TODO: Refraction probability
       

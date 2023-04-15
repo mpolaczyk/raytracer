@@ -65,7 +65,7 @@ void scene::query_lights()
   lights_num = 0;
   for (hittable* object : objects)
   {
-    if (object->material_ptr != nullptr && object->material_ptr->get_emitted().length_squared() != 0.0f)
+    if (object->material_ptr != nullptr && object->material_ptr->type == material_class::light)
     {
       lights[lights_num] = object;
       lights_num++;

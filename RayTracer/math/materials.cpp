@@ -6,35 +6,7 @@
 
 material* material::spawn_by_type(material_class type)
 {
-  if (type == material_class::universal) { return new universal_material(); }
+  if (type == material_class::universal) { return new material(material_class::universal); }
+  else if (type == material_class::light) { return new material(material_class::light); }
   return nullptr;
-}
-
-vec3 material::get_color() const
-{
-  return c_black;
-}
-
-vec3 material::get_emitted() const
-{
-  return c_white;
-}
-
-float material::get_smoothness() const
-{
-  return 0.5f;  // More smoothness -> more shiny, more specular
-}
-
-bool material::get_gloss_enabled() const
-{
-  return false;
-}
-
-float material::get_gloss_probability() const
-{
-  return 0.2;
-}
-vec3 material::get_gloss_color() const
-{
-  return c_white;
 }

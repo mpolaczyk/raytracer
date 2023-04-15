@@ -97,22 +97,6 @@ void material::get_name(std::string& out_name, bool with_params) const
   out_name = oss.str();
 }
 
-void universal_material::get_name(std::string& out_name, bool with_params) const
-{
-  std::string base_name;
-  material::get_name(base_name);
-  if (with_params)
-  {
-    std::ostringstream oss;
-    oss << base_name << "/" << color;
-    out_name = oss.str();
-  }
-  else
-  {
-    out_name = base_name;
-  }
-}
-
 void material::draw_edit_panel()
 {
   std::string mat_name;
@@ -120,11 +104,7 @@ void material::draw_edit_panel()
   ImGui::Text("Material: ");
   ImGui::SameLine();
   ImGui::Text(mat_name.c_str());
-}
-
-void universal_material::draw_edit_panel()
-{
-  material::draw_edit_panel();
+  // type?
   ImGui::ColorEdit3("Color", color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
   ImGui::ColorEdit3("Emitted color", emitted_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
   ImGui::InputFloat("Smoothness", &smoothness, 1);
