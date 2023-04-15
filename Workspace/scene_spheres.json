@@ -1,5 +1,5 @@
 {
-  "camera_setting": {
+  "camera_config": {
     "aperture": 1.4901161193847656e-08,
     "aspect_ratio_h": 9.0,
     "aspect_ratio_w": 16.0,
@@ -21,7 +21,7 @@
     "material_id": "",
     "objects": [
       {
-        "material_id": "lambertian_red",
+        "material_id": "glossy_red",
         "origin": {
           "x": -115.0,
           "y": 115.0,
@@ -31,7 +31,7 @@
         "type": 1
       },
       {
-        "material_id": "lambertian_white",
+        "material_id": "glossy_white",
         "origin": {
           "x": -487.0,
           "y": 208.0,
@@ -41,17 +41,17 @@
         "type": 1
       },
       {
-        "material_id": "light_strong",
+        "material_id": "light",
         "origin": {
           "x": 177.0,
           "y": 782.0,
           "z": -23.0
         },
-        "radius": 212.0,
+        "radius": 300.0,
         "type": 1
       },
       {
-        "material_id": "lambertian_white",
+        "material_id": "glossy_white",
         "origin": {
           "x": 0.0,
           "y": -8000.0,
@@ -61,7 +61,7 @@
         "type": 1
       },
       {
-        "material_id": "lambertian_green",
+        "material_id": "glossy_green",
         "origin": {
           "x": 169.0,
           "y": 100.0,
@@ -71,7 +71,7 @@
         "type": 1
       },
       {
-        "material_id": "lambertian_blue",
+        "material_id": "mirror",
         "origin": {
           "x": 382.0,
           "y": 62.0,
@@ -81,7 +81,7 @@
         "type": 1
       },
       {
-        "material_id": "lambertian_yellow",
+        "material_id": "metal_copper",
         "origin": {
           "x": 552.0,
           "y": 33.0,
