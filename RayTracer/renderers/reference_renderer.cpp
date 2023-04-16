@@ -112,9 +112,13 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
       // New directions
       vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
       vec3 specular_dir = reflect(in_ray.direction, hit.normal);
-      float refraction_ratio = hit.front_face ? (1.0f / mat_refraction_index) : mat_refraction_index;
-      vec3 refraction_dir = refract(in_ray.direction, hit.normal, refraction_ratio);
 
+      if (mat->type == material_type::light)
+      {
+        // Hitting light may stop the bounce
+        incoming_light += mat_emitted * color;
+        break;
+      }
       if (mat_gloss_enabled)
       {
         // Define next bounce
@@ -128,6 +132,9 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
       }
       else if (mat_refraction_enabled)
       {
+        float refraction_ratio = hit.front_face ? (1.0f / mat_refraction_index) : mat_refraction_index;
+        vec3 refraction_dir = refract(in_ray.direction, hit.normal, refraction_ratio);
+
         // Define next bounce
         in_ray.direction = refraction_dir;
         in_ray.origin = hit.p;

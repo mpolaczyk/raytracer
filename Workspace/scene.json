@@ -41,14 +41,14 @@
       {
         "material_id": "light",
         "type": 3,
-        "x0": 101.0,
+        "x0": 102.0,
         "x1": 445.0,
-        "y": 462.0,
-        "z0": 45.0,
-        "z1": 363.0
+        "y": 525.0,
+        "z0": -1.0,
+        "z1": 567.0
       },
       {
-        "material_id": "mirror",
+        "material_id": "metal_white_polished",
         "type": 3,
         "x0": 0.0,
         "x1": 555.0,
@@ -57,27 +57,27 @@
         "z1": 555.0
       },
       {
-        "material_id": "metal_gold",
+        "material_id": "mirror",
         "origin": {
           "x": 452.0,
-          "y": 115.0,
-          "z": 260.0
+          "y": 220.0,
+          "z": 320.0
         },
         "radius": 107.0,
         "type": 1
       },
       {
-        "material_id": "glossy_white",
+        "material_id": "pearl",
         "origin": {
-          "x": 115.0,
-          "y": 115.0,
-          "z": 260.0
+          "x": 109.0,
+          "y": 220.0,
+          "z": 320.0
         },
         "radius": 107.0,
         "type": 1
       },
       {
-        "material_id": "glossy_white",
+        "material_id": "metal_white_polished",
         "type": 3,
         "x0": 0.0,
         "x1": 555.0,
@@ -86,7 +86,7 @@
         "z1": 555.0
       },
       {
-        "material_id": "metal_copper",
+        "material_id": "metal_white_polished",
         "type": 2,
         "x0": 0.0,
         "x1": 555.0,
@@ -97,11 +97,61 @@
       {
         "material_id": "glass",
         "origin": {
-          "x": 279.0,
-          "y": 58.0,
-          "z": -19.0
+          "x": 49.0,
+          "y": 380.0,
+          "z": 220.0
         },
-        "radius": 111.0,
+        "radius": 50.0,
+        "type": 1
+      },
+      {
+        "material_id": "glass",
+        "origin": {
+          "x": 500.0,
+          "y": 380.0,
+          "z": 220.0
+        },
+        "radius": 50.0,
+        "type": 1
+      },
+      {
+        "material_id": "metal_gold",
+        "origin": {
+          "x": 278.0,
+          "y": 102.0,
+          "z": 142.0
+        },
+        "radius": 101.0,
+        "type": 1
+      },
+      {
+        "material_id": "glossy_white",
+        "origin": {
+          "x": 469.0,
+          "y": 80.0,
+          "z": 113.0
+        },
+        "radius": 70.0,
+        "type": 1
+      },
+      {
+        "material_id": "mirror",
+        "origin": {
+          "x": 83.0,
+          "y": 80.0,
+          "z": 113.0
+        },
+        "radius": 70.0,
+        "type": 1
+      },
+      {
+        "material_id": "metal_copper",
+        "origin": {
+          "x": 278.0,
+          "y": 251.0,
+          "z": 141.0
+        },
+        "radius": 51.0,
         "type": 1
       }
     ],
