@@ -36,6 +36,54 @@
         "z": 0.0
       },
       "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.0,
+      "id": "glass_green",
+      "refraction_enabled": true,
+      "refraction_index": 1.5,
+      "smoothness": 1.0,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.6399999856948853,
+        "y": 0.05000000074505806,
+        "z": 0.05000000074505806
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.0,
+      "id": "glass_red",
+      "refraction_enabled": true,
+      "refraction_index": 1.5,
+      "smoothness": 1.0,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.10999999940395355,
+        "y": 0.4399999976158142,
+        "z": 0.15000000596046448
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
         "x": 0.10999999940395355,
         "y": 0.4399999976158142,
         "z": 0.15000000596046448
@@ -93,31 +141,7 @@
       "id": "glossy_white",
       "refraction_enabled": false,
       "refraction_index": 0.0,
-      "smoothness": 0.94,
-      "type": 1
-    },
-    {
-      "color": {
-        "x": 0.7300000190734863,
-        "y": 0.7300000190734863,
-        "z": 0.7300000190734863
-      },
-      "emitted_color": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "gloss_color": {
-        "x": 1.7300000190734863,
-        "y": 1.7300000190734863,
-        "z": 1.7300000190734863
-      },
-      "gloss_enabled": true,
-      "gloss_probability": 0.60000000298023224,
-      "id": "pearl",
-      "refraction_enabled": false,
-      "refraction_index": 0.0,
-      "smoothness": 0.7,
+      "smoothness": 0.9399999976158142,
       "type": 1
     },
     {
@@ -311,11 +335,35 @@
       "refraction_index": 0.0,
       "smoothness": 1.0,
       "type": 1
+    },
+    {
+      "color": {
+        "x": 0.7300000190734863,
+        "y": 0.7300000190734863,
+        "z": 0.7300000190734863
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.7300000190734863,
+        "y": 1.7300000190734863,
+        "z": 1.7300000190734863
+      },
+      "gloss_enabled": true,
+      "gloss_probability": 0.6000000238418579,
+      "id": "pearl",
+      "refraction_enabled": false,
+      "refraction_index": 0.0,
+      "smoothness": 0.699999988079071,
+      "type": 1
     }
   ],
   "renderer_config": {
     "ray_bounces": 8,
-    "rays_per_pixel": 100,
+    "rays_per_pixel": 20,
     "resolution_horizontal": 800,
     "resolution_vertical": 800,
     "reuse_buffer": false,

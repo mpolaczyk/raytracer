@@ -23,8 +23,8 @@ enum class renderer_type
 };
 static inline const char* renderer_type_names[] =
 {
-  "Example",
-  "Reference"
+  "CPU Example",
+  "CPU Reference"
 };
 
 

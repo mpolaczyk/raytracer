@@ -9,7 +9,7 @@
 
 std::string reference_renderer::get_name() const
 {
-  return "Reference";
+  return "Reference CPU";
 }
 
 void reference_renderer::render()
@@ -18,7 +18,7 @@ void reference_renderer::render()
 
   std::vector<tchunk> chunks;
   const int chunks_per_thread = 32;
-  tchunk_generator::generate_chunks(tchunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * chunks_per_thread, job_state.image_width, job_state.image_height, chunks);
+  tchunk_generator::generate_chunks(tchunk_strategy_type::rectangles, std::thread::hardware_concurrency() * chunks_per_thread, job_state.image_width, job_state.image_height, chunks);
 
   concurrency::parallel_for_each(begin(chunks), end(chunks), [&](tchunk ch) { render_chunk(ch); });
 }
@@ -87,38 +87,46 @@ vec3 reference_renderer::enviroment_light(const ray& in_ray)
 
 vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
 {
-  vec3 incoming_light = vec3(0.0f);
-  vec3 color = vec3(1.0f);
+  vec3 incoming_light = vec3(0.0f);   // sum of all colors from all bounces, incoming light to a point on the screen
+  vec3 color = vec3(1.0f);            
 
   for (int i = 0; i < job_state.renderer_conf.ray_bounces; ++i)
   {
     hit_record hit;
     if (job_state.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same
     {
-      // Read material
-      material* mat = hit.material_ptr;
-      
-      float mat_smoothness = mat->smoothness;
-      vec3 mat_emitted = mat->emitted_color;
-      vec3 mat_color = mat->color;
+      // Don't bounce if there is no energy anyway
+      if (color.length_squared() < 0.1f)
+      {
+        break;
+      }
 
-      bool mat_gloss_enabled = mat->gloss_enabled;
-      float mat_gloss_probability = mat->gloss_probability;
-      vec3 mat_gloss_color = mat->gloss_color;
+      // Read material
+      material mat = *hit.material_ptr;
+
+      vec3 mat_emitted = mat.emitted_color;
+
+      if (mat.type == material_type::light)
+      {
+        // Don't bounce of lights
+        incoming_light += mat_emitted * color;
+        break;
+      }
+
+      float mat_smoothness = mat.smoothness;
+      vec3 mat_color = mat.color;
+
+      bool mat_gloss_enabled = mat.gloss_enabled;
+      float mat_gloss_probability = mat.gloss_probability;
+      vec3 mat_gloss_color = mat.gloss_color;
       
-      bool mat_refraction_enabled = mat->refraction_enabled;
-      float mat_refraction_index = mat->refraction_index;
-      
+      bool mat_refraction_enabled = mat.refraction_enabled;
+      float mat_refraction_index = mat.refraction_index;
+
       // New directions
       vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
       vec3 specular_dir = reflect(in_ray.direction, hit.normal);
 
-      if (mat->type == material_type::light)
-      {
-        // Hitting light may stop the bounce
-        incoming_light += mat_emitted * color;
-        break;
-      }
       if (mat_gloss_enabled)
       {
         // Define next bounce

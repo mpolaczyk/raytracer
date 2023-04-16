@@ -6,7 +6,7 @@
 
 std::string example_renderer::get_name() const
 {
-  return "Example";
+  return "CPU Example";
 }
 
 void example_renderer::render()

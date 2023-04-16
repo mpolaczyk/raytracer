@@ -95,7 +95,7 @@
         "z": 552.0
       },
       {
-        "material_id": "glass",
+        "material_id": "glass_green",
         "origin": {
           "x": 49.0,
           "y": 380.0,
@@ -105,7 +105,7 @@
         "type": 1
       },
       {
-        "material_id": "glass",
+        "material_id": "glass_red",
         "origin": {
           "x": 500.0,
           "y": 380.0,
