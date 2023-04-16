@@ -16,5 +16,5 @@ private:
 
   vec3 enviroment_light(const ray& in_ray);
 
-  vec3 ray_color(ray in_ray, uint32_t seed);
+  vec3 trace_ray(ray in_ray, uint32_t seed);
 };

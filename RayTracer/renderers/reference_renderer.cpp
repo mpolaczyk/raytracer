@@ -70,33 +70,38 @@ vec3 reference_renderer::fragment(float x, float y, const vec3& resolution)
     float v = (float(y) + rand_pcg(seed)) / (resolution.y - 1);
     // Trace the ray
     ray r = job_state.cam.get_ray(u, v);
-    sum_colors += ray_color(r, seed);
+    sum_colors += trace_ray(r, seed);
   }
   
-  return sum_colors / (float)rays_per_pixel;
+  vec3 final_color = sum_colors / (float)rays_per_pixel;
+  return final_color;
 }
 
 vec3 reference_renderer::enviroment_light(const ray& in_ray)
 {
   static const vec3 sky_color_zenith = c_white_blue;
   static const vec3 sky_color_horizon = c_white;
-  
-  float t = smoothstep(-0.4f, 0.2f, in_ray.direction.y);
-  return lerp_vec3(sky_color_horizon, sky_color_zenith, t);
+
+  float t = smoothstep(-0.6f, 0.2f, in_ray.direction.y);
+  vec3 light = lerp_vec3(sky_color_horizon, sky_color_zenith, t);
+  return clamp_vec3(0.0f, 1.0f, light);
 }
 
-vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
+vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
 {
-  vec3 incoming_light = vec3(0.0f);   // sum of all colors from all bounces, incoming light to a point on the screen
-  vec3 color = vec3(1.0f);            
+  // Defined by material color of all bounces, mixing colors (multiply to aggregate) [0.0f, 1.0f]
+  vec3 ray_color = vec3(1.0f);
+
+  // Defined by emitted color of all emissive bounces weighted by the material color (add to aggregate) [0.0f, 1.0f]
+  vec3 incoming_light = vec3(0.0f);
 
   for (int i = 0; i < job_state.renderer_conf.ray_bounces; ++i)
   {
     hit_record hit;
     if (job_state.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same
     {
-      // Don't bounce if there is no energy anyway
-      if (color.length_squared() < 0.1f)
+      // Don't bounce if ray has no color
+      if (ray_color.length_squared() < 0.1f)
       {
         break;
       }
@@ -109,7 +114,7 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
       if (mat.type == material_type::light)
       {
         // Don't bounce of lights
-        incoming_light += mat_emitted * color;
+        incoming_light += mat_emitted * ray_color;
         break;
       }
 
@@ -135,8 +140,10 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
         in_ray.origin = hit.p;
 
         // Calculate color for this hit
-        incoming_light += mat_emitted * color;
-        color *= lerp_vec3(mat_color, mat_gloss_color, is_gloss_bounce);
+        incoming_light += mat_emitted * ray_color;
+        ray_color *= lerp_vec3(mat_color, mat_gloss_color, is_gloss_bounce);
+        assert(incoming_light.is_valid_color());
+        assert(ray_color.is_valid_color());
       }
       else if (mat_refraction_enabled)
       {
@@ -157,13 +164,17 @@ vec3 reference_renderer::ray_color(ray in_ray, uint32_t seed)
         in_ray.origin = hit.p;
 
         // Calculate color for this hit
-        incoming_light += mat_emitted * color;
-        color *= mat_color;
+        incoming_light += mat_emitted * ray_color;
+        ray_color *= mat_color;
+        assert(incoming_light.is_valid_color());
+        assert(ray_color.is_valid_color());
       }
     }
     else
     {
-      incoming_light += enviroment_light(in_ray) * color;
+      vec3 env_light = enviroment_light(in_ray);
+      incoming_light += env_light * ray_color;
+      assert(incoming_light.is_valid_color());
       break;
     }
   }

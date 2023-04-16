@@ -131,7 +131,8 @@ vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
 float reflectance(float cosine, float ref_idx);
 bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal);
 inline float lerp_float(float a, float b, float f) { return a + f * (b - a); }
-vec3 lerp_vec3(vec3 a, vec3 b, float f);
+vec3 lerp_vec3(const vec3& a, const vec3& b, float f);
+vec3 clamp_vec3(float a, float b, const vec3& f);
 inline float min1(float a, float b) { return a < b ? a : b; }
 inline float max1(float a, float b) { return a < b ? b : a; }
 inline float clamp(float f, float a, float b) { return  min1(b, max1(a, f)); }

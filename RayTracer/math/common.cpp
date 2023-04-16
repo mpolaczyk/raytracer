@@ -138,9 +138,18 @@ bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outw
   }
 }
 
-vec3 lerp_vec3(vec3 a, vec3 b, float f)
+vec3 lerp_vec3(const vec3& a, const vec3& b, float f)
 {
   return vec3(lerp_float(a.x, b.x, f), lerp_float(a.y, b.y, f), lerp_float(a.z, b.z, f));
+}
+
+vec3 clamp_vec3(float a, float b, const vec3& f)
+{
+  vec3 ans;
+  ans.x = clamp(f.x, a, b);
+  ans.y = clamp(f.y, a, b);
+  ans.z = clamp(f.z, a, b);
+  return ans;
 }
 
 namespace random_cache

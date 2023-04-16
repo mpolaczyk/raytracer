@@ -49,7 +49,6 @@ public:
   bool operator==(const vec3& v) { return e == v.e; }
   bool operator!=(const vec3& v) { return e == v.e; }
 
-
   inline float length() const
   {
 #if USE_SIMD 
@@ -75,6 +74,12 @@ public:
   inline bool is_zero() const
   {
     return x == 0.0f && y == 0.0f && z == 0.0f;
+  }
+
+  inline bool is_valid_color() const
+  {
+    return x <= 1.0f && y <= 1.0f && z <= 1.0f 
+        && x >= 0.0f && y >= 0.0f && z >= 0.0f;
   }
 
 public:
