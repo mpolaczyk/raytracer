@@ -119,7 +119,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
       }
 
       // New directions
-      vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
+      vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed)); 
       vec3 specular_dir = reflect(in_ray.direction, hit.normal);
 
       if (mat.gloss_enabled)
@@ -145,6 +145,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
 
         // Refraction color
         ray_color *= mat.color;
+        assert(ray_color.is_valid_color());
       }
       else
       {
@@ -160,7 +161,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
     }
     else
     {
-      vec3 env_light = enviroment_light(in_ray);
+      vec3 env_light = enviroment_light(in_ray);  // environment is emissive
       incoming_light += env_light * ray_color;
       break;
     }

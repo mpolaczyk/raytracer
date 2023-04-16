@@ -1,5 +1,5 @@
 # RayTracer
-**CPU Path Tracer (in a Kajiya sense)**
+**CPU Ray Tracer**
 
 Author: [planet620]
 
@@ -9,7 +9,11 @@ Author: [planet620]
 ## Releases
 
 ### [2.0]
-- TBA
+- The same set of materials and primitives
+- Renderer interface, with example and reference CPU renderer, easy to hot-swap with another version
+- Simpler algorithm, no PDF in use
+
+![Example output](Example output2.bmp)
 
 ### [1.0]
 Based on books: [Ray Tracing in One Weekend] by Peter Shirley
@@ -49,7 +53,7 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
     -  XZ rectangle
     -  ZY rectangle
 
-![Example output ](Example output.bmp)
+![Example output](Example output.bmp)
 
 ### Build details
 Project file: Visual Studio 2022
@@ -73,6 +77,7 @@ DirectX 11
 
    [planet620]: <https://mpolaczyk.pl>
    [1.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_1.0>
+   [2.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.0>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>
