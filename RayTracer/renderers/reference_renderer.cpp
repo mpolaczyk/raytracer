@@ -118,36 +118,26 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
         break;
       }
 
-      float mat_smoothness = mat.smoothness;
-      vec3 mat_color = mat.color;
-
-      bool mat_gloss_enabled = mat.gloss_enabled;
-      float mat_gloss_probability = mat.gloss_probability;
-      vec3 mat_gloss_color = mat.gloss_color;
-      
-      bool mat_refraction_enabled = mat.refraction_enabled;
-      float mat_refraction_index = mat.refraction_index;
-
       // New directions
       vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
       vec3 specular_dir = reflect(in_ray.direction, hit.normal);
 
-      if (mat_gloss_enabled)
+      if (mat.gloss_enabled)
       {
         // Define next bounce
-        bool is_gloss_bounce = mat_gloss_probability >= rand_pcg(seed);
-        in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat_smoothness * is_gloss_bounce);
+        bool is_gloss_bounce = mat.gloss_probability >= rand_pcg(seed);
+        in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat.smoothness * is_gloss_bounce);
         in_ray.origin = hit.p;
 
         // Calculate color for this hit
         incoming_light += mat_emitted * ray_color;
-        ray_color *= lerp_vec3(mat_color, mat_gloss_color, is_gloss_bounce);
+        ray_color *= lerp_vec3(mat.color, mat.gloss_color, is_gloss_bounce);
         assert(incoming_light.is_valid_color());
         assert(ray_color.is_valid_color());
       }
-      else if (mat_refraction_enabled)
+      else if (mat.refraction_enabled)
       {
-        float refraction_ratio = hit.front_face ? (1.0f / mat_refraction_index) : mat_refraction_index;
+        float refraction_ratio = hit.front_face ? (1.0f / mat.refraction_index) : mat.refraction_index;
         vec3 refraction_dir = refract(in_ray.direction, hit.normal, refraction_ratio);
 
         // Define next bounce
@@ -160,12 +150,12 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
       else
       {
         // Define next bounce
-        in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat_smoothness);
+        in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat.smoothness);
         in_ray.origin = hit.p;
 
         // Calculate color for this hit
         incoming_light += mat_emitted * ray_color;
-        ray_color *= mat_color;
+        ray_color *= mat.color;
         assert(incoming_light.is_valid_color());
         assert(ray_color.is_valid_color());
       }
