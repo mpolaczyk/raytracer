@@ -48,10 +48,6 @@ void material::deserialize(const nlohmann::json& j)
   nlohmann::json jemitted_color;
   if (TRY_PARSE(nlohmann::json, j, "emitted_color", jemitted_color)) { emitted_color.deserialize(jemitted_color); }
   assert(emitted_color.is_valid_color());
-  if (type != material_type::light)
-  {
-    assert(emitted_color.is_zero());
-  }
 
   TRY_PARSE(float, j, "smoothness", smoothness);
   assert(smoothness >= 0.0f && smoothness <= 1.0f);

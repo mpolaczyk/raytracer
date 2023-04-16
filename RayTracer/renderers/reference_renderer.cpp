@@ -74,6 +74,7 @@ vec3 reference_renderer::fragment(float x, float y, const vec3& resolution)
   }
   
   vec3 final_color = sum_colors / (float)rays_per_pixel;
+
   return final_color;
 }
 
@@ -92,7 +93,8 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
   // Defined by material color of all bounces, mixing colors (multiply to aggregate) [0.0f, 1.0f]
   vec3 ray_color = vec3(1.0f);
 
-  // Defined by emitted color of all emissive bounces weighted by the material color (add to aggregate) [0.0f, 1.0f]
+  // Defined by emitted color of all emissive bounces weighted by the material color (add to aggregate) [0.0f, inf] 
+  // Allow light to exceed 1.0f. Non-emissive materials can emit a little bit of light
   vec3 incoming_light = vec3(0.0f);
 
   for (int i = 0; i < job_state.renderer_conf.ray_bounces; ++i)
@@ -109,12 +111,10 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
       // Read material
       material mat = *hit.material_ptr;
 
-      vec3 mat_emitted = mat.emitted_color;
-
       if (mat.type == material_type::light)
       {
         // Don't bounce of lights
-        incoming_light += mat_emitted * ray_color;
+        incoming_light += mat.emitted_color * ray_color;
         break;
       }
 
@@ -130,9 +130,8 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
         in_ray.origin = hit.p;
 
         // Calculate color for this hit
-        incoming_light += mat_emitted * ray_color;
+        incoming_light += mat.emitted_color * ray_color;
         ray_color *= lerp_vec3(mat.color, mat.gloss_color, is_gloss_bounce);
-        assert(incoming_light.is_valid_color());
         assert(ray_color.is_valid_color());
       }
       else if (mat.refraction_enabled)
@@ -144,8 +143,8 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
         in_ray.direction = refraction_dir;
         in_ray.origin = hit.p;
 
-        // refraction color ?
-        // refraction probability ?
+        // Refraction color
+        ray_color *= mat.color;
       }
       else
       {
@@ -154,9 +153,8 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
         in_ray.origin = hit.p;
 
         // Calculate color for this hit
-        incoming_light += mat_emitted * ray_color;
+        incoming_light += mat.emitted_color * ray_color;
         ray_color *= mat.color;
-        assert(incoming_light.is_valid_color());
         assert(ray_color.is_valid_color());
       }
     }
@@ -164,7 +162,6 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
     {
       vec3 env_light = enviroment_light(in_ray);
       incoming_light += env_light * ray_color;
-      assert(incoming_light.is_valid_color());
       break;
     }
   }
