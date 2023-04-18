@@ -67,7 +67,7 @@
         "type": 1
       },
       {
-        "material_id": "pearl",
+        "material_id": "metal_white_polished",
         "origin": {
           "x": 109.0,
           "y": 300.0,
@@ -115,7 +115,7 @@
         "type": 1
       },
       {
-        "material_id": "metal_white_polished",
+        "material_id": "pearl",
         "origin": {
           "x": 278.0,
           "y": 190.0,

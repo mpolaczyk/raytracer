@@ -8,10 +8,13 @@ Author: [planet620]
 
 ## Releases
 
-### [2.0]
+### [2.1]
 - The same set of materials and primitives
 - Renderer interface, with example and reference CPU renderer, easy to hot-swap with another version
 - Simpler algorithm, no PDF in use
+- Refraction with smoothness
+- Coloured refraction
+- Gloss with smoothness
 
 ![Example output](Example output2.bmp)
 
@@ -78,6 +81,7 @@ DirectX 11
    [planet620]: <https://mpolaczyk.pl>
    [1.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_1.0>
    [2.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.0>
+   [2.1]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.1>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>

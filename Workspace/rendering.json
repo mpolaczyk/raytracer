@@ -16,7 +16,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.30000001192092896,
       "id": "glass",
       "refraction_index": 1.5,
@@ -40,7 +39,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.30000001192092896,
       "id": "glass_matt",
       "refraction_index": 1.5,
@@ -64,7 +62,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.30000001192092896,
       "id": "glass_green",
       "refraction_index": 1.5,
@@ -88,7 +85,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.30000001192092896,
       "id": "glass_red",
       "refraction_index": 1.5,
@@ -112,7 +108,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.30000001192092896,
       "id": "glass_green_matt",
       "refraction_index": 1.5,
@@ -136,7 +131,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.30000001192092896,
       "id": "glass_red_matt",
       "refraction_index": 1.5,
@@ -160,7 +154,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": true,
       "gloss_probability": 0.20000000298023224,
       "id": "glossy_green",
       "refraction_index": 0.0,
@@ -184,7 +177,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": true,
       "gloss_probability": 0.20000000298023224,
       "id": "glossy_red",
       "refraction_index": 0.0,
@@ -208,7 +200,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": true,
       "gloss_probability": 0.20000000298023224,
       "id": "glossy_white",
       "refraction_index": 0.0,
@@ -232,7 +223,6 @@
         "y": 0.0,
         "z": 0.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.0,
       "id": "light",
       "refraction_index": 0.0,
@@ -256,7 +246,6 @@
         "y": 0.0,
         "z": 0.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.0,
       "id": "light_green",
       "refraction_index": 0.0,
@@ -280,7 +269,6 @@
         "y": 0.0,
         "z": 0.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.0,
       "id": "light_red",
       "refraction_index": 0.0,
@@ -304,7 +292,6 @@
         "y": 0.0,
         "z": 0.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.0,
       "id": "metal_copper",
       "refraction_index": 0.0,
@@ -328,7 +315,6 @@
         "y": 0.0,
         "z": 0.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.0,
       "id": "metal_gold",
       "refraction_index": 0.0,
@@ -352,7 +338,6 @@
         "y": 0.0,
         "z": 0.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.0,
       "id": "metal_white",
       "refraction_index": 0.0,
@@ -376,7 +361,6 @@
         "y": 0.0,
         "z": 0.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.0,
       "id": "metal_white_polished",
       "refraction_index": 0.0,
@@ -400,7 +384,6 @@
         "y": 0.0,
         "z": 0.0
       },
-      "gloss_enabled": false,
       "gloss_probability": 0.0,
       "id": "mirror",
       "refraction_index": 0.0,
@@ -424,7 +407,6 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_enabled": true,
       "gloss_probability": 0.6000000238418579,
       "id": "pearl",
       "refraction_index": 0.0,
