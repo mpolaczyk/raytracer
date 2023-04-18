@@ -82,7 +82,7 @@ vec3 reference_renderer::enviroment_light(const ray& in_ray)
 {
   static const vec3 sky_color_zenith = c_white_blue;
   static const vec3 sky_color_horizon = c_white;
-  static const float sky_brightness = 0.2f;
+  static const float sky_brightness = 0.4f;
 
   float t = smoothstep(-0.6f, 0.2f, in_ray.direction.y);
   vec3 light = lerp_vec3(sky_color_horizon, sky_color_zenith, t);
@@ -125,13 +125,15 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
       bool can_gloss_bounce = mat.gloss_probability >= rand_pcg(seed);
       bool can_refract = mat.refraction_probability >= rand_pcg(seed);
       
+      vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
+
       if (!can_gloss_bounce && can_refract)
       {
         float refraction_ratio = hit.front_face ? (1.0f / mat.refraction_index) : mat.refraction_index;
         vec3 refraction_dir = refract(in_ray.direction, hit.normal, refraction_ratio);
 
         // Define next bounce
-        in_ray.direction = refraction_dir;
+        in_ray.direction = refraction_dir + diffuse_dir*(1.0f-mat.smoothness);
         
         // Refraction color
         ray_color *= mat.color;
@@ -141,7 +143,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
       }
 
       // New directions
-      vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
+      
       vec3 specular_dir = reflect(in_ray.direction, hit.normal);
 
       // Define next bounce

@@ -48,7 +48,7 @@
         "z1": 567.0
       },
       {
-        "material_id": "glossy_white",
+        "material_id": "metal_white_polished",
         "type": 3,
         "x0": 0.0,
         "x1": 555.0,
@@ -60,7 +60,7 @@
         "material_id": "metal_gold",
         "origin": {
           "x": 452.0,
-          "y": 220.0,
+          "y": 300.0,
           "z": 392.0
         },
         "radius": 101.0,
@@ -70,7 +70,7 @@
         "material_id": "pearl",
         "origin": {
           "x": 109.0,
-          "y": 220.0,
+          "y": 300.0,
           "z": 392.0
         },
         "radius": 99.0,
@@ -95,37 +95,37 @@
         "z": 552.0
       },
       {
-        "material_id": "glass_green",
+        "material_id": "glossy_green",
         "origin": {
           "x": 49.0,
-          "y": 380.0,
+          "y": 420.0,
           "z": 220.0
         },
         "radius": 50.0,
         "type": 1
       },
       {
-        "material_id": "glass_red",
+        "material_id": "glossy_red",
         "origin": {
           "x": 500.0,
-          "y": 380.0,
+          "y": 420.0,
           "z": 220.0
         },
         "radius": 50.0,
         "type": 1
       },
       {
-        "material_id": "mirror",
+        "material_id": "metal_white_polished",
         "origin": {
           "x": 278.0,
-          "y": 101.0,
+          "y": 190.0,
           "z": 360.0
         },
         "radius": 101.0,
         "type": 1
       },
       {
-        "material_id": "glass_red",
+        "material_id": "glass_green",
         "origin": {
           "x": 435.0,
           "y": 74.0,
@@ -135,7 +135,7 @@
         "type": 1
       },
       {
-        "material_id": "glass_green",
+        "material_id": "glass_red",
         "origin": {
           "x": 123.0,
           "y": 74.0,
@@ -148,8 +148,8 @@
         "material_id": "glass_matt",
         "origin": {
           "x": 278.0,
-          "y": 270.0,
-          "z": 141.0
+          "y": 74.0,
+          "z": 150.0
         },
         "radius": 71.0,
         "type": 1

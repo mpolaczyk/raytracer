@@ -45,7 +45,7 @@
       "id": "glass_matt",
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
-      "smoothness": 0.7,
+      "smoothness": 0.9,
       "type": 1
     },
     {
@@ -94,6 +94,54 @@
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
       "smoothness": 1.0,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.30000001192092896,
+      "id": "glass_green_matt",
+      "refraction_index": 1.5,
+      "refraction_probability": 1.0,
+      "smoothness": 0.9,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_enabled": false,
+      "gloss_probability": 0.30000001192092896,
+      "id": "glass_red_matt",
+      "refraction_index": 1.5,
+      "refraction_probability": 1.0,
+      "smoothness": 0.9,
       "type": 1
     },
     {
