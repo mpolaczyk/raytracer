@@ -52,8 +52,6 @@ void material::deserialize(const nlohmann::json& j)
   TRY_PARSE(float, j, "smoothness", smoothness);
   assert(smoothness >= 0.0f && smoothness <= 1.0f);
 
-  TRY_PARSE(bool, j, "gloss_enabled", gloss_enabled);
-
   TRY_PARSE(float, j, "gloss_probability", gloss_probability);
   assert(gloss_probability >= 0.0f && gloss_probability <= 1.0f);
 
@@ -61,6 +59,7 @@ void material::deserialize(const nlohmann::json& j)
   if (TRY_PARSE(nlohmann::json, j, "gloss_color", jgloss_color)) { gloss_color.deserialize(jgloss_color); }
   assert(gloss_color.is_valid_color());
 
-  TRY_PARSE(bool, j, "refraction_enabled", refraction_enabled);
+  TRY_PARSE(float, j, "refraction_probability", refraction_probability);
+  assert(refraction_probability >= 0.0f && refraction_probability <= 1.0f);
   TRY_PARSE(float, j, "refraction_index", refraction_index);  
 }

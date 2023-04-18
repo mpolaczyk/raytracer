@@ -82,10 +82,11 @@ vec3 reference_renderer::enviroment_light(const ray& in_ray)
 {
   static const vec3 sky_color_zenith = c_white_blue;
   static const vec3 sky_color_horizon = c_white;
+  static const float sky_brightness = 0.2f;
 
   float t = smoothstep(-0.6f, 0.2f, in_ray.direction.y);
   vec3 light = lerp_vec3(sky_color_horizon, sky_color_zenith, t);
-  return clamp_vec3(0.0f, 1.0f, light);
+  return clamp_vec3(0.0f, 1.0f, light) * sky_brightness;
 }
 
 vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
@@ -97,10 +98,11 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
   // Allow light to exceed 1.0f. Non-emissive materials can emit a little bit of light
   vec3 incoming_light = vec3(0.0f);
 
-  for (int i = 0; i < job_state.renderer_conf.ray_bounces; ++i)
+  int bounces = job_state.renderer_conf.ray_bounces;
+  for (int i = 0; i < bounces; ++i)
   {
     hit_record hit;
-    if (job_state.scene_root.hit(in_ray, 0.01f, infinity, hit))  // potential work to save, first hit always the same
+    if (job_state.scene_root.hit(in_ray, 0.01f, infinity, hit))
     {
       // Don't bounce if ray has no color
       if (ray_color.length_squared() < 0.1f)
@@ -118,46 +120,42 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
         break;
       }
 
-      // New directions
-      vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed)); 
-      vec3 specular_dir = reflect(in_ray.direction, hit.normal);
+      in_ray.origin = hit.p;
 
-      if (mat.gloss_enabled)
-      {
-        // Define next bounce
-        bool is_gloss_bounce = mat.gloss_probability >= rand_pcg(seed);
-        in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat.smoothness * is_gloss_bounce);
-        in_ray.origin = hit.p;
-
-        // Calculate color for this hit
-        incoming_light += mat.emitted_color * ray_color;
-        ray_color *= lerp_vec3(mat.color, mat.gloss_color, is_gloss_bounce);
-        assert(ray_color.is_valid_color());
-      }
-      else if (mat.refraction_enabled)
+      bool can_gloss_bounce = mat.gloss_probability >= rand_pcg(seed);
+      bool can_refract = mat.refraction_probability >= rand_pcg(seed);
+      
+      if (!can_gloss_bounce && can_refract)
       {
         float refraction_ratio = hit.front_face ? (1.0f / mat.refraction_index) : mat.refraction_index;
         vec3 refraction_dir = refract(in_ray.direction, hit.normal, refraction_ratio);
 
         // Define next bounce
         in_ray.direction = refraction_dir;
-        in_ray.origin = hit.p;
-
+        
         // Refraction color
         ray_color *= mat.color;
-        assert(ray_color.is_valid_color());
-      }
-      else
-      {
-        // Define next bounce
-        in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, mat.smoothness);
-        in_ray.origin = hit.p;
 
-        // Calculate color for this hit
-        incoming_light += mat.emitted_color * ray_color;
-        ray_color *= mat.color;
         assert(ray_color.is_valid_color());
+        continue;
       }
+
+      // New directions
+      vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
+      vec3 specular_dir = reflect(in_ray.direction, hit.normal);
+
+      // Define next bounce
+      float blend = mat.smoothness;
+      if (mat.gloss_probability > 0.0f)
+      {
+        blend = mat.smoothness * can_gloss_bounce;
+      }
+      in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, blend);
+
+      // Calculate color for this hit
+      incoming_light += mat.emitted_color * ray_color;
+      ray_color *= lerp_vec3(mat.color, mat.gloss_color, can_gloss_bounce);
+      assert(ray_color.is_valid_color());
     }
     else
     {

@@ -108,9 +108,8 @@ void material::draw_edit_panel()
   ImGui::ColorEdit3("Color", color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
   ImGui::ColorEdit3("Emitted color", emitted_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
   ImGui::InputFloat("Smoothness", &smoothness, 1);
-  ImGui::Checkbox("Gloss enabled", &gloss_enabled);
   ImGui::InputFloat("Gloss probability", &smoothness, 1);
   ImGui::ColorEdit3("Gloss color", color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-  ImGui::Checkbox("Refraction enabled", &refraction_enabled);
+  ImGui::InputFloat("Refraction probability", &refraction_probability);
   ImGui::InputFloat("Refraction index", &refraction_index, 1);
 }

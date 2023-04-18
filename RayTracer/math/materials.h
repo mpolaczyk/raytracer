@@ -50,10 +50,9 @@ public:
   vec3 color;
   vec3 emitted_color;
   float smoothness = 0.0f;
-  bool gloss_enabled = false;
   float gloss_probability = 0.0f;
   vec3 gloss_color;
-  bool refraction_enabled;
+  float refraction_probability = 0.0f;
   float refraction_index;
 
   void get_name(std::string& out_name, bool with_params=true) const;
@@ -61,5 +60,5 @@ public:
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(material, type, id, smoothness, gloss_enabled, gloss_probability, refraction_enabled, refraction_index); // to_json only
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(material, type, id, smoothness, gloss_probability, refraction_probability, refraction_index); // to_json only
 };
