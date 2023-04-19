@@ -19,11 +19,13 @@ static inline const char* material_type_names[] =
 enum class renderer_type
 {
   example = 0,
+  preview,
   reference
 };
 static inline const char* renderer_type_names[] =
 {
   "CPU Example",
+  "CPU Preview",
   "CPU Reference"
 };
 

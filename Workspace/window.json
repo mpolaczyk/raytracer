@@ -1,10 +1,10 @@
 {
-  "auto_render": false,
+  "auto_render": true,
   "window": {
-    "h": 1002,
+    "h": 995,
     "w": 1646,
-    "x": -1899,
-    "y": 217
+    "x": 336,
+    "y": 93
   },
   "zoom": 1.0
 }

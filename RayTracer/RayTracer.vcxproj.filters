@@ -96,6 +96,9 @@
     <ClCompile Include="app\factories.cpp">
       <Filter>app</Filter>
     </ClCompile>
+    <ClCompile Include="renderers\preview_renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -191,6 +194,9 @@
     </ClInclude>
     <ClInclude Include="app\factories.h">
       <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers\preview_renderer.h">
+      <Filter>renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
