@@ -156,9 +156,10 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
       oss << "[" << n << "] " << obj_name;
       if (ImGui::Selectable(oss.str().c_str(), model.selected_id == n))
       {
-        model.m_model.selected_material_name_index = -1;
-        model.selected_id = n;
-        model.d_model.selected_id = n;
+         model.m_model.selected_material_name_index = -1;
+         model.selected_id = n;
+         model.d_model.selected_id = n;
+         state.selected_object = nullptr;
       }
     }
     ImGui::EndListBox();
