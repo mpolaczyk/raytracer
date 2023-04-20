@@ -39,6 +39,39 @@ public:
     return ::hash_combine(a, b, a, look_dir.get_type_hash());
   }
 
+  // Camera movement
+  void move_up(float speed)
+  {
+    look_from += vec3(0.0f, speed, 0.0f);
+  }
+  void move_down(float speed)
+  {
+    look_from -= vec3(0.0f, speed, 0.0f);
+  }
+  void move_forward(float speed)
+  {
+    look_from -= look_dir * speed;
+  }
+  void move_backward(float speed)
+  {
+    look_from += look_dir * speed;
+  }
+  void move_left(float speed)
+  {
+    vec3 left_dir = cross(look_dir, vec3(0.0f, 1.0f, 0.0f));
+    look_from += left_dir * speed;
+  }
+  void move_right(float speed)
+  {
+    vec3 left_dir = cross(look_dir, vec3(0.0f, 1.0f, 0.0f));
+    look_from -= left_dir * speed;
+  }
+  void rotate(float roll, float pitch)
+  {
+    look_dir = rotate_roll(look_dir, roll);  // because x is the vertical axis
+    look_dir = rotate_pitch(look_dir, pitch);
+  }
+
   // Persistent members
   vec3 look_from;
   vec3 look_dir;

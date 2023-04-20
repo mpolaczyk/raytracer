@@ -118,6 +118,7 @@ public:
   scene_editor_window_model sew_model;
 
   // Runtime state
+  bool is_running = true;
   int output_width = 0;
   int output_height = 0;
   struct ID3D11ShaderResourceView* output_srv = nullptr;
@@ -130,6 +131,7 @@ public:
   float output_window_lmb_x = -1.0f;
   float output_window_lmb_y = -1.0f;
   class hittable* selected_object = nullptr;
+  float camera_move_speed = 15.0f;
 
   void load_scene_state();
   void save_scene_state();
@@ -150,3 +152,5 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_in
 void draw_delete_object_panel(delete_object_panel_model& model, app_instance& state);
 
 void update_default_spawn_position(app_instance& state);
+
+void handle_input(app_instance& state);

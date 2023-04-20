@@ -18,8 +18,8 @@ void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
   ImGuiIO& io = ImGui::GetIO();
   ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
-  draw_renderer_panel(model.rp_model, state);
   draw_hotkeys_panel(state);
+  draw_renderer_panel(model.rp_model, state);
   ImGui::End();
 }
 
@@ -87,13 +87,16 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 void draw_hotkeys_panel(app_instance& state)
 {
   ImGui::Separator();
-  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "HOTKEYS");
+  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CONTROLS");
   ImGui::Separator();
   ImGui::Text("F1 - Use example renderer");
   ImGui::Text("F2 - Use preview renderer");
   ImGui::Text("F3 - Use reference renderer");
   ImGui::Text("F5 - Render!");
   ImGui::Text("LMB (on image) - select object");
+  ImGui::Text("Scroll - Camera speed (current speed: %f)", state.camera_move_speed);
+  ImGui::Text("QWEASD - Camera movement");
+  ImGui::Text("RMB - Camera rotation");
 }
 
 void draw_output_window(output_window_model& model, app_instance& state)

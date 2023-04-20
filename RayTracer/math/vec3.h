@@ -159,3 +159,24 @@ inline vec3 cross(const vec3& u, const vec3& v)
 { 
   return vec3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x); 
 };
+
+inline vec3 rotate_yaw(const vec3& u, float yaw)
+{
+  float s = sinf(yaw);
+  float c = cosf(yaw);
+  return vec3(c * u.x - s * u.y, s * u.x + c * u.y, u.z);
+}
+
+inline vec3 rotate_pitch(const vec3& u, float pitch)
+{
+    float s = sinf(pitch);
+    float c = cosf(pitch);
+    return vec3(u.x, c * u.y - s * u.z, s * u.y + c * u.z);
+}
+
+inline vec3 rotate_roll(const vec3& u, float roll)
+{
+    float s = sinf(roll);
+    float c = cosf(roll);
+    return vec3(c * u.x - s * u.z, u.y, s * u.x + c * u.z);
+}

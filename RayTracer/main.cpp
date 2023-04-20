@@ -96,7 +96,9 @@ int main(int, char**)
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
-    
+    ImGui::GetIO().KeyRepeatDelay = 0.1f;
+    //ImGui::GetIO().KeyRepeatRate = 0.01f;
+
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(dx11::g_pd3dDevice, dx11::g_pd3dDeviceContext);
@@ -116,8 +118,7 @@ int main(int, char**)
     state.rw_model.rp_model.render_pressed = true;
 
     // Main loop
-    bool done = false;
-    while (!done)
+    while (state.is_running)
     {
       // Poll and handle messages (inputs, window resize, etc.)
       // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -129,60 +130,19 @@ int main(int, char**)
       {
         if(msg.message == WM_QUIT)
         {
-          done = true;
+          state.is_running = false;
         }
         ::TranslateMessage(&msg);
         ::DispatchMessage(&msg);
       }
-      if (done) break;
+      if (!state.is_running) break;
     
       // Start the Dear ImGui frame
       ImGui_ImplDX11_NewFrame();
       ImGui_ImplWin32_NewFrame();
       ImGui::NewFrame();
     
-      // Handle clicks on the output window - select the object under the cursor
-      if (state.output_window_lmb_x > 0.0f && state.output_window_lmb_y > 0.0f)
-      {
-        float u = state.output_window_lmb_x / (state.output_width - 1);
-        float v = state.output_window_lmb_y / (state.output_height - 1);
-        v = 1.0f - v; // because vertical axis is flipped in the output window
-        camera cam;
-        cam.set_camera(state.camera_conf);
-        ray r = cam.get_ray(u, v);
-        hit_record hit;
-        if (state.scene_root.hit(r, 0.0f, infinity, hit))
-        {
-          state.selected_object = hit.object;
-        }
-
-        state.output_window_lmb_x = -1.0f;
-        state.output_window_lmb_y = -1.0f;
-      }
-
-      // Handle global hotkeys
-      {
-        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
-        {
-          done = true;
-        }
-        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F1)))
-        {
-          state.renderer_conf.type = renderer_type::example;
-        }
-        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F2)))
-        {
-          state.renderer_conf.type = renderer_type::preview;
-        }
-        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F3)))
-        {
-          state.renderer_conf.type = renderer_type::reference;
-        }
-        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F5)))
-        {
-          state.rw_model.rp_model.render_pressed = true;
-        }
-      }
+      handle_input(state);
 
       // Draw UI
       if (0) { ImGui::ShowDemoWindow(); }
@@ -249,7 +209,7 @@ int main(int, char**)
       dx11::g_pd3dDeviceContext->ClearRenderTargetView(dx11::g_mainRenderTargetView, clear_color_with_alpha);
       ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     
-      if (false)
+      if (true)
       {
         dx11::g_pSwapChain->Present(1, 0); // Present with vsync
       }
