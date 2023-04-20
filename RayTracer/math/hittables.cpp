@@ -129,18 +129,19 @@ bool scene::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit
   bool hit_anything = false;
   float closest_so_far = t_max;
 
-  for (const hittable* object : objects)
+  for (hittable* object : objects)
   {
     // TODO: no hierarchical check, only replacement of the object hit function
-    if (!object->bounding_box.hit(in_ray, t_min, t_max))
-    {
-      continue;
-    }
+    //if (!object->bounding_box.hit(in_ray, t_min, t_max))
+    //{
+    //  continue;
+    //}
     if (object->hit(in_ray, t_min, closest_so_far, temp_rec))
     {
       hit_anything = true;
       closest_so_far = temp_rec.t;
       out_hit = temp_rec;
+      out_hit.object = object;
     }
   }
 

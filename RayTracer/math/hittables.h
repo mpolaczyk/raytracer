@@ -23,6 +23,7 @@ struct hit_record
   float v;
   material* material_ptr = nullptr;
   bool front_face;
+  class hittable* object = nullptr;
 };
 
 enum class hittable_class  // No RTTI, simple type detection

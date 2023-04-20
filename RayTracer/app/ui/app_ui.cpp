@@ -98,8 +98,19 @@ void draw_output_window(output_window_model& model, app_instance& state)
   {
     ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
-    ImGui::Image((ImTextureID)state.output_srv, ImVec2(state.output_width * model.zoom, state.output_height * model.zoom), ImVec2(0, 1), ImVec2(1, 0));
+    ImVec2 size = ImVec2(state.output_width * model.zoom, state.output_height * model.zoom);
+    ImGui::Image((ImTextureID)state.output_srv, size, ImVec2(0, 1), ImVec2(1, 0));
+
+    if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+    {
+      ImVec2 itemMin = ImGui::GetItemRectMin();
+      ImVec2 mousePos = ImGui::GetMousePos();
+      state.output_window_lmb_x = mousePos.x - itemMin.x;
+      state.output_window_lmb_y = mousePos.y - itemMin.y;
+    }
+
     ImGui::Checkbox("Auto render on scene change", &model.auto_render);
+
     ImGui::End();
   }
 }
@@ -129,6 +140,12 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     for (int n = 0; n < num_objects; n++)
     {
       hittable* obj = state.scene_root.objects[n];
+      if (state.selected_object != nullptr && obj == state.selected_object)
+      {
+        model.m_model.selected_material_name_index = -1;
+        model.selected_id = n;
+        model.d_model.selected_id = n;
+      }
       std::string obj_name;
       obj->get_name(obj_name, false);
       std::ostringstream oss;
@@ -150,6 +167,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     ImGui::Separator();
 
     hittable* selected_obj = state.scene_root.objects[model.selected_id];
+    state.selected_object = selected_obj;
     selected_obj->draw_edit_panel();
 
     material_selection_combo_model m_model;

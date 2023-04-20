@@ -127,6 +127,10 @@ public:
   vec3 center_of_scene;
   float distance_to_center_of_scene = 0.0f;
 
+  float output_window_lmb_x = -1.0f;
+  float output_window_lmb_y = -1.0f;
+  class hittable* selected_object = nullptr;
+
   void load_scene_state();
   void save_scene_state();
   void load_rendering_state();

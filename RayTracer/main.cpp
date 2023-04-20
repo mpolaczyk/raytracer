@@ -141,12 +141,30 @@ int main(int, char**)
       ImGui_ImplWin32_NewFrame();
       ImGui::NewFrame();
     
+      // Handle clicks on the output window - select the object under the cursor
+      if (state.output_window_lmb_x > 0.0f && state.output_window_lmb_y > 0.0f)
+      {
+        float u = state.output_window_lmb_x / (state.output_width - 1);
+        float v = state.output_window_lmb_y / (state.output_height - 1);
+        camera cam;
+        cam.set_camera(state.camera_conf);
+        ray r = cam.get_ray(u, v);
+        hit_record hit;
+        if (state.scene_root.hit(r, 0.0f, infinity, hit))
+        {
+          state.selected_object = hit.object;
+        }
+
+        state.output_window_lmb_x = -1.0f;
+        state.output_window_lmb_y = -1.0f;
+      }
+
       // Draw UI
       if (0) { ImGui::ShowDemoWindow(); }
       draw_raytracer_window(state.rw_model, state);
       draw_output_window(state.ow_model, state);
       draw_scene_editor_window(state.sew_model, state);
-    
+
       // Check if rendering is needed and do it 
       if (state.renderer != nullptr)
       {
