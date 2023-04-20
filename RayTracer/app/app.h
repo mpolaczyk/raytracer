@@ -31,7 +31,7 @@ public:
 */
 struct camera_panel_model
 {
-  bool use_custom_focus_distance = false;
+  
 };
 
 struct renderer_panel_model

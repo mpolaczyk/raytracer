@@ -38,18 +38,9 @@ void draw_camera_panel(camera_panel_model& model, app_instance& state)
   ImGui::Text("0 = Perspective; 1 = Orthografic");
   ImGui::Separator();
   ImGui::InputFloat3("Look from", state.camera_conf.look_from.e, "%.2f");
-  ImGui::InputFloat3("Look at", state.camera_conf.look_at.e, "%.2f");
+  ImGui::InputFloat3("Look direction", state.camera_conf.look_dir.e, "%.2f");
   ImGui::Separator();
-  if (model.use_custom_focus_distance)
-  {
-    ImGui::InputFloat("Focus distance", &state.camera_conf.dist_to_focus, 0.0f, 1000.0f, "%.2f");
-  }
-  else
-  {
-    state.camera_conf.dist_to_focus = (state.camera_conf.look_from - state.camera_conf.look_at).length();
-    ImGui::Text("Focus distance = %.3f", state.camera_conf.dist_to_focus);
-  }
-  ImGui::Checkbox("Use custom focus distance", &model.use_custom_focus_distance);
+  ImGui::InputFloat("Focus distance", &state.camera_conf.dist_to_focus, 0.0f, 1000.0f, "%.2f");
   ImGui::InputFloat("Aperture", &state.camera_conf.aperture, 0.1f, 1.0f, "%.2f");
 }
 

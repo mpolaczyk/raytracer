@@ -20,8 +20,8 @@ class camera_config : serializable<nlohmann::json>
 {
 public: 
   camera_config() = default;
-  camera_config(vec3 look_from, vec3 look_at, float field_of_view, float aspect_ratio_w, float aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
-    : look_from(look_from), look_at(look_at), field_of_view(field_of_view), aspect_ratio_w(aspect_ratio_w), aspect_ratio_h(aspect_ratio_h), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
+  camera_config(vec3 look_from, vec3 look_dir, float field_of_view, float aspect_ratio_w, float aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
+    : look_from(look_from), look_dir(look_dir), field_of_view(field_of_view), aspect_ratio_w(aspect_ratio_w), aspect_ratio_h(aspect_ratio_h), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
   { }
 
   static camera_config lerp(const camera_config& a, const camera_config& b, float f)
@@ -34,14 +34,14 @@ public:
 
   inline uint32_t get_type_hash() const
   {
-    uint32_t a = hash_combine(look_from.get_type_hash(), look_at.get_type_hash(), ::get_type_hash(field_of_view), ::get_type_hash(aspect_ratio_h));
+    uint32_t a = hash_combine(look_from.get_type_hash(), look_dir.get_type_hash(), ::get_type_hash(field_of_view), ::get_type_hash(aspect_ratio_h));
     uint32_t b = hash_combine(::get_type_hash(aspect_ratio_w), ::get_type_hash(aperture), ::get_type_hash(dist_to_focus), ::get_type_hash(type));
-    return ::hash_combine(a, b);
+    return ::hash_combine(a, b, a, look_dir.get_type_hash());
   }
 
   // Persistent members
   vec3 look_from;
-  vec3 look_at;
+  vec3 look_dir;
   float field_of_view = 90.0f;
   float aspect_ratio_h = 9.0f;
   float aspect_ratio_w = 16.0f;
@@ -70,7 +70,7 @@ public:
     viewport_width = camera_conf.aspect_ratio_w / camera_conf.aspect_ratio_h * viewport_height;
 
     const vec3 view_up(0.0f, 1.0f, 0.0f);
-    w = unit_vector(camera_conf.look_from - camera_conf.look_at);   
+    w = unit_vector(camera_conf.look_dir);
     u = unit_vector(cross(view_up, w));     
     v = cross(w, u);                        
 

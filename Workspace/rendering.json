@@ -417,10 +417,10 @@
   ],
   "renderer_config": {
     "ray_bounces": 8,
-    "rays_per_pixel": 200,
+    "rays_per_pixel": 20,
     "resolution_horizontal": 800,
     "resolution_vertical": 800,
-    "reuse_buffer": false,
+    "reuse_buffer": true,
     "type": 1
   }
 }

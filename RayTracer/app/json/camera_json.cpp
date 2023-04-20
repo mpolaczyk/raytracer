@@ -8,7 +8,7 @@ nlohmann::json camera_config::serialize()
   nlohmann::json j;
   to_json(j, *this);
   j["look_from"] = look_from.serialize();
-  j["look_at"] = look_at.serialize();
+  j["look_dir"] = look_dir.serialize();
   return j;
 }
 
@@ -21,8 +21,8 @@ void camera_config::deserialize(const nlohmann::json& j)
   TRY_PARSE(float, j, "dist_to_focus", dist_to_focus);
   TRY_PARSE(float, j, "type", type);
 
-  nlohmann::json jlook_at;
-  if (TRY_PARSE(nlohmann::json, j, "look_at", jlook_at)) { look_at.deserialize(jlook_at); }
+  nlohmann::json jlook_dir;
+  if (TRY_PARSE(nlohmann::json, j, "look_dir", jlook_dir)) { look_dir.deserialize(jlook_dir); }
 
   nlohmann::json jlook_from;
   if (TRY_PARSE(nlohmann::json, j, "look_from", jlook_from)) { look_from.deserialize(jlook_from); }

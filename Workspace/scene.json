@@ -5,10 +5,10 @@
     "aspect_ratio_w": 1.0,
     "dist_to_focus": 800.0,
     "field_of_view": 38.0,
-    "look_at": {
-      "x": 278.0,
-      "y": 278.0,
-      "z": 0.0
+    "look_dir": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": -1.0
     },
     "look_from": {
       "x": 278.0,

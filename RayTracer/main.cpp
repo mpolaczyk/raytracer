@@ -146,7 +146,7 @@ int main(int, char**)
       {
         float u = state.output_window_lmb_x / (state.output_width - 1);
         float v = state.output_window_lmb_y / (state.output_height - 1);
-        v = 1.0f - v;
+        v = 1.0f - v; // because vertical axis is flipped in the output window
         camera cam;
         cam.set_camera(state.camera_conf);
         ray r = cam.get_ray(u, v);
