@@ -141,6 +141,7 @@ public:
 
 void draw_camera_panel(camera_panel_model& model, app_instance& state);
 void draw_renderer_panel(renderer_panel_model& model, app_instance& state);
+void draw_hotkeys_panel(app_instance& state);
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state);
 void draw_output_window(output_window_model& model, app_instance& state);
 void draw_scene_editor_window(scene_editor_window_model& model, app_instance& state);

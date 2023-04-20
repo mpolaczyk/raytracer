@@ -146,6 +146,7 @@ int main(int, char**)
       {
         float u = state.output_window_lmb_x / (state.output_width - 1);
         float v = state.output_window_lmb_y / (state.output_height - 1);
+        v = 1.0f - v;
         camera cam;
         cam.set_camera(state.camera_conf);
         ray r = cam.get_ray(u, v);
@@ -157,6 +158,30 @@ int main(int, char**)
 
         state.output_window_lmb_x = -1.0f;
         state.output_window_lmb_y = -1.0f;
+      }
+
+      // Handle global hotkeys
+      {
+        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
+        {
+          done = true;
+        }
+        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F1)))
+        {
+          state.renderer_conf.type = renderer_type::example;
+        }
+        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F2)))
+        {
+          state.renderer_conf.type = renderer_type::preview;
+        }
+        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F3)))
+        {
+          state.renderer_conf.type = renderer_type::reference;
+        }
+        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F5)))
+        {
+          state.rw_model.rp_model.render_pressed = true;
+        }
       }
 
       // Draw UI
