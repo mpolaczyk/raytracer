@@ -1,12 +1,17 @@
-# RayTracer
+## RayTracer
 **CPU Ray Tracer**
 
 Author: [planet620]
 
-![User interface](Screenshot.png)
-
-
 ## Releases
+
+### [2.2]
+- Full scene editor
+    - Flying camera
+    - Object selection and movement
+    - Material editor
+
+![User interface](Screenshot22.png)
 
 ### [2.1]
 - The same set of materials and primitives
@@ -16,10 +21,12 @@ Author: [planet620]
 - Coloured refraction
 - Gloss with smoothness
 
-![Example output](Example output2.bmp)
+![Example output](ExampleOutput2.png)
 
 ### [1.0]
 Based on books: [Ray Tracing in One Weekend] by Peter Shirley
+
+![User interface](Screenshot.png)
 
 - Editor UI
     - Scene setup: spawn/delete/move/edit object properties
@@ -56,7 +63,7 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
     -  XZ rectangle
     -  ZY rectangle
 
-![Example output](Example output.bmp)
+![Example output](ExampleOutput.png)
 
 ### Build details
 Project file: Visual Studio 2022
@@ -82,6 +89,7 @@ DirectX 11
    [1.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_1.0>
    [2.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.0>
    [2.1]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.1>
+   [2.2]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.2>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>

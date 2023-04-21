@@ -100,9 +100,8 @@ void draw_hotkeys_panel(app_instance& state)
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CONTROLS");
   ImGui::Separator();
-  ImGui::Text("F1 - Use example renderer");
-  ImGui::Text("F2 - Use preview renderer");
-  ImGui::Text("F3 - Use reference renderer");
+  ImGui::Text("F1 - Use preview renderer");
+  ImGui::Text("F2 - Use reference renderer");
   ImGui::Text("F5 - Render!");
   ImGui::Text("LMB (on image) - select object");
   ImGui::Text("Scroll - Camera speed (current speed: %f)", state.move_speed);
