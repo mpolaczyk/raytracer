@@ -53,11 +53,25 @@ void handle_input(app_instance& state)
   }
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F1)))
   {
-    state.renderer_conf.type = renderer_type::preview;
+    if (state.renderer_conf.type == renderer_type::preview)
+    {
+      state.rw_model.rp_model.render_pressed = true;
+    }
+    else
+    {
+      state.renderer_conf.type = renderer_type::preview;
+    }
   }
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F2)))
   {
-    state.renderer_conf.type = renderer_type::reference;
+    if (state.renderer_conf.type == renderer_type::reference)
+    {
+      state.rw_model.rp_model.render_pressed = true;
+    }
+    else
+    {
+      state.renderer_conf.type = renderer_type::reference;
+    }
   }
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F5)))
   {
@@ -119,12 +133,12 @@ void handle_input(app_instance& state)
       mouse_delta = -mouse_delta;
     }
   }
-  else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_X)))
+  else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_C)))
   {
     object_movement_axis = vec3(0.0f, -1.0f, 0.0f);
     mouse_delta = ImGui::GetIO().MouseDelta.y;
   }
-  else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_C)))
+  else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_X)))
   {
     object_movement_axis = vec3(0.0f, 0.0f, 1.0f);
     mouse_delta = ImGui::GetIO().MouseDelta.x;

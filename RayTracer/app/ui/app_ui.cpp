@@ -82,6 +82,17 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     ImGui::SameLine();
     ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.5f, 1.0f), "No renderer active");
   }
+
+  ImGui::Separator();
+  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MATERIALS");
+  ImGui::Separator();
+
+  draw_material_selection_combo(model.m_model, state);
+
+  std::string material_id = state.materials.get_material_ids()[model.m_model.selected_material_name_index];
+
+  material* mat = state.materials.get_material(material_id);
+  mat->draw_edit_panel();
 }
 
 void draw_hotkeys_panel(app_instance& state)

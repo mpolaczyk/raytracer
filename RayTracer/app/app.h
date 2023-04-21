@@ -34,9 +34,15 @@ struct camera_panel_model
   
 };
 
+struct material_selection_combo_model
+{
+  int selected_material_name_index = 0;
+};
+
 struct renderer_panel_model
 {
   bool render_pressed = false;
+  material_selection_combo_model m_model;
 };
 
 struct raytracer_window_model
@@ -48,11 +54,6 @@ struct output_window_model
 {
   float zoom = 1.0f;
   bool auto_render = false;
-};
-
-struct material_selection_combo_model
-{
-  int selected_material_name_index = 0;
 };
 
 struct new_object_panel_model
