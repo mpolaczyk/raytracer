@@ -99,6 +99,9 @@
     <ClCompile Include="renderers\preview_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
+    <ClCompile Include="renderers\ispc_renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -198,6 +201,12 @@
     <ClInclude Include="renderers\preview_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
+    <ClInclude Include="renderers\ispc_renderer.h">
+      <Filter>renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers\trace_ray.h">
+      <Filter>renderers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -230,5 +239,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
+    <None Include="renderers\trace_ray.ispc">
+      <Filter>renderers</Filter>
+    </None>
+    <None Include="renderers\trace_ray.isph">
+      <Filter>renderers</Filter>
+    </None>
   </ItemGroup>
 </Project>

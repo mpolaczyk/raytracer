@@ -421,6 +421,6 @@
     "resolution_horizontal": 800,
     "resolution_vertical": 800,
     "reuse_buffer": true,
-    "type": 1
+    "type": 3
   }
 }

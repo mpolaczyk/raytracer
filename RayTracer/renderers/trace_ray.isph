@@ -1,0 +1,22 @@
+
+#ifndef __TRACE_RAY_ISPH__
+#define __TRACE_RAY_ISPH__
+
+struct chunk
+{
+  int id;
+  int x;
+  int y;
+  int size_x;
+  int size_y;
+};
+
+struct vec3
+{
+  float x;
+  float y;
+  float z;
+  float padding;
+};
+
+#endif

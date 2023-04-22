@@ -70,12 +70,16 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>mkdir $(SolutionDir)Build\$(Platform)_$(Configuration) 2&gt; NUL
+ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)\renderers\trace_ray.h -g -O0 --arch=x86-64 --target=avx2-i32x16</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -102,12 +106,16 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)ThirtParty\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>mkdir $(SolutionDir)Build\$(Platform)_$(Configuration) 2&gt; NUL
+ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)\renderers\trace_ray.h --arch=x86-64 --target=avx2-i32x16</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\ThirtParty\imgui_v1.87\backends\imgui_impl_dx11.cpp">
@@ -162,6 +170,7 @@
     <ClCompile Include="processing\benchmark.cpp" />
     <ClCompile Include="processing\chunk_generator.cpp" />
     <ClCompile Include="renderers\example_renderer.cpp" />
+    <ClCompile Include="renderers\ispc_renderer.cpp" />
     <ClCompile Include="renderers\preview_renderer.cpp" />
     <ClCompile Include="renderers\reference_renderer.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -200,8 +209,10 @@
     <ClInclude Include="processing\benchmark.h" />
     <ClInclude Include="processing\chunk_generator.h" />
     <ClInclude Include="renderers\example_renderer.h" />
+    <ClInclude Include="renderers\ispc_renderer.h" />
     <ClInclude Include="renderers\preview_renderer.h" />
     <ClInclude Include="renderers\reference_renderer.h" />
+    <ClInclude Include="renderers\trace_ray.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +220,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
+    <None Include="renderers\trace_ray.ispc" />
+    <None Include="renderers\trace_ray.isph" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
