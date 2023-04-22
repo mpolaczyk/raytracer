@@ -11,13 +11,13 @@ std::string example_renderer::get_name() const
 
 void example_renderer::render()
 {
-  std::vector<tchunk> chunks;
-  tchunk_generator::generate_chunks(tchunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency(), job_state.image_width, job_state.image_height, chunks);
+  std::vector<chunk> chunks;
+  chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency(), job_state.image_width, job_state.image_height, chunks);
 
-  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](tchunk ch) { render_chunk(ch); });
+  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
 }
 
-void example_renderer::render_chunk(const tchunk& in_chunk)
+void example_renderer::render_chunk(const chunk& in_chunk)
 {
   std::thread::id thread_id = std::this_thread::get_id();
 

@@ -16,15 +16,15 @@ void reference_renderer::render()
 {
   save_output = true;
 
-  std::vector<tchunk> chunks;
+  std::vector<chunk> chunks;
   const int chunks_per_thread = 32;
-  tchunk_generator::generate_chunks(tchunk_strategy_type::rectangles, std::thread::hardware_concurrency() * chunks_per_thread, job_state.image_width, job_state.image_height, chunks);
+  chunk_generator::generate_chunks(chunk_strategy_type::rectangles, std::thread::hardware_concurrency() * chunks_per_thread, job_state.image_width, job_state.image_height, chunks);
 
-  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](tchunk ch) { render_chunk(ch); });
+  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
 }
 
 
-void reference_renderer::render_chunk(const tchunk& in_chunk)
+void reference_renderer::render_chunk(const chunk& in_chunk)
 {
   std::thread::id thread_id = std::this_thread::get_id();
 

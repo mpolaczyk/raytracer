@@ -15,13 +15,13 @@ void preview_renderer::render()
 {
   save_output = false;
 
-  std::vector<tchunk> chunks;
-  tchunk_generator::generate_chunks(tchunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * 32, job_state.image_width, job_state.image_height, chunks);
+  std::vector<chunk> chunks;
+  chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * 32, job_state.image_width, job_state.image_height, chunks);
   
-  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](tchunk ch) { render_chunk(ch); });
+  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
 }
 
-void preview_renderer::render_chunk(const tchunk& in_chunk)
+void preview_renderer::render_chunk(const chunk& in_chunk)
 {
   std::thread::id thread_id = std::this_thread::get_id();
 
