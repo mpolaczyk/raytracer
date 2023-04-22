@@ -15,7 +15,7 @@ nlohmann::json sphere::serialize()
   nlohmann::json j;
   hittable::to_json(j, *this);
   to_json(j, *this);
-  j["origin"] = origin.serialize();
+  j["origin"] = vec3_serializer::serialize(origin);
   return j;
 }
 
@@ -70,7 +70,7 @@ void sphere::deserialize(const nlohmann::json& j)
   TRY_PARSE(float, j, "radius", radius);
 
   nlohmann::json jorigin;
-  if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { origin.deserialize(jorigin); }
+  if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { origin = vec3_serializer::deserialize(jorigin); }
 }
 
 void scene::deserialize(const nlohmann::json& j)

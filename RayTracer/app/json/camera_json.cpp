@@ -7,8 +7,8 @@ nlohmann::json camera_config::serialize()
 {
   nlohmann::json j;
   to_json(j, *this);
-  j["look_from"] = look_from.serialize();
-  j["look_dir"] = look_dir.serialize();
+  j["look_from"] = vec3_serializer::serialize(look_from);
+  j["look_dir"] = vec3_serializer::serialize(look_dir);
   return j;
 }
 
@@ -22,8 +22,8 @@ void camera_config::deserialize(const nlohmann::json& j)
   TRY_PARSE(float, j, "type", type);
 
   nlohmann::json jlook_dir;
-  if (TRY_PARSE(nlohmann::json, j, "look_dir", jlook_dir)) { look_dir.deserialize(jlook_dir); }
+  if (TRY_PARSE(nlohmann::json, j, "look_dir", jlook_dir)) { look_dir = vec3_serializer::deserialize(jlook_dir); }
 
   nlohmann::json jlook_from;
-  if (TRY_PARSE(nlohmann::json, j, "look_from", jlook_from)) { look_from.deserialize(jlook_from); }
+  if (TRY_PARSE(nlohmann::json, j, "look_from", jlook_from)) { look_from = vec3_serializer::deserialize(jlook_from); }
 }

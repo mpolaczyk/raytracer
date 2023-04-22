@@ -10,7 +10,7 @@
 #include <intrin.h> // SSE3 required
 #endif
 
-__declspec(align(16)) class vec3 : serializable<nlohmann::json>
+__declspec(align(16)) class vec3
 {
 public:
   vec3() = default;
@@ -90,12 +90,15 @@ public:
     __m128 R128;
   };
 
-  nlohmann::json serialize();
-  void deserialize(const nlohmann::json& j);
-
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(vec3, x, y, z); // to_json only
-
   uint32_t get_type_hash() const;
+};
+
+class vec3_serializer : serializable<nlohmann::json>
+{
+  // Separate serializer tool to reduce the sizeof(vec3) to 16 bytes
+public:
+  static nlohmann::json serialize(const vec3& value);
+  static vec3 deserialize(const nlohmann::json& j);
 };
 
 inline std::ostream& operator<<(std::ostream& out, const vec3& v) { return out << '[' << v.x << ',' << v.y << ',' << v.z << ']'; }
