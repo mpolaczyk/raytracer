@@ -12,6 +12,20 @@
 #ifdef __cplusplus
 namespace ispc { /* namespace */
 #endif // __cplusplus
+///////////////////////////////////////////////////////////////////////////
+// Vector types with external visibility from ispc code
+///////////////////////////////////////////////////////////////////////////
+
+#ifndef __ISPC_VECTOR_float3__
+#define __ISPC_VECTOR_float3__
+#ifdef _MSC_VER
+__declspec( align(16) ) struct float3 { float v[3]; };
+#else
+struct float3 { float v[3]; } __attribute__ ((aligned(16)));
+#endif
+#endif
+
+
 
 #ifndef __ISPC_ALIGN__
 #if defined(__clang__) || !defined(_MSC_VER)
@@ -23,16 +37,6 @@ namespace ispc { /* namespace */
 #define __ISPC_ALIGN__(s) __declspec(align(s))
 #define __ISPC_ALIGNED_STRUCT__(s) __ISPC_ALIGN__(s) struct
 #endif
-#endif
-
-#ifndef __ISPC_STRUCT_vec3__
-#define __ISPC_STRUCT_vec3__
-struct vec3 {
-    float x;
-    float y;
-    float z;
-    float padding;
-};
 #endif
 
 #ifndef __ISPC_STRUCT_chunk__
@@ -53,7 +57,7 @@ struct chunk {
 #if defined(__cplusplus) && (! defined(__ISPC_NO_EXTERN_C) || !__ISPC_NO_EXTERN_C )
 extern "C" {
 #endif // __cplusplus
-    extern void render_chunk(const struct vec3 &in_resolution, const struct chunk &in_chunk, struct vec3 * output);
+    extern void render_chunk(const float3   &in_resolution, const struct chunk &in_chunk, float3   * output);
 #if defined(__cplusplus) && (! defined(__ISPC_NO_EXTERN_C) || !__ISPC_NO_EXTERN_C )
 } /* end extern C */
 #endif // __cplusplus

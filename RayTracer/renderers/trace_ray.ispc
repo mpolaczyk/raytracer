@@ -2,22 +2,24 @@
 
 #include "trace_ray.isph"
 
-inline vec3 draw_uv_noise(varying int32 x, varying int32 y, const uniform vec3& in_resolution)
+inline vec3 draw_uv(const int32 x, const int32 y, const uniform vec3& in_resolution)
 {
   float u = (float)x / (float)(in_resolution.x - 1);
   float v = (float)y / (float)(in_resolution.y - 1);
 
-  return set_vec3(u, v, 0.5f);
+  vec3 w = { u, v, 0.5f };
+  return w;
 }
 
-inline vec3 draw_procedural_texture(varying int32 x, varying int32 y, const uniform vec3& in_resolution)
+inline vec3 draw_procedural_texture(const int32 x, const int32 y, const uniform vec3& in_resolution)
 {
-  return set_vec3(abs(sin(x / 50.0f)), abs(sin(y / 300.0f)), 0.5f);
+  vec3 v = { abs(sin(x / 50.0f)), abs(sin(y / 300.0f)), 0.5f };
+  return v;
 }
 
-inline vec3 draw_random(varying int32 x, varying int32 y, const uniform vec3& in_resolution)
+inline vec3 draw_random(const int32 x, const int32 y, const int32 index, const uniform vec3& in_resolution)
 {
-  return rand_direction(in_resolution.x * in_resolution.y);
+  return rand_direction(x * y + index);
 }
 
 
@@ -31,6 +33,8 @@ export void render_chunk(const uniform vec3& in_resolution, const uniform chunk&
   foreach_tiled(y = y_min ... y_max, x = x_min ... x_max)
   {
     const int32 index = y + x * in_chunk.size_y;
-    output[index] = draw_random(x, y, in_resolution);
+    //output[index] = draw_uv(x, y, in_resolution);
+    //output[index] = draw_procedural_texture(x, y, in_resolution);
+    output[index] = draw_random(x, y, index, in_resolution);
   }
 }

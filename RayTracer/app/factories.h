@@ -28,7 +28,7 @@ static inline const char* renderer_type_names[] =
   "CPU Example",
   "CPU Preview",
   "CPU Reference",
-  "CPU ISPC"
+  "CPU ISPC (Example only)"
 };
 
 

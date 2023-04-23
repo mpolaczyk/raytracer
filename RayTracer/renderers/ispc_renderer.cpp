@@ -8,11 +8,11 @@
 #include "ispc_renderer.h"
 
 static_assert(sizeof(ispc::chunk) == sizeof(chunk));
-static_assert(sizeof(ispc::vec3) == sizeof(vec3));
+static_assert(sizeof(ispc::float3) == sizeof(vec3));
 
 std::string ispc_renderer::get_name() const
 {
-  return "CPU ISPC";
+  return "CPU ISPC (Example only)";
 }
 
 void ispc_renderer::render()
@@ -23,7 +23,7 @@ void ispc_renderer::render()
   const int chunks_per_thread = 32;
   chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency(), job_state.image_width, job_state.image_height, chunks);
 
-  ispc::vec3* output = new ispc::vec3[job_state.image_width * job_state.image_height];
+  ispc::float3* output = new ispc::float3[job_state.image_width * job_state.image_height];
 
   concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch, output); });
 
@@ -33,12 +33,16 @@ void ispc_renderer::render()
   {
     for (int y = 0; y < job_state.image_height; ++y)
     {
-      ispc::vec3 value = output[index];
+      ispc::float3 value = output[index];
       index++;
-      vec3 pixel_color = vec3(value.x, value.y, value.z);
+      vec3 pixel_color = vec3(value.v[0], value.v[1], value.v[2]);
 
       bmp::bmp_pixel p(pixel_color);
       job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
+      if (save_output)
+      {
+        job_state.img_bgr->draw_pixel(x, y, &p);
+      }
     }
   }
 
@@ -46,7 +50,7 @@ void ispc_renderer::render()
 }
 
 
-void ispc_renderer::render_chunk(const chunk& in_chunk, ispc::vec3* output)
+void ispc_renderer::render_chunk(const chunk& in_chunk, ispc::float3* output)
 {
   std::thread::id thread_id = std::this_thread::get_id();
 
@@ -58,5 +62,5 @@ void ispc_renderer::render_chunk(const chunk& in_chunk, ispc::vec3* output)
 
   vec3 resolution(job_state.image_width, job_state.image_height, 0.0f);
 
-  ispc::render_chunk((const ispc::vec3&)resolution, (const ispc::chunk&)in_chunk, output);
+  ispc::render_chunk((const ispc::float3&)resolution, (const ispc::chunk&)in_chunk, output);
 }

@@ -12,5 +12,5 @@ public:
 private:
   virtual void render() override;
 
-  void render_chunk(const chunk& in_chunk, ispc::vec3* output);
+  void render_chunk(const chunk& in_chunk, ispc::float3* output);
 };

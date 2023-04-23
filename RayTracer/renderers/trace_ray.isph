@@ -13,58 +13,21 @@ struct chunk
   uint32 size_y;
 };
 
-struct vec3
-{
-  float x;
-  float y;
-  float z;
-  float padding;
-};
-
-inline uniform vec3 set_vec3(const uniform float in_x, const  uniform float in_y, const uniform float in_z)
-{
-  const uniform vec3 result = {in_x, in_y, in_z, 0.0f};
-  return result;
-}
-
-inline vec3 set_vec3(const float in_x, const float in_y, const float in_z)
-{
-  const vec3 result = {in_x, in_y, in_z, 0.0f};
-  return result;
-}
+typedef float<3> vec3;
 
 
-inline vec3 operator/(const vec3 &a, const vec3 &b)
-{
-	vec3 result;
-	result.x = a.x / b.x;
-	result.y = a.y / b.y;
-	result.z = a.z / b.z;
-	return result;
-}
-inline vec3 operator/(const vec3 &a, const uniform float b)
-{
-	vec3 result;
-	result.x = a.x / b;
-	result.y = a.y / b;
-	result.z = a.z / b;
-	return result;
-}
 
 inline vec3 normalize(const vec3& v)
 {
-  float s = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-  return set_vec3(v.x /s, v.y /s, v.z /s);
+  return v / sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
 inline float rand_pcg(const uint32 seed)
 {
-  static uint32 last = 0;
-  uint32 state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
-  state = state * 747796405U + 2891336453U;
+  uint32 state;
+  state = seed * 747796405U + 2891336453U;
   uint32 word = ((state >> ((state >> 28U) + 4U)) ^ state) * 277803737U;
   uint32 result = (word >> 22U) ^ word;
-  last = result;
   return (float)result / (float)UINT_MAX;   // [0.0f, 1.0f]
 }
 
@@ -79,9 +42,10 @@ inline float rand_normal_distribution(const uint32 seed)
 inline vec3 rand_direction(const uint32 seed)
 {
   float x = rand_normal_distribution(seed);
-  float y = rand_normal_distribution(seed);
-  float z = rand_normal_distribution(seed);
-  return normalize(set_vec3(x, y, z));
+  float y = rand_normal_distribution(seed+1);
+  float z = rand_normal_distribution(seed+2);
+  vec3 v = {x, y, z};
+  return normalize(v);
 }
 
 
