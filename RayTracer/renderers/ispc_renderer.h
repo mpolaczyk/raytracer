@@ -2,6 +2,8 @@
 
 #include "processing/async_renderer_base.h"
 
+#include "renderers/trace_ray.h"
+
 class ispc_renderer : public async_renderer_base
 {
 public:
@@ -10,5 +12,5 @@ public:
 private:
   virtual void render() override;
 
-  void render_chunk(const chunk& in_chunk);
+  void render_chunk(const chunk& in_chunk, ispc::vec3* output);
 };

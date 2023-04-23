@@ -23,9 +23,9 @@ float rand_pcg(uint32_t seed)
   uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
   state = state * 747796405U + 2891336453U;
   uint32_t word = ((state >> ((state >> 28U) + 4U)) ^ state) * 277803737U;
-  float result = (float)((word >> 22U) ^ word);
+  uint32_t result = ((word >> 22U) ^ word);
   last = result;
-  return result / (float)UINT_MAX;   // [0.0f, 1.0f]
+  return (float)result / (float)UINT_MAX;   // [0.0f, 1.0f]
 }
 
 float rand_normal_distribution()

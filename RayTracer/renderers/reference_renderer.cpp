@@ -49,8 +49,7 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
       job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
       if (save_output)
       {
-        job_state.img_bgr->draw_pixel(x, y, &p);
-        
+        job_state.img_bgr->draw_pixel(x, y, &p);      
       }
     }
   }

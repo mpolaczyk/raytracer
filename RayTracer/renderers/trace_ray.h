@@ -38,11 +38,11 @@ struct vec3 {
 #ifndef __ISPC_STRUCT_chunk__
 #define __ISPC_STRUCT_chunk__
 struct chunk {
-    int32_t id;
-    int32_t x;
-    int32_t y;
-    int32_t size_x;
-    int32_t size_y;
+    uint32_t id;
+    uint32_t x;
+    uint32_t y;
+    uint32_t size_x;
+    uint32_t size_y;
 };
 #endif
 
@@ -53,7 +53,7 @@ struct chunk {
 #if defined(__cplusplus) && (! defined(__ISPC_NO_EXTERN_C) || !__ISPC_NO_EXTERN_C )
 extern "C" {
 #endif // __cplusplus
-    extern int32_t render_chunk(const struct vec3 &resolution, const struct chunk &ch);
+    extern void render_chunk(const struct vec3 &in_resolution, const struct chunk &in_chunk, struct vec3 * output);
 #if defined(__cplusplus) && (! defined(__ISPC_NO_EXTERN_C) || !__ISPC_NO_EXTERN_C )
 } /* end extern C */
 #endif // __cplusplus

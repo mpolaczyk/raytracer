@@ -34,17 +34,17 @@ void example_renderer::render_chunk(const chunk& in_chunk)
       vec3 pixel_color;
 
       int option = 3;
-      if (option == 1)
+      if (option == 1)  // UV map
       {
         float u = float(x) / (job_state.image_width - 1);
         float v = float(y) / (job_state.image_height - 1);
-        pixel_color = vec3(u, v, 0.3f);
+        pixel_color = vec3(u, v, 0.5f);
       }
-      else if (option == 2)
+      else if (option == 2) // Procedural texture
       {
         pixel_color = vec3(abs(sin(x / 50.0f)), abs(sin(y / 300.0f)), 0.5f);
       }
-      else if (option == 3)
+      else if (option == 3) // Random noise
       {
         if (x < job_state.image_width / 2)
         {
