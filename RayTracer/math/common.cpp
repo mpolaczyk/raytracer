@@ -238,6 +238,41 @@ namespace random_cache
   }
 }
 
+namespace tone_mapping
+{
+  vec3 trivial(const vec3& v)
+  {
+    return clamp_vec3(0.0f, 1.0f, v);
+  }
+  vec3 reinhard(const vec3& v)
+  {
+    // Mathematically guarantees to produce [0.0, 1.0]
+    // Use with luminance not with RGB radiance
+    return v / (1.0f + v);
+  }
+  vec3 reinhard_extended(const vec3& v, float max_white)
+  {
+    vec3 numerator = v * (1.0f + (v / vec3(max_white * max_white)));
+    return numerator / (1.0f + v);
+  }
+  float luminance(const vec3& v)
+  {
+    return dot(v, vec3(0.2126f, 0.7152f, 0.0722f));
+  }
+  vec3 change_luminance(const vec3& c_in, float l_out)
+  {
+    float l_in = luminance(c_in);
+    return c_in * (l_out / l_in);
+  }
+  vec3 reinhard_extended_luminance(const vec3& v, float max_white_l)
+  {
+    float l_old = luminance(v);
+    float numerator = l_old * (1.0f + (l_old / (max_white_l * max_white_l)));
+    float l_new = numerator / (1.0f + l_old);
+    return change_luminance(v, l_new);
+  }
+}
+
 namespace paths
 {
   std::string get_working_dir()

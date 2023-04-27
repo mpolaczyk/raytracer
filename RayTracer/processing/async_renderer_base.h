@@ -37,14 +37,17 @@ public:
   int resolution_vertical = 0;
   int resolution_horizontal = 0;
 
+  // Manually set the brightest point of an image used for tone mapping
+  float white_point = 1.0f;
+
   nlohmann::json serialize();
   void deserialize(const nlohmann::json& j);
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, rays_per_pixel, ray_bounces, type, reuse_buffer, resolution_vertical, resolution_horizontal); // to_json only
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, rays_per_pixel, ray_bounces, type, reuse_buffer, resolution_vertical, resolution_horizontal, white_point); // to_json only
 
   inline uint32_t get_type_hash() const
   {
-    return hash_combine(rays_per_pixel, ray_bounces, (int)type, (int)type);
+    return hash_combine(rays_per_pixel, ray_bounces, (int)type, white_point);
   }
 };
 

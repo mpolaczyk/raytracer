@@ -61,6 +61,10 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
   ImGui::InputInt("Ray bounces", &state.renderer_conf.ray_bounces, 1);
   
   ImGui::Checkbox("Reuse buffers", &state.renderer_conf.reuse_buffer);
+
+  ImGui::Text("Tone mapping - Reinhard extended");
+  ImGui::InputFloat("White point", &state.renderer_conf.white_point, 0.1f);
+
   if (ImGui::Button("Render"))
   {
     model.render_pressed = true;

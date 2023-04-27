@@ -39,13 +39,15 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
   {
     for (int x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
     {
-      vec3 pixel_color = fragment(x, y, resolution);
+      vec3 hdr_color = fragment(x, y, resolution);
 
-      assert(isfinite(pixel_color.x));
-      assert(isfinite(pixel_color.y));
-      assert(isfinite(pixel_color.z));
+      assert(isfinite(hdr_color.x));
+      assert(isfinite(hdr_color.y));
+      assert(isfinite(hdr_color.z));
 
-      bmp::bmp_pixel p(pixel_color);
+      vec3 ldr_color = tone_mapping::reinhard_extended_luminance(hdr_color, job_state.renderer_conf.white_point);
+
+      bmp::bmp_pixel p(ldr_color);
       job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
       if (save_output)
       {
@@ -72,9 +74,9 @@ vec3 reference_renderer::fragment(float x, float y, const vec3& resolution)
     sum_colors += trace_ray(r, seed);
   }
   
-  vec3 final_color = sum_colors / (float)rays_per_pixel;
+  vec3 hdr_color = sum_colors / (float)rays_per_pixel;
 
-  return final_color;
+  return hdr_color;
 }
 
 vec3 reference_renderer::enviroment_light(const ray& in_ray)

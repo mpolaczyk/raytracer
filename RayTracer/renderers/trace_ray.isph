@@ -19,7 +19,7 @@ typedef float<3> vec3;
 
 inline vec3 normalize(const vec3& v)
 {
-  return v / sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+  return v * rsqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
 inline float rand_pcg(const uint32 seed)

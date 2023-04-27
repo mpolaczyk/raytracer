@@ -68,6 +68,7 @@
  https://en.wikipedia.org/wiki/Isotropy
 
  - radiance - power emitted/reflected by a surface per unit solid angle, per unit of a projected area. The amount of light incoming to a point from a single direction.
+ - radiance vs luminance - radiance is physical measure (RGB), luminance is how humans percieve it, how bright we see something? (scalar)
  - radiance vs luminance - radiance used in radiometry where physical properties are relevant, luminance in photometry where the visual perception is relevant (spectral response)
  - irradiance - irradiance is the amount of light incoming to a certain point from possibly all directions.
 

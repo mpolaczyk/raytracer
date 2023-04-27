@@ -165,7 +165,24 @@ inline void get_sphere_uv(const vec3& p, float& out_u, float& out_v)
   out_v = theta / pi;
 }
 
+namespace tone_mapping
+{
+  // Tone mapping functions
+  // Based on https://64.github.io/tonemapping/
+  // radiance vs luminance 
+  // - radiance is physical measure (RGB), the amount of light incoming to a point from a single direction
+  // - luminance is how humans perceive it, how bright we see something? (scalar) Human perception is non-linear.
+  // HDR - High Dynamic Range
+  // LDR - Low Dynamic Range
+  // TMO - Tone Mapping Operator
 
+  vec3 trivial(const vec3& v);
+  vec3 reinhard(const vec3& v);
+  vec3 reinhard_extended(const vec3& v, float max_white);
+  float luminance(const vec3& v);
+  vec3 change_luminance(const vec3& c_in, float l_out);
+  vec3 reinhard_extended_luminance(const vec3& v, float max_white_l);
+}
 
 inline uint32_t hash_combine(uint32_t A, uint32_t C)
 {

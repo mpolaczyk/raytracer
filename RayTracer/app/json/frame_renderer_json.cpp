@@ -18,4 +18,5 @@ void renderer_config::deserialize(const nlohmann::json& j)
   TRY_PARSE(bool, j, "reuse_buffer", reuse_buffer);
   TRY_PARSE(int, j, "resolution_vertical", resolution_vertical);
   TRY_PARSE(int, j, "resolution_horizontal", resolution_horizontal);
+  TRY_PARSE(float, j, "white_point", white_point);
 }
