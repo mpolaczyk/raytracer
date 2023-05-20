@@ -257,15 +257,22 @@ namespace tone_mapping
   }
   float luminance(const vec3& v)
   {
-    return dot(v, vec3(0.2126f, 0.7152f, 0.0722f));
+    float value = dot(v, vec3(0.2126f, 0.7152f, 0.0722f));
+    assert(value >= 0.0f);
+    return value;
   }
   vec3 change_luminance(const vec3& c_in, float l_out)
   {
     float l_in = luminance(c_in);
+    if (l_in == 0.0f)
+    {
+      return vec3(0, 0, 0);
+    }
     return c_in * (l_out / l_in);
   }
   vec3 reinhard_extended_luminance(const vec3& v, float max_white_l)
   {
+    assert(max_white_l > 0.0f);
     float l_old = luminance(v);
     float numerator = l_old * (1.0f + (l_old / (max_white_l * max_white_l)));
     float l_new = numerator / (1.0f + l_old);
@@ -291,27 +298,44 @@ namespace paths
     return oss.str();
   }
 
-  std::string get_workspace_file_path(const char* workspace_file_name)
-  {
-    std::string project_dir = get_workspace_dir();
-    std::ostringstream oss;
-    oss << project_dir << workspace_file_name;
-    return oss.str();
-  }
-
-  std::string get_workspace_images_dir()
+  std::string get_objects_dir()
   {
     std::string workspace_dir = get_workspace_dir();
     std::ostringstream oss;
-    oss << workspace_dir << "\\Images\\";
+    oss << workspace_dir << "Objects\\";
     return oss.str();
   }
 
-  std::string get_workspace_images_file_path(const char* workspace_images_file_name)
+  std::string get_images_dir()
   {
-    std::string workspace_images_dir = get_workspace_images_dir();
+    std::string workspace_dir = get_workspace_dir();
     std::ostringstream oss;
-    oss << workspace_images_dir << workspace_images_file_name;
+    oss << workspace_dir << "Images\\";
+    return oss.str();
+  }
+
+
+  std::string get_workspace_file_path(const char* file_name)
+  {
+    std::string workspace_dir = get_workspace_dir();
+    std::ostringstream oss;
+    oss << workspace_dir << file_name;
+    return oss.str();
+  }
+
+  std::string get_images_file_path(const char* file_name)
+  {
+    std::string images_dir = get_images_dir();
+    std::ostringstream oss;
+    oss << images_dir << file_name;
+    return oss.str();
+  }
+
+  std::string get_objects_file_path(const char* file_name)
+  {
+    std::string objects_dir = get_objects_dir();
+    std::ostringstream oss;
+    oss << objects_dir << file_name;
     return oss.str();
   }
 
@@ -330,16 +354,80 @@ namespace paths
     return get_workspace_file_path("rendering.json");
   }
 
-  std::string get_render_output_file_path()
-  {
-    std::time_t result = std::time(nullptr);
-    std::ostringstream oss;
-    oss << "output_" << result << ".bmp";
-    return get_workspace_images_file_path(oss.str().c_str());
-  }
-
   std::string get_imgui_file_path()
   {
     return get_workspace_file_path("imgui.ini");
+  }
+
+  std::string get_render_output_file_path()
+  {
+    std::time_t t = std::time(nullptr);
+    std::ostringstream oss;
+    oss << "output_" << t << ".bmp";
+    return get_images_file_path(oss.str().c_str());
+  }
+
+}
+
+
+#include "gfx/tiny_obj_loader.h"
+namespace obj_helper
+{
+  bool load_obj(const std::string& file_name, int shape_index, std::vector<triangle_face>& out_faces)
+  {
+    assert(shape_index >= 0);
+
+    tinyobj::attrib_t attributes; // not implemented
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials; // not implemented
+
+    std::string dir = paths::get_objects_dir();
+    std::string path = paths::get_objects_file_path(file_name.c_str());
+
+    std::string error;
+    if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &error, path.c_str(), dir.c_str(), true))
+    {
+      std::cout << "Unable to load object file: " << file_name.c_str() << std::endl;
+      return false;
+    }
+
+    if (shape_index < shapes.size())
+    {
+      tinyobj::shape_t shape = shapes[shape_index];
+      int num_faces = shape.mesh.num_face_vertices.size();
+      out_faces.reserve(num_faces);
+      assert(num_faces > 0);
+
+      // loop over faces
+      for (size_t fi = 0; fi < num_faces; ++fi)
+      {
+        out_faces.push_back(triangle_face());
+        triangle_face& face = out_faces[fi];
+
+        // loop over the vertices in the face
+        assert(shape.mesh.num_face_vertices[fi] == 3);
+        for (size_t vi = 0; vi < 3; ++vi)
+        {
+          tinyobj::index_t idx = shape.mesh.indices[3 * fi + vi];
+
+          float x = attributes.vertices[3 * idx.vertex_index + 0];
+          float y = attributes.vertices[3 * idx.vertex_index + 1];
+          float z = attributes.vertices[3 * idx.vertex_index + 2];
+
+          if (idx.normal_index != -1)
+          {
+            face.has_normals = true;
+            face.normals[vi] = vec3(attributes.normals[3 * idx.normal_index + 0], attributes.normals[3 * idx.normal_index + 1], attributes.normals[3 * idx.normal_index + 2]);
+          }
+
+          if (idx.texcoord_index != -1)
+          {
+            face.has_UVs = true;
+            face.UVs[vi] = vec3(attributes.texcoords[2 * idx.texcoord_index + 0], attributes.texcoords[2 * idx.texcoord_index + 1], 0.0f);
+          }
+        }
+      }
+      return true;
+    }
   }
 }

@@ -12,6 +12,7 @@ hittable* hittable::spawn_by_type(hittable_class type)
   else if (type == hittable_class::xy_rect) { return new xy_rect(); }
   else if (type == hittable_class::xz_rect) { return new xz_rect(); }
   else if (type == hittable_class::yz_rect) { return new yz_rect(); }
+  else if (type == hittable_class::static_mesh) { return new static_mesh(); }
   return nullptr;
 }
 
@@ -199,6 +200,12 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.material_ptr = material_ptr;
   out_hit.p = in_ray.at(t);
   return true;
+}
+
+bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+{
+  // TODO
+  return false;
 }
 
 
@@ -396,6 +403,12 @@ bool yz_rect::get_bounding_box(aabb& out_box) const
   return true;
 }
 
+bool static_mesh::get_bounding_box(aabb& out_box) const
+{
+  out_box = aabb(origin - extent, origin + extent);
+  return true;
+}
+
 
 inline uint32_t hittable::get_type_hash() const
 {
@@ -435,6 +448,13 @@ inline uint32_t yz_rect::get_type_hash() const
 {
   uint32_t a = hash_combine(hittable::get_type_hash(), ::get_type_hash(y0), ::get_type_hash(z0), ::get_type_hash(y1));
   uint32_t b = hash_combine(::get_type_hash(z1), ::get_type_hash(x));
+  return hash_combine(a, b);
+}
+
+inline uint32_t static_mesh::get_type_hash() const
+{
+  uint32_t a = hash_combine(hittable::get_type_hash(), origin.get_type_hash(), ::get_type_hash(extent), rotation.get_type_hash());
+  uint32_t b = hash_combine(scale.get_type_hash(), ::get_type_hash(resources_dirty));
   return hash_combine(a, b);
 }
 
@@ -479,4 +499,32 @@ yz_rect* yz_rect::clone() const
   yz_rect* ans = new yz_rect();
   *ans = *this;
   return ans;
+}
+
+static_mesh* static_mesh::clone() const
+{
+  static_mesh* ans = new static_mesh();
+  *ans = *this;
+  return ans;
+}
+
+
+void scene::load_resources()
+{
+  assert(objects.size() > 0);
+  for (hittable* object : objects)
+  {
+    assert(object != nullptr);
+    object->load_resources();
+  }
+}
+
+void static_mesh::load_resources()
+{
+  if (resources_dirty && file_name.length() > 0)
+  {
+    bool success = obj_helper::load_obj(file_name, 0, faces);
+    resources_dirty = !success;
+  }
+  // TODO find extent
 }

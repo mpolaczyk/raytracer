@@ -169,7 +169,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
         model.d_model.selected_id = n;
       }
       std::string obj_name;
-      obj->get_name(obj_name, false);
+      obj->get_name(obj_name, true);
       std::ostringstream oss;
       oss << "[" << n << "] " << obj_name;
       if (ImGui::Selectable(oss.str().c_str(), model.selected_id == n))

@@ -214,37 +214,6 @@ inline uint32_t pointer_hash(const void* ptr, uint32_t C = 0)
   return hash_combine(ptr_int, C);
 }
 
-
-//inline uint32_t get_type_hash(const uint8_t A)
-//{
-//  return A;
-//}
-//
-//inline uint32_t get_type_hash(const int8_t A)
-//{
-//  return A;
-//}
-//
-//inline uint32_t get_type_hash(const uint16_t A)
-//{
-//  return A;
-//}
-//
-//inline uint32_t get_type_hash(const int16_t A)
-//{
-//  return A;
-//}
-//
-//inline uint32_t get_type_hash(const int32_t A)
-//{
-//  return A;
-//}
-//
-//inline uint32_t get_type_hash(const uint32_t A)
-//{
-//  return A;
-//}
-
 inline uint32_t get_type_hash(const uint64_t A)
 {
   return (uint32_t)A + ((uint32_t)(A >> 32) * 23);
@@ -285,12 +254,32 @@ namespace paths
   // Directories
   std::string get_working_dir();
   std::string get_workspace_dir();
+  std::string get_objects_dir();
+  std::string get_images_dir();
 
   // Files
-  std::string get_workspace_file_path(const char* project_file_name);
+  std::string get_workspace_file_path(const char* file_name);
+  std::string get_images_file_path(const char* file_name);
+  std::string get_objects_file_path(const char* file_name);
   std::string get_window_file_path();
   std::string get_scene_file_path();
   std::string get_rendering_file_path();
-  std::string get_render_output_file_path();
   std::string get_imgui_file_path();
+  std::string get_render_output_file_path();
+} 
+
+namespace obj_helper
+{
+  struct triangle_face
+  {
+    vec3 vertices[3];
+
+    bool has_normals = false;
+    vec3 normals[3];
+
+    bool has_UVs = false;
+    vec3 UVs[3]; //xy
+  };
+
+  bool load_obj(const std::string& file_name, int shape_index, std::vector<triangle_face>& out_faces);
 }

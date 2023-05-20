@@ -32,7 +32,8 @@ enum class hittable_class  // No RTTI, simple type detection
   sphere,
   xy_rect,
   xz_rect,
-  yz_rect
+  yz_rect,
+  static_mesh
 };
 static inline const char* hittable_class_names[] =
 {
@@ -40,7 +41,8 @@ static inline const char* hittable_class_names[] =
   "Sphere",
   "XY Rectangle",
   "XZ Rectangle",
-  "YZ Rectangle"
+  "YZ Rectangle",
+  "Static Mesh"
 };
 
 class hittable : serializable<nlohmann::json>
@@ -55,18 +57,21 @@ public:
   virtual void get_name(std::string& out_name, bool with_params = true) const;
   virtual vec3 get_origin() const = 0;
   virtual vec3 get_extent() const = 0;
-  virtual vec3 get_random_point() const = 0;
-  virtual float get_area() const = 0;
   virtual void set_origin(const vec3& value) = 0;
   virtual void set_extent(float value) = 0;
-  virtual float get_pdf_value(const vec3& origin, const vec3& v) const = 0;
-  virtual vec3 get_pdf_direction(const vec3& look_from) const = 0;
+  // Deprecated begin
+  virtual float get_area() const { assert(false); return 0.0f; };
+  virtual float get_pdf_value(const vec3& origin, const vec3& v) const { assert(false); return 0.0f; };
+  virtual vec3 get_pdf_direction(const vec3& look_from) const { assert(false); return vec3(0, 0, 0); };
+  virtual vec3 get_random_point() const { assert(false); return vec3(0, 0, 0); };
+  // Deprecated end
 
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize();
   virtual void deserialize(const nlohmann::json& j);
   virtual uint32_t get_type_hash() const;
   virtual hittable* clone() const = 0;
+  virtual void load_resources() {};
 
   // Persistent members
   hittable_class type = hittable_class::scene;
@@ -94,12 +99,14 @@ public:
   virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual vec3 get_origin() const override { return origin; };
   virtual vec3 get_extent() const override { return radius; };
+  virtual void set_origin(const vec3& value) override { origin = value; };
+  virtual void set_extent(float value) { radius = value; };
+  // Deprecated begin
   virtual float get_area() const override;
   virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
   virtual vec3 get_pdf_direction(const vec3& look_from) const override;
   virtual vec3 get_random_point() const override;
-  virtual void set_origin(const vec3& value) override { origin = value; };
-  virtual void set_extent(float value) { radius = value; };
+  // Deprecated end
 
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
@@ -107,11 +114,12 @@ public:
   virtual uint32_t get_type_hash() const override;
   virtual sphere* clone() const override;
 
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(sphere, radius); // to_json only
+
+private:
   // Persistent members
   vec3 origin = { 0,0,0 };
   float radius = 0.0f;
-
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(sphere, radius); // to_json only
 };
 
 
@@ -127,10 +135,6 @@ public:
   virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual vec3 get_origin() const override { assert(false); return vec3(0, 0, 0); };
   virtual vec3 get_extent() const override { assert(false); return vec3(0, 0, 0); };
-  virtual float get_area() const override { assert(false); return 0.0f; };
-  virtual float get_pdf_value(const vec3& origin, const vec3& v) const override { assert(false); return 0.0f; };
-  virtual vec3 get_pdf_direction(const vec3& look_from) const override { assert(false); return vec3(0, 0, 0); };
-  virtual vec3 get_random_point() const override { assert(false); return vec3(0, 0, 0); };
   virtual void set_origin(const vec3& value) override { };
   virtual void set_extent(float value) { assert(false); };
 
@@ -139,6 +143,7 @@ public:
   virtual void deserialize(const nlohmann::json& j) override;
   virtual uint32_t get_type_hash() const override;
   virtual scene* clone() const override;
+  virtual void load_resources() override;
 
   void add(hittable* object);
   void remove(int object_id);
@@ -167,12 +172,14 @@ public:
   virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual vec3 get_origin() const override { return vec3(x0, y0, z); };
   virtual vec3 get_extent() const override { return vec3(x1-x0, y1-y0, 0.0f); };
+  virtual void set_origin(const vec3& value) override { x0 = value.x; y0 = value.y; };
+  virtual void set_extent(float value) { x1 = x0 + value; y1 = y0 + value; };
+  // Deprecated begin
   virtual float get_area() const override;
   virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
   virtual vec3 get_pdf_direction(const vec3& look_from) const override;
   virtual vec3 get_random_point() const override;
-  virtual void set_origin(const vec3& value) override { x0 = value.x; y0 = value.y; };
-  virtual void set_extent(float value) { x1 = x0 + value; y1 = y0 + value; };
+  // Deprecated end
 
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
@@ -209,12 +216,14 @@ public:
   virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual vec3 get_origin() const override { return vec3(x0, y, z0); };
   virtual vec3 get_extent() const override { return vec3(x1-x0, 0.0f, z1-z0); };
+  virtual void set_origin(const vec3& value) override { x0 = value.x; z0 = value.z; };
+  virtual void set_extent(float value) { x1 = x0 + value; z1 = z0 + value; };
+  // Deprecated begin
   virtual float get_area() const override;
   virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
   virtual vec3 get_pdf_direction(const vec3& look_from) const override;
   virtual vec3 get_random_point() const override;
-  virtual void set_origin(const vec3& value) override { x0 = value.x; z0 = value.z; };
-  virtual void set_extent(float value) { x1 = x0 + value; z1 = z0 + value; };
+  // Deprecated end
 
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
@@ -251,12 +260,14 @@ public:
   virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual vec3 get_origin() const override { return vec3(x, y0, z0); };
   virtual vec3 get_extent() const override { return vec3(0.0f, y1-y0, z1-z0); };
+  virtual void set_origin(const vec3& value) override { y0 = value.y; z0 = value.z; };
+  virtual void set_extent(float value) { y1 = y0 + value; z1 = z0 + value; };
+  // Deprecated begin
   virtual float get_area() const override;
   virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
   virtual vec3 get_pdf_direction(const vec3& look_from) const override;
   virtual vec3 get_random_point() const override;
-  virtual void set_origin(const vec3& value) override { y0 = value.y; z0 = value.z; };
-  virtual void set_extent(float value) { y1 = y0 + value; z1 = z0 + value; };
+  // Deprecated end
 
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
@@ -278,4 +289,41 @@ public:
   float x;
 
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(yz_rect, y0, z0, y1, z1, x); // to_json only
+};
+
+class static_mesh : public hittable
+{
+public:
+  static_mesh() : hittable("", hittable_class::static_mesh) {}
+  static_mesh(const static_mesh* rhs) { *this = *rhs; };
+
+  virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
+  virtual bool get_bounding_box(aabb& out_box) const override;
+  virtual void get_name(std::string& out_name, bool with_params) const override;
+  virtual vec3 get_origin() const override { return origin; };
+  virtual vec3 get_extent() const override { return extent; };
+  virtual void set_origin(const vec3& value) override { origin = value; };
+  virtual void set_extent(float value) { extent = value; };
+
+  virtual void draw_edit_panel() override;
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
+  virtual uint32_t get_type_hash() const override;
+  virtual static_mesh* clone() const override;
+  virtual void load_resources() override;
+
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(static_mesh, file_name); // to_json only
+
+private:
+  
+  // Persistent state
+  std::string file_name;
+  vec3 origin = { 0,0,0 };
+  vec3 scale = { 1,1,1 };
+  vec3 rotation = { 0,0,0 };
+
+  // Runtime state
+  std::vector<obj_helper::triangle_face> faces;
+  float extent = 0.0f;
+  bool resources_dirty = true;
 };

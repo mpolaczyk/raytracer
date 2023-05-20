@@ -85,6 +85,21 @@ void yz_rect::get_name(std::string& out_name, bool with_params) const
   }
 }
 
+void static_mesh::get_name(std::string& out_name, bool with_params) const
+{
+  std::string base_name;
+  hittable::get_name(base_name);
+  if (with_params)
+  {
+    std::ostringstream oss;
+    oss << base_name << "/" << file_name;
+    out_name = oss.str();
+  }
+  else
+  {
+    out_name = base_name;
+  }
+}
 
 void hittable::draw_edit_panel()
 {
@@ -129,4 +144,24 @@ void yz_rect::draw_edit_panel()
   ImGui::DragFloat2("y0 z0", y0z0);
   ImGui::DragFloat2("y1 z1", y1z1);
   ImGui::DragFloat("x", &x);
+}
+
+void static_mesh::draw_edit_panel()
+{
+  hittable::draw_edit_panel();
+  ImGui::DragFloat3("Origin", origin.e);
+  ImGui::DragFloat3("Rotation", rotation.e);
+  ImGui::DragFloat3("Scale", scale.e);
+  
+  {
+    assert(file_name.size() <= 256);
+    char* buffer = new char[256];
+    strcpy(buffer, file_name.c_str());
+    if (ImGui::InputText("Object file", buffer, 256, ImGuiInputTextFlags_EnterReturnsTrue))
+    {
+      file_name = buffer;
+      resources_dirty = true;
+    }
+    delete[] buffer;
+  }
 }

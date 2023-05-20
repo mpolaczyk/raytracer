@@ -41,7 +41,10 @@
  - scale all vectors until you get out of floating point precision
  - grid of square glass tiles surface/texture behind it, lots of caustics
  - rotating split screen dynamically creating one screen
- 
+ - blending between two frames (different pixels for each frame)
+ - gestalt psychology
+ - alculating reflections or shadows in a way that they form a picture/shape
+
  # Optim ideas:
  - Use depth field, trace pixels close to the camera, first.
  - Probe scene with low resolution or even ray cast, calculate the difference from previous scene. Next frame renders only the diff areas.

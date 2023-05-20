@@ -111,9 +111,10 @@ int main(int, char**)
     state.load_scene_state();
     state.load_rendering_state();
     state.load_window_state();
+    state.scene_root.load_resources();
     state.renderer = object_factory::spawn_renderer(state.renderer_conf.type);
     ::SetWindowPos(hwnd, NULL, state.window_conf.x, state.window_conf.y, state.window_conf.w, state.window_conf.h, NULL);
-    
+
     // Auto render on startup
     state.rw_model.rp_model.render_pressed = true;
 
@@ -169,6 +170,7 @@ int main(int, char**)
               state.renderer = object_factory::spawn_renderer(state.renderer_conf.type);
             }
 
+            state.scene_root.load_resources();
             state.scene_root.build_boxes();
             state.scene_root.update_materials(&state.materials);
             state.scene_root.query_lights();

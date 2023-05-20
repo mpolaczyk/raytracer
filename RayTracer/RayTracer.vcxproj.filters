@@ -207,6 +207,9 @@
     <ClInclude Include="renderers\trace_ray.h">
       <Filter>renderers</Filter>
     </ClInclude>
+    <ClInclude Include="gfx\tiny_obj_loader.h">
+      <Filter>gfx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

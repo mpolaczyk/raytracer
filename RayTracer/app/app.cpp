@@ -46,6 +46,8 @@ void handle_input(app_instance& state)
     state.output_window_lmb_y = -1.0f;
   }
 
+  ImGuiIO& io = ImGui::GetIO();
+
   // Handle hotkeys
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
   {
@@ -83,29 +85,32 @@ void handle_input(app_instance& state)
   state.move_speed = max(0.5f, state.move_speed + wheel_delta / 2.0f);
 
   // Handle camera movement
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)))
+  if (!io.WantCaptureKeyboard)
   {
-    state.camera_conf.move_up(state.move_speed);
-  }
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)))
-  {
-    state.camera_conf.move_down(state.move_speed);
-  }
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)))
-  {
-    state.camera_conf.move_forward(state.move_speed);
-  }
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)))
-  {
-    state.camera_conf.move_backward(state.move_speed);
-  }
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)))
-  {
-    state.camera_conf.move_left(state.move_speed);
-  }
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)))
-  {
-    state.camera_conf.move_right(state.move_speed);
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)))
+    {
+      state.camera_conf.move_up(state.move_speed);
+    }
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)))
+    {
+      state.camera_conf.move_down(state.move_speed);
+    }
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)))
+    {
+      state.camera_conf.move_forward(state.move_speed);
+    }
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)))
+    {
+      state.camera_conf.move_backward(state.move_speed);
+    }
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)))
+    {
+      state.camera_conf.move_left(state.move_speed);
+    }
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)))
+    {
+      state.camera_conf.move_right(state.move_speed);
+    }
   }
   
   // Handle camera rotation
@@ -122,34 +127,37 @@ void handle_input(app_instance& state)
   }
  
   // Object movement
-  vec3 object_movement_axis = vec3(0.0f, 0.0f, 0.0f);
-  float mouse_delta = 0.0f;
-  if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Z)))
+  if (!io.WantCaptureKeyboard)
   {
-    object_movement_axis = vec3(1.0f, 0.0f, 0.0f);
-    mouse_delta = ImGui::GetIO().MouseDelta.x;
-    if (state.camera_conf.look_dir.z < 0.0f)
+    vec3 object_movement_axis = vec3(0.0f, 0.0f, 0.0f);
+    float mouse_delta = 0.0f;
+    if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Z)))
     {
-      mouse_delta = -mouse_delta;
+      object_movement_axis = vec3(1.0f, 0.0f, 0.0f);
+      mouse_delta = ImGui::GetIO().MouseDelta.x;
+      if (state.camera_conf.look_dir.z < 0.0f)
+      {
+        mouse_delta = -mouse_delta;
+      }
     }
-  }
-  else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_C)))
-  {
-    object_movement_axis = vec3(0.0f, -1.0f, 0.0f);
-    mouse_delta = ImGui::GetIO().MouseDelta.y;
-  }
-  else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_X)))
-  {
-    object_movement_axis = vec3(0.0f, 0.0f, 1.0f);
-    mouse_delta = ImGui::GetIO().MouseDelta.x;
-    if (state.camera_conf.look_dir.x > 0.0f)
+    else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_C)))
     {
-      mouse_delta = -mouse_delta;
+      object_movement_axis = vec3(0.0f, -1.0f, 0.0f);
+      mouse_delta = ImGui::GetIO().MouseDelta.y;
     }
-  }
-  if (!object_movement_axis.is_zero() && mouse_delta != 0.0f && state.selected_object != nullptr)
-  {
-    vec3 selected_origin = state.selected_object->get_origin();
-    state.selected_object->set_origin(selected_origin + object_movement_axis * mouse_delta);
+    else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_X)))
+    {
+      object_movement_axis = vec3(0.0f, 0.0f, 1.0f);
+      mouse_delta = ImGui::GetIO().MouseDelta.x;
+      if (state.camera_conf.look_dir.x > 0.0f)
+      {
+        mouse_delta = -mouse_delta;
+      }
+    }
+    if (!object_movement_axis.is_zero() && mouse_delta != 0.0f && state.selected_object != nullptr)
+    {
+      vec3 selected_origin = state.selected_object->get_origin();
+      state.selected_object->set_origin(selected_origin + object_movement_axis * mouse_delta);
+    }
   }
 }

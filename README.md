@@ -83,6 +83,8 @@ DirectX 11
 
 [STB Image] v2.27
 
+[Tiny obj] v1.0.6
+
 [//]: # (links)
 
    [planet620]: <https://mpolaczyk.pl>
@@ -94,4 +96,5 @@ DirectX 11
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>
    [STB Image]: <http://nothings.org/stb>
+   [Tiny obj]: <https://github.com/tinyobjloader/tinyobjloader>
    [Ray Tracing in One Weekend]: <https://raytracing.github.io>
