@@ -48,7 +48,7 @@ void preview_renderer::render_chunk(const chunk& in_chunk)
       if (job_state.scene_root.hit(r, 0.01f, math::infinity, h))
       {
         r.origin = h.p;
-        vec3 light_dir = normalize(light - r.origin);
+        vec3 light_dir = math::normalize(light - r.origin);
         r.direction = light_dir;
         hit_record sh;
         bool in_shadow = false;
@@ -59,7 +59,7 @@ void preview_renderer::render_chunk(const chunk& in_chunk)
         }
 
         assert(h.material_ptr != nullptr);
-        pixel_color = h.material_ptr->color * max(0.2f, dot(h.normal, light_dir));
+        pixel_color = h.material_ptr->color * max(0.2f, math::dot(h.normal, light_dir));
         if (in_shadow)
         {
           pixel_color *= vec3(.9f, .9f, .9f);

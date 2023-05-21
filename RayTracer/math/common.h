@@ -19,6 +19,12 @@ namespace colors
   const vec3 steel = vec3(0.44f, 0.47f, 0.49f);
   const vec3 silver = vec3(0.32f, 0.34f, 0.34f);
   const vec3 gold = vec3(1.f, 0.84f, 0.f);
+
+  inline bool is_valid(const vec3& color)
+  {
+    return color.x <= 1.0f && color.y <= 1.0f && color.z <= 1.0f
+      && color.x >= 0.0f && color.y >= 0.0f && color.z >= 0.0f;
+  }
 }
 
 namespace math
@@ -28,6 +34,8 @@ namespace math
   const float small_number = 0.00000001f;
   constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
+  // FLOAT
+  float reflectance(float cosine, float ref_idx);
   inline float sign(float value)
   {
     return value >= 0.0f ? 1.0f : -1.0f;  //  Assume 0 is positive
@@ -44,11 +52,6 @@ namespace math
   {
     return fabs(a - b) <= epsilon;
   }
-  inline bool is_near_zero(vec3& value)
-  {
-    return (fabs(value[0]) < small_number) && (fabs(value[1]) < small_number) && (fabs(value[2]) < small_number);
-  }
-
   inline float inv_sqrt(float x)
   {
     float xhalf = 0.5f * x;
@@ -58,22 +61,107 @@ namespace math
     x = x * (1.5f - xhalf * x * x);     // One round of Newton's method
     return x;
   }
-
-  vec3 reflect(const vec3& v, const vec3& n);
-  vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
-  float reflectance(float cosine, float ref_idx);
-  bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal);
-  inline float lerp_float(float a, float b, float f) { return a + f * (b - a); }
-  vec3 lerp_vec3(const vec3& a, const vec3& b, float f);
-  vec3 clamp_vec3(float a, float b, const vec3& f);
-  inline float min1(float a, float b) { return a < b ? a : b; }
-  inline float max1(float a, float b) { return a < b ? b : a; }
-  inline float clamp(float f, float a, float b) { return  min1(b, max1(a, f)); }
+  inline float min1(float a, float b) 
+  { 
+    return a < b ? a : b; 
+  }
+  inline float max1(float a, float b) 
+  { 
+    return a < b ? b : a; 
+  }
+  inline float clamp(float f, float a, float b) 
+  { 
+    return  min1(b, max1(a, f)); 
+  }
   inline float smoothstep(float a, float b, float x)
   {
     // https://thebookofshaders.com/glossary/?search=smoothstep
     float t = clamp(0.0f, 1.0f, (x - a) / (b - a));
     return t * t * (3.0f - 2.0f * t);
+  }
+  inline float lerp_float(float a, float b, float f) 
+  { 
+    return a + f * (b - a); 
+  }
+
+  // VEC3
+  vec3 reflect(const vec3& v, const vec3& n);
+  vec3 refract(const vec3& uv, const vec3& n, float etai_over_etat);
+  bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal);
+  vec3 lerp_vec3(const vec3& a, const vec3& b, float f);
+  vec3 clamp_vec3(float a, float b, const vec3& f);
+  inline bool is_near_zero(vec3& value)
+  {
+    return (fabs(value[0]) < small_number) && (fabs(value[1]) < small_number) && (fabs(value[2]) < small_number);
+  }
+  inline bool is_zero(vec3& value)
+  {
+    return value.x == 0.0f && value.y == 0.0f && value.z == 0.0f;
+  }
+  inline float dot(const vec3& u, const vec3& v)
+  {
+#ifdef USE_SIMD 
+    __m128 a = _mm_mul_ps(u.R128, v.R128);
+    a = _mm_hadd_ps(a, a);
+    return _mm_cvtss_f32(_mm_hadd_ps(a, a));
+#else
+    return u.x * v.x + u.y * v.y + u.z * v.z;
+#endif
+  }
+  inline vec3 cross(const vec3& u, const vec3& v)
+  {
+    return vec3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
+  }
+  inline vec3 normalize(const vec3& v)
+  {
+#ifdef USE_SIMD 
+    __m128 a = _mm_mul_ps(v.R128, v.R128);
+    a = _mm_hadd_ps(a, a);
+    return _mm_div_ps(v.R128, _mm_sqrt_ps(_mm_hadd_ps(a, a)));
+#else
+    return v / length(v);
+#endif
+  }
+  inline float length(const vec3& v)
+  {
+#ifdef USE_SIMD 
+    __m128 a = _mm_mul_ps(v.R128, v.R128);
+    a = _mm_hadd_ps(a, a);
+    return _mm_cvtss_f32(_mm_sqrt_ps(_mm_hadd_ps(a, a)));
+#else
+    return std::sqrt(length_squared(v));
+#endif
+  }
+  inline float length_squared(const vec3& v)
+  {
+    // commented out, non vectorized is faster in that case
+    //#ifdef USE_SIMD 
+    //    __m128 a = _mm_mul_ps(v.R128, v.R128);
+    //    a = _mm_hadd_ps(a, a);
+    //    return _mm_cvtss_f32(_mm_hadd_ps(a,a));
+    //#else
+    return v.x * v.x + v.y * v.y + v.z * v.z;
+    //#endif
+  }
+  inline vec3 rotate_yaw(const vec3& u, float yaw)
+  {
+    float s = sinf(yaw);
+    float c = cosf(yaw);
+    return vec3(c * u.x - s * u.y, s * u.x + c * u.y, u.z);
+  }
+
+  inline vec3 rotate_pitch(const vec3& u, float pitch)
+  {
+    float s = sinf(pitch);
+    float c = cosf(pitch);
+    return vec3(u.x, c * u.y - s * u.z, s * u.y + c * u.z);
+  }
+
+  inline vec3 rotate_roll(const vec3& u, float roll)
+  {
+    float s = sinf(roll);
+    float c = cosf(roll);
+    return vec3(c * u.x - s * u.z, u.y, s * u.x + c * u.z);
   }
   inline vec3 min3(const vec3& a, const vec3& b)
   {
@@ -91,7 +179,7 @@ namespace math
     //     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
     //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
     //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
-    vec3 pp = unit_vector(p); // normalize to get sensible values for acos, otherwise floating point exceptions will happen
+    vec3 pp = normalize(p); // normalize to get sensible values for acos, otherwise floating point exceptions will happen
     float theta = acos(-pp.y);
     float phi = atan2(-pp.z, pp.x) + pi;
     out_u = phi / (2.0f * pi);
@@ -112,13 +200,13 @@ namespace random_seed
   vec3 cosine_direction(uint32_t seed);
   inline vec3 in_unit_disk(uint32_t seed)
   {
-    vec3 dir = normalize(RAND_SEED_FUNC(seed));
+    vec3 dir = math::normalize(RAND_SEED_FUNC(seed));
     return dir * RAND_SEED_FUNC(seed);
   }
   inline vec3 unit_in_hemisphere(const vec3& normal, uint32_t seed)
   {
     vec3 dir = direction(seed);
-    return dir * math::sign(dot(normal, dir));
+    return dir * math::sign(math::dot(normal, dir));
   }
   
 }
@@ -149,20 +237,19 @@ namespace random_cache
   vec3 get_vec3_0_1();
   int32_t get_int_0_N(int32_t N);
   vec3 get_cosine_direction();
-
   vec3 direction();
   float normal_distribution();
   vec3 cosine_direction();
   vec3 in_sphere(float radius, float distance_squared);
   inline vec3 in_unit_disk()
   {
-    vec3 dir = normalize(random_cache::get_vec3());
+    vec3 dir = math::normalize(random_cache::get_vec3());
     return dir * random_cache::get_float();
   }
   inline vec3 unit_in_hemisphere(const vec3& normal)
   {
-    vec3 dir = normalize(random_cache::get_vec3());
-    return dir * math::sign(dot(dir, normal));
+    vec3 dir = math::normalize(random_cache::get_vec3());
+    return dir * math::sign(math::dot(dir, normal));
   }
 }
 
@@ -196,6 +283,7 @@ namespace hash
   uint32_t get(bool a);
   uint32_t get(const void* a);
   uint32_t get(void* a);
+  uint32_t get(const vec3& a);
 }
 
 namespace paths

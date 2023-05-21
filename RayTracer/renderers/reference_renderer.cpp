@@ -106,7 +106,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
     if (job_state.scene_root.hit(in_ray, 0.01f, math::infinity, hit))
     {
       // Don't bounce if ray has no color
-      if (ray_color.length_squared() < 0.1f)
+      if (math::length_squared(ray_color) < 0.1f)
       {
         break;
       }
@@ -126,7 +126,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
       bool can_gloss_bounce = mat.gloss_probability >= random_seed::rand_pcg(seed);
       bool can_refract = mat.refraction_probability >= random_seed::rand_pcg(seed);
       
-      vec3 diffuse_dir = normalize(hit.normal + random_seed::direction(seed));
+      vec3 diffuse_dir = math::normalize(hit.normal + random_seed::direction(seed));
 
       if (!can_gloss_bounce && can_refract)
       {
@@ -139,7 +139,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
         // Refraction color
         ray_color *= mat.color;
 
-        assert(ray_color.is_valid_color());
+        assert(colors::is_valid(ray_color));
         continue;
       }
 
@@ -158,7 +158,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
       // Calculate color for this hit
       incoming_light += mat.emitted_color * ray_color;
       ray_color *= math::lerp_vec3(mat.color, mat.gloss_color, can_gloss_bounce);
-      assert(ray_color.is_valid_color());
+      assert(colors::is_valid(ray_color));
     }
     else
     {

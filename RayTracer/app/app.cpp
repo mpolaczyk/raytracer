@@ -16,7 +16,7 @@ void update_default_spawn_position(app_instance& state)
   if (state.scene_root.hit(center_of_scene_ray, 0.01f, 2.0f*dist_to_focus, center_of_scene_hit))
   {
     state.center_of_scene = center_of_scene_hit.p;
-    state.distance_to_center_of_scene = (center_of_scene_hit.p - look_from).length();
+    state.distance_to_center_of_scene = math::length(center_of_scene_hit.p - look_from);
   }
   else
   {
@@ -154,7 +154,7 @@ void handle_input(app_instance& state)
         mouse_delta = -mouse_delta;
       }
     }
-    if (!object_movement_axis.is_zero() && mouse_delta != 0.0f && state.selected_object != nullptr)
+    if (!math::is_zero(object_movement_axis) && mouse_delta != 0.0f && state.selected_object != nullptr)
     {
       vec3 selected_origin = state.selected_object->get_origin();
       state.selected_object->set_origin(selected_origin + object_movement_axis * mouse_delta);

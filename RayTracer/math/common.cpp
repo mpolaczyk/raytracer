@@ -8,19 +8,6 @@
 
 namespace math
 {
-  vec3 reflect(const vec3& vec, const vec3& normal)
-  {
-    return vec - 2 * dot(vec, normal) * normal;
-  }
-
-  vec3 refract(const vec3& v, const vec3& n, float etai_over_etat)
-  {
-    float cos_theta = fmin(dot(-v, n), 1.0f);
-    vec3 r_out_perpendicular = etai_over_etat * (v + cos_theta * n);
-    vec3 r_out_parallel = -sqrt(fabs(1.0f - r_out_perpendicular.length_squared())) * n;
-    return r_out_perpendicular + r_out_parallel;
-  }
-
   float reflectance(float cosine, float ref_idx)
   {
     // Use Schlick's approximation for reflectance.
@@ -43,6 +30,19 @@ namespace math
       out_normal = -in_outward_normal;
       return false;
     }
+  }
+
+  vec3 reflect(const vec3& vec, const vec3& normal)
+  {
+    return vec - 2 * dot(vec, normal) * normal;
+  }
+
+  vec3 refract(const vec3& v, const vec3& n, float etai_over_etat)
+  {
+    float cos_theta = fmin(dot(-v, n), 1.0f);
+    vec3 r_out_perpendicular = etai_over_etat * (v + cos_theta * n);
+    vec3 r_out_parallel = -sqrt(fabs(1.0f - math::length_squared(r_out_perpendicular))) * n;
+    return r_out_perpendicular + r_out_parallel;
   }
 
   vec3 lerp_vec3(const vec3& a, const vec3& b, float f)
@@ -88,7 +88,7 @@ namespace random_seed
     float x = normal_distribution(seed);
     float y = normal_distribution(seed);
     float z = normal_distribution(seed);
-    return normalize(vec3(x, y, z));
+    return math::normalize(vec3(x, y, z));
   }
   
   float normal_distribution(uint32_t seed)
@@ -204,7 +204,7 @@ namespace random_cache
     float x = normal_distribution();
     float y = normal_distribution();
     float z = normal_distribution();
-    return normalize(vec3(x, y, z));
+    return math::normalize(vec3(x, y, z));
   }
 
   vec3 cosine_direction()
@@ -262,7 +262,7 @@ namespace tone_mapping
   }
   float luminance(const vec3& v)
   {
-    float value = dot(v, vec3(0.2126f, 0.7152f, 0.0722f));
+    float value = math::dot(v, vec3(0.2126f, 0.7152f, 0.0722f));
     assert(value >= 0.0f);
     return value;
   }
@@ -335,6 +335,10 @@ namespace hash
   uint32_t get(bool a)
   {
     return (uint32_t)a;
+  }
+  uint32_t get(const vec3& a)
+  {
+    return combine(get(a.x), get(a.y), get(a.z), get(a.padding));
   }
 }
 

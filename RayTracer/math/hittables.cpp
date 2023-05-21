@@ -91,9 +91,9 @@ hittable* scene::get_random_light()
 bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
   vec3 oc = in_ray.origin - origin;
-  float a = in_ray.direction.length_squared();
-  float half_b = dot(oc, in_ray.direction);
-  float c = oc.length_squared() - radius * radius;
+  float a = math::length_squared(in_ray.direction);
+  float half_b = math::dot(oc, in_ray.direction);
+  float c = math::length_squared(oc) - radius * radius;
 
   float delta = half_b * half_b - a * c;
   if (delta < 0.0f)
@@ -268,7 +268,7 @@ float sphere::get_pdf_value(const vec3& look_from, const vec3& from_to) const
    
  
   
-  float cos_theta_max = sqrt(1 - radius * radius / (origin - look_from).length_squared());
+  float cos_theta_max = sqrt(1 - radius * radius / math::length_squared(origin - look_from));
   float solid_angle = 2 * math::pi * (1 - cos_theta_max);
   
   return  1.0f / solid_angle;
@@ -281,8 +281,8 @@ float xy_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
     return 0;
 
   auto area = get_area();
-  auto distance_squared = from_to.length_squared();
-  auto cosine = fabs(dot(from_to, rec.normal) / from_to.length());
+  auto distance_squared = math::length_squared(from_to);
+  auto cosine = fabs(math::dot(from_to, rec.normal) / math::length(from_to));
 
   return distance_squared / (cosine * area);
 }
@@ -294,8 +294,8 @@ float xz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
     return 0;
 
   auto area = get_area();
-  auto distance_squared = from_to.length_squared();
-  auto cosine = fabs(dot(from_to, rec.normal) / from_to.length());
+  auto distance_squared = math::length_squared(from_to);
+  auto cosine = fabs(math::dot(from_to, rec.normal) / math::length(from_to));
 
   return distance_squared / (cosine * area);
 }
@@ -307,8 +307,8 @@ float yz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
     return 0;
 
   auto area = get_area();
-  auto distance_squared = from_to.length_squared();
-  auto cosine = fabs(dot(from_to, rec.normal) / from_to.length());
+  auto distance_squared = math::length_squared(from_to);
+  auto cosine = fabs(math::dot(from_to, rec.normal) / math::length(from_to));
 
   return distance_squared / (cosine * area);
 
@@ -334,7 +334,7 @@ vec3 sphere::get_pdf_direction(const vec3& look_from) const
 
   // BOOK
   vec3 direction = origin - look_from;
-  auto distance_squared = direction.length_squared();
+  auto distance_squared = math::length_squared(direction);
   onb uvw;
   uvw.build_from_w(direction);
   return uvw.local(random_cache::in_sphere(radius, distance_squared));
@@ -417,7 +417,7 @@ inline uint32_t hittable::get_type_hash() const
 
 inline uint32_t sphere::get_type_hash() const
 {
-  return hash::combine(hittable::get_type_hash(), origin.get_type_hash(), hash::get(radius));
+  return hash::combine(hittable::get_type_hash(), hash::get(origin), hash::get(radius));
 }
 
 inline uint32_t scene::get_type_hash() const
@@ -453,8 +453,8 @@ inline uint32_t yz_rect::get_type_hash() const
 
 inline uint32_t static_mesh::get_type_hash() const
 {
-  uint32_t a = hash::combine(hittable::get_type_hash(), origin.get_type_hash(), hash::get(extent), rotation.get_type_hash());
-  uint32_t b = hash::combine(scale.get_type_hash(), hash::get(resources_dirty), shape_index, shape_index);
+  uint32_t a = hash::combine(hittable::get_type_hash(), hash::get(origin), hash::get(extent), hash::get(rotation));
+  uint32_t b = hash::combine(hash::get(scale), hash::get(resources_dirty), shape_index, shape_index);
   return hash::combine(a, b);
 }
 

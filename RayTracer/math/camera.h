@@ -34,9 +34,9 @@ public:
 
   inline uint32_t get_type_hash() const
   {
-    uint32_t a = hash::combine(look_from.get_type_hash(), look_dir.get_type_hash(), hash::get(field_of_view), hash::get(aspect_ratio_h));
+    uint32_t a = hash::combine(hash::get(look_from), hash::get(look_dir), hash::get(field_of_view), hash::get(aspect_ratio_h));
     uint32_t b = hash::combine(hash::get(aspect_ratio_w), hash::get(aperture), hash::get(dist_to_focus), hash::get(type));
-    return hash::combine(a, b, a, look_dir.get_type_hash());
+    return hash::combine(a, b, a, hash::get(look_dir));
   }
 
   // Camera movement
@@ -58,18 +58,18 @@ public:
   }
   void move_left(float speed)
   {
-    vec3 left_dir = cross(look_dir, vec3(0.0f, 1.0f, 0.0f));
+    vec3 left_dir = math::cross(look_dir, vec3(0.0f, 1.0f, 0.0f));
     look_from += left_dir * speed;
   }
   void move_right(float speed)
   {
-    vec3 left_dir = cross(look_dir, vec3(0.0f, 1.0f, 0.0f));
+    vec3 left_dir = math::cross(look_dir, vec3(0.0f, 1.0f, 0.0f));
     look_from -= left_dir * speed;
   }
   void rotate(float roll, float pitch)
   {
-    look_dir = rotate_roll(look_dir, roll);  // because x is the vertical axis
-    look_dir = rotate_pitch(look_dir, pitch);
+    look_dir = math::rotate_roll(look_dir, roll);  // because x is the vertical axis
+    look_dir = math::rotate_pitch(look_dir, pitch);
   }
 
   // Persistent members
@@ -103,9 +103,9 @@ public:
     viewport_width = camera_conf.aspect_ratio_w / camera_conf.aspect_ratio_h * viewport_height;
 
     const vec3 view_up(0.0f, 1.0f, 0.0f);
-    w = unit_vector(camera_conf.look_dir);
-    u = unit_vector(cross(view_up, w));     
-    v = cross(w, u);                        
+    w = math::normalize(camera_conf.look_dir);
+    u = math::normalize(math::cross(view_up, w));
+    v = math::cross(w, u);
 
     // Focus plane at origin (size of the frustum at the focus distance)
     f.horizontal = viewport_width * u * camera_conf.dist_to_focus;
@@ -130,7 +130,7 @@ public:
       // Shoot rays from the point to the focus plane - perspective camera
       vec3 fpo = f.get_point(uu, vv);                     // point on the focus plane at origin
       vec3 fpf = fpo - w * camera_conf.dist_to_focus;           // point on the focus plane at the focus distance forward camera
-      return ray(camera_conf.look_from - offset, unit_vector(fpf - camera_conf.look_from + offset));
+      return ray(camera_conf.look_from - offset, math::normalize(fpf - camera_conf.look_from + offset));
     }
     else
     {
@@ -138,7 +138,7 @@ public:
       vec3 cpo = c.get_point(uu, vv);             // point on the camera plane at origin
       vec3 fpo = f.get_point(uu, vv);               // point on the focus plane at origin
       vec3 fpf = fpo - w * camera_conf.dist_to_focus;     // point on the plane crossing frustum, forward camera
-      return ray(cpo - offset, unit_vector(fpf - cpo + offset)); 
+      return ray(cpo - offset, math::normalize(fpf - cpo + offset));
     }
   }
 

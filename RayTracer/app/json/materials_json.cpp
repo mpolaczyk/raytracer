@@ -43,11 +43,11 @@ void material::deserialize(const nlohmann::json& j)
 
   nlohmann::json jcolor;
   if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { color = vec3_serializer::deserialize(jcolor); }
-  assert(color.is_valid_color());
+  assert(colors::is_valid(color));
 
   nlohmann::json jemitted_color;
   if (TRY_PARSE(nlohmann::json, j, "emitted_color", jemitted_color)) { emitted_color = vec3_serializer::deserialize(jemitted_color); }
-  assert(emitted_color.is_valid_color());
+  assert(colors::is_valid(emitted_color));
 
   TRY_PARSE(float, j, "smoothness", smoothness);
   assert(smoothness >= 0.0f && smoothness <= 1.0f);
@@ -57,7 +57,7 @@ void material::deserialize(const nlohmann::json& j)
 
   nlohmann::json jgloss_color;
   if (TRY_PARSE(nlohmann::json, j, "gloss_color", jgloss_color)) { gloss_color = vec3_serializer::deserialize(jgloss_color); }
-  assert(gloss_color.is_valid_color());
+  assert(colors::is_valid(gloss_color));
 
   TRY_PARSE(float, j, "refraction_probability", refraction_probability);
   assert(refraction_probability >= 0.0f && refraction_probability <= 1.0f);

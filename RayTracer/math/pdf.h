@@ -44,7 +44,7 @@ struct cosine_pdf : public pdf
 
   virtual float get_value(const vec3& direction) const override
   {
-    float cosine_theta = dot(unit_vector(direction), uvw.w);
+    float cosine_theta = math::dot(math::normalize(direction), uvw.w);
     return (cosine_theta <= 0) ? 0 : cosine_theta / math::pi;
   }
 
