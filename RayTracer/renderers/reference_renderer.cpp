@@ -20,7 +20,7 @@ void reference_renderer::render()
   const int chunks_per_thread = 32;
   chunk_generator::generate_chunks(chunk_strategy_type::rectangles, std::thread::hardware_concurrency() * chunks_per_thread, job_state.image_width, job_state.image_height, chunks);
 
-  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
+  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
 }
 
 
@@ -30,8 +30,7 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
 
   std::ostringstream oss;
   oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-  const char* name = oss.str().c_str();
-  benchmark::scope_counter benchmark_render_chunk(name, false);
+  benchmark::scope_counter benchmark_render_chunk(oss.str(), false);
 
   vec3 resolution((float)job_state.image_width, (float)job_state.image_height, 0.0f);
 

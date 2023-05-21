@@ -211,7 +211,7 @@ bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& o
 
 vec3 sphere::get_random_point() const
 {
-  return random_cache::normal_distribution() * radius;
+  return vec3(random_cache::normal_distribution() * radius);
 }
 
 vec3 xy_rect::get_random_point() const

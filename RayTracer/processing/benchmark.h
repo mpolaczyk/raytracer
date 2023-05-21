@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <functional>
+#include <string>
 
 using namespace std::chrono;
 
@@ -9,27 +10,27 @@ namespace benchmark
 {
   struct instance
   {
-    inline void start(const char* name, bool verbose = true);
-    inline uint64_t repeat(const char* name, uint32_t count, std::function<void()>& func, bool verbose = true);
-    inline uint64_t once(const char* name, std::function<void()>& func, bool verbose = true);
+    inline void start(const std::string& name, bool verbose = true);
+    inline uint64_t repeat(const std::string& name, uint32_t count, const std::function<void()>& func, bool verbose = true);
+    inline uint64_t once(const std::string& name, const std::function<void()>& func, bool verbose = true);
     inline uint64_t stop();
 
   private:
     time_point<high_resolution_clock> start_point, end_point;
-    const char* name;
-    bool verbose;
+    std::string name;
+    bool verbose = true;
   };
 
   struct scope_counter
   {
-    scope_counter(const char* name, bool verbose = true);
+    explicit scope_counter(const std::string& name, bool verbose = true);
     ~scope_counter();
 
     instance state;
   };  
 
   static instance static_instance;
-  static void static_start(const char* name, bool verbose = true)
+  static void static_start(const std::string& name, bool verbose = true)
   {
     static_instance.start(name, verbose);
   }

@@ -10,8 +10,8 @@ public:
   vec3() = default;
   vec3(float in_x, float in_y, float in_z) : e{ in_x, in_y, in_z } {}
 #ifdef USE_SIMD
-  vec3(float f) { R128 = _mm_set_ps1(f); }
-  vec3(const __m128& r128) { R128 = r128; }
+  explicit vec3(float f) { R128 = _mm_set_ps1(f); }
+  explicit vec3(const __m128& r128) { R128 = r128; }
 #else
   vec3(float f) { x = f; y = f; z = f; }
 #endif
@@ -40,8 +40,8 @@ public:
   vec3& operator *= (float t) { return *this *= t; }
   vec3& operator /= (float t) { return *this /= t; }
 #endif
-  bool operator==(const vec3& v) { return e == v.e; }
-  bool operator!=(const vec3& v) { return e == v.e; }
+  bool operator==(const vec3& v) { return x == v.x && y == v.y && z == v.z; }
+  bool operator!=(const vec3& v) { return x != v.x && y != v.y && z != v.z; }
 
 public:
   union 
@@ -53,18 +53,18 @@ public:
 };
 
 #ifdef USE_SIMD
-inline vec3 operator + (const vec3& v, float t) { return _mm_add_ps(v.R128, _mm_set_ps1(t)); }
-inline vec3 operator - (const vec3& v, float t) { return _mm_sub_ps(v.R128, _mm_set_ps1(t)); }
-inline vec3 operator * (const vec3& v, float t) { return _mm_mul_ps(v.R128, _mm_set_ps1(t)); }
-inline vec3 operator / (const vec3& v, float t) { return _mm_div_ps(v.R128, _mm_set_ps1(t)); }
-inline vec3 operator + (float t, const vec3& v) { return _mm_add_ps(v.R128, _mm_set_ps1(t)); }
-inline vec3 operator - (float t, const vec3& v) { return _mm_sub_ps(v.R128, _mm_set_ps1(t)); }
-inline vec3 operator * (float t, const vec3& v) { return _mm_mul_ps(v.R128, _mm_set_ps1(t)); }
-inline vec3 operator / (float t, const vec3& v) { return _mm_div_ps(v.R128, _mm_set_ps1(t)); }
-inline vec3 operator + (const vec3& u, const vec3& v) { return _mm_add_ps(u.R128, v.R128); }
-inline vec3 operator - (const vec3& u, const vec3& v) { return _mm_sub_ps(u.R128, v.R128); }
-inline vec3 operator * (const vec3& u, const vec3& v) { return _mm_mul_ps(u.R128, v.R128); }
-inline vec3 operator / (const vec3& u, const vec3& v) { return _mm_div_ps(u.R128, v.R128); }
+inline vec3 operator + (const vec3& v, float t) { return vec3(_mm_add_ps(v.R128, _mm_set_ps1(t))); }
+inline vec3 operator - (const vec3& v, float t) { return vec3(_mm_sub_ps(v.R128, _mm_set_ps1(t))); }
+inline vec3 operator * (const vec3& v, float t) { return vec3(_mm_mul_ps(v.R128, _mm_set_ps1(t))); }
+inline vec3 operator / (const vec3& v, float t) { return vec3(_mm_div_ps(v.R128, _mm_set_ps1(t))); }
+inline vec3 operator + (float t, const vec3& v) { return vec3(_mm_add_ps(v.R128, _mm_set_ps1(t))); }
+inline vec3 operator - (float t, const vec3& v) { return vec3(_mm_sub_ps(v.R128, _mm_set_ps1(t))); }
+inline vec3 operator * (float t, const vec3& v) { return vec3(_mm_mul_ps(v.R128, _mm_set_ps1(t))); }
+inline vec3 operator / (float t, const vec3& v) { return vec3(_mm_div_ps(v.R128, _mm_set_ps1(t))); }
+inline vec3 operator + (const vec3& u, const vec3& v) { return vec3(_mm_add_ps(u.R128, v.R128)); }
+inline vec3 operator - (const vec3& u, const vec3& v) { return vec3(_mm_sub_ps(u.R128, v.R128)); }
+inline vec3 operator * (const vec3& u, const vec3& v) { return vec3(_mm_mul_ps(u.R128, v.R128)); }
+inline vec3 operator / (const vec3& u, const vec3& v) { return vec3(_mm_div_ps(u.R128, v.R128)); }
 #else
 inline vec3 operator + (const vec3& v, float t) { return vec3(v.x + t, v.y + t, v.z + t); }
 inline vec3 operator - (const vec3& v, float t) { return vec3(v.x - t, v.y - t, v.z - t); }

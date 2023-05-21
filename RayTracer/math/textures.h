@@ -25,7 +25,7 @@ class solid_texture : public texture
 {
 public:
   solid_texture() {}
-  solid_texture(const vec3 color) : color(color) {}
+  explicit solid_texture(const vec3& color) : color(color) {}
   solid_texture(float r, float g, float b) : solid_texture(vec3(r, g, b)) {}
 
   virtual vec3 value(float u, float v, const vec3& p) const override

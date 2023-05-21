@@ -22,7 +22,7 @@ namespace fpexcept
   {
   public:
 
-    enabled_scope(unsigned int enable_bits = _EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID)
+    explicit enabled_scope(unsigned int enable_bits = _EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID)
     {
 #if USE_FPEXCEPT
       _controlfp_s(&old_values, _MCW_EM, _MCW_EM);

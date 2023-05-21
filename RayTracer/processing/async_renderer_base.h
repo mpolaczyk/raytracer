@@ -40,8 +40,8 @@ public:
   // Manually set the brightest point of an image used for tone mapping
   float white_point = 1.0f;
 
-  nlohmann::json serialize();
-  void deserialize(const nlohmann::json& j);
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, rays_per_pixel, ray_bounces, type, reuse_buffer, resolution_vertical, resolution_horizontal, white_point); // to_json only
 

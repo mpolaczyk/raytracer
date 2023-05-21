@@ -28,7 +28,7 @@ nlohmann::json material::serialize()
 
 void material_instances::deserialize(const nlohmann::json& j)
 {
-  for (auto& element : j)
+  for (const auto& element : j)
   {
     material* obj = object_factory::spawn_material(element["type"]);
     obj->deserialize(element);

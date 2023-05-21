@@ -15,8 +15,8 @@ public:
   int w = 1920;
   int h = 1080;
 
-  nlohmann::json serialize();
-  void deserialize(const nlohmann::json& j);
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(window_config, x, y, w, h);  // to_json only
 };

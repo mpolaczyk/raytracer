@@ -32,7 +32,7 @@ struct cosine_pdf : public pdf
 {
   cosine_pdf() {}
 
-  cosine_pdf(const vec3& w) 
+  explicit cosine_pdf(const vec3& w) 
   { 
     uvw.build_from_w(w); 
   }

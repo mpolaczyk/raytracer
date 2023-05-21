@@ -20,7 +20,7 @@ class camera_config : serializable<nlohmann::json>
 {
 public: 
   camera_config() = default;
-  camera_config(vec3 look_from, vec3 look_dir, float field_of_view, float aspect_ratio_w, float aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
+  camera_config(const vec3& look_from, const vec3& look_dir, float field_of_view, float aspect_ratio_w, float aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
     : look_from(look_from), look_dir(look_dir), field_of_view(field_of_view), aspect_ratio_w(aspect_ratio_w), aspect_ratio_h(aspect_ratio_h), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
   { }
 
@@ -82,8 +82,8 @@ public:
   float dist_to_focus = 1.0f;  // distance from camera to the focus object
   float type = 0.0f;           // 0.0f perspective camera, 1.0f orthographic camera
 
-  nlohmann::json serialize();
-  void deserialize(const nlohmann::json& j);
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(camera_config, field_of_view, aspect_ratio_h, aspect_ratio_w, aperture, dist_to_focus, type); // to_json only
 

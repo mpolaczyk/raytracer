@@ -57,13 +57,9 @@ uint8_t* bmp::bmp_image::create_info_header(uint32_t height, uint32_t width) con
 
 void bmp::bmp_image::draw_pixel(uint32_t x, uint32_t y, const bmp_pixel* p, bmp_format format)
 {
-  assert(x >= 0 && x < width);
-  assert(y >= 0 && y < height);
-#if _DEBUG 
-  assert(p->r >= 0 && p->r <= 255);
-  assert(p->g >= 0 && p->g <= 255);
-  assert(p->b >= 0 && p->b <= 255);
-#endif
+  assert(x < width);
+  assert(y < height);
+
   uint32_t pixel_addr = y * width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
   if (format == bmp_format::rgba)
   {
@@ -83,7 +79,7 @@ void bmp::bmp_image::save_to_file(const char* image_file_name) const
 
   uint32_t width_in_bytes = width * BYTES_PER_PIXEL;
   uint32_t padding_size = (4 - (width_in_bytes) % 4) % 4;
-  assert(padding_size >= 0 && padding_size <= 3);
+  assert(padding_size <= 3);
   uint32_t stride = width_in_bytes + padding_size;
 
   const char* mode = "wb";

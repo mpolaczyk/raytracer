@@ -46,7 +46,7 @@ void handle_input(app_instance& state)
     state.output_window_lmb_y = -1.0f;
   }
 
-  ImGuiIO& io = ImGui::GetIO();
+  const ImGuiIO& io = ImGui::GetIO();
 
   // Handle hotkeys
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))

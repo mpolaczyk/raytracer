@@ -49,7 +49,7 @@ class hittable : serializable<nlohmann::json>
 {
 public:
   hittable() {}
-  hittable(const hittable* rhs) { *this = *rhs; };
+  explicit hittable(const hittable* rhs) { *this = *rhs; };
   hittable(std::string&& in_material_id, hittable_class in_type) : material_id(std::move(in_material_id)), type(in_type) { };
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const = 0;
@@ -67,8 +67,8 @@ public:
   // Deprecated end
 
   virtual void draw_edit_panel();
-  virtual nlohmann::json serialize();
-  virtual void deserialize(const nlohmann::json& j);
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
   virtual uint32_t get_type_hash() const;
   virtual hittable* clone() const = 0;
   virtual void load_resources() {};
@@ -91,14 +91,14 @@ class sphere : public hittable
 {
 public:
   sphere() : hittable("", hittable_class::sphere) {}
-  sphere(const sphere* rhs) { *this = *rhs; };
-  sphere(std::string&& in_material_id, vec3 in_origin, float radius) : origin(in_origin), radius(radius), hittable(std::move(in_material_id), hittable_class::sphere) { };
+  explicit sphere(const sphere* rhs) { *this = *rhs; };
+  sphere(std::string&& in_material_id, const vec3& in_origin, float radius) : origin(in_origin), radius(radius), hittable(std::move(in_material_id), hittable_class::sphere) { };
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual vec3 get_origin() const override { return origin; };
-  virtual vec3 get_extent() const override { return radius; };
+  virtual vec3 get_extent() const override { return vec3(radius); };
   virtual void set_origin(const vec3& value) override { origin = value; };
   virtual void set_extent(float value) { radius = value; };
   // Deprecated begin
@@ -127,7 +127,7 @@ class scene : public hittable
 {
 public:
   scene() : hittable("", hittable_class::scene) {}
-  scene(const scene* rhs) { *this = *rhs; };
+  explicit scene(const scene* rhs) { *this = *rhs; };
   ~scene();
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
@@ -136,7 +136,7 @@ public:
   virtual vec3 get_origin() const override { assert(false); return vec3(0, 0, 0); };
   virtual vec3 get_extent() const override { assert(false); return vec3(0, 0, 0); };
   virtual void set_origin(const vec3& value) override { };
-  virtual void set_extent(float value) { assert(false); };
+  virtual void set_extent(float value) override { assert(false); };
 
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
@@ -163,7 +163,7 @@ class xy_rect : public hittable
 {
 public:
   xy_rect() : hittable("", hittable_class::xy_rect) {}
-  xy_rect(const xy_rect* rhs) { *this = *rhs; };
+  explicit xy_rect(const xy_rect* rhs) { *this = *rhs; };
   xy_rect(std::string&& in_material_id, float _x0, float _x1, float _y0, float _y1, float _z)
     : x0(_x0), x1(_x1), y0(_y0), y1(_y1), z(_z), hittable(std::move(in_material_id), hittable_class::xy_rect) { };
 
@@ -173,7 +173,7 @@ public:
   virtual vec3 get_origin() const override { return vec3(x0, y0, z); };
   virtual vec3 get_extent() const override { return vec3(x1-x0, y1-y0, 0.0f); };
   virtual void set_origin(const vec3& value) override { x0 = value.x; y0 = value.y; };
-  virtual void set_extent(float value) { x1 = x0 + value; y1 = y0 + value; };
+  virtual void set_extent(float value) override { x1 = x0 + value; y1 = y0 + value; };
   // Deprecated begin
   virtual float get_area() const override;
   virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
@@ -207,7 +207,7 @@ class xz_rect : public hittable
 {
 public:
   xz_rect() : hittable("", hittable_class::xz_rect) {}
-  xz_rect(const xz_rect* rhs) { *this = *rhs; };
+  explicit xz_rect(const xz_rect* rhs) { *this = *rhs; };
   xz_rect(std::string&& in_material_id, float _x0, float _x1, float _z0, float _z1, float _y)
     : x0(_x0), x1(_x1), z0(_z0), z1(_z1), y(_y), hittable(std::move(in_material_id), hittable_class::xz_rect) { };
 
@@ -217,7 +217,7 @@ public:
   virtual vec3 get_origin() const override { return vec3(x0, y, z0); };
   virtual vec3 get_extent() const override { return vec3(x1-x0, 0.0f, z1-z0); };
   virtual void set_origin(const vec3& value) override { x0 = value.x; z0 = value.z; };
-  virtual void set_extent(float value) { x1 = x0 + value; z1 = z0 + value; };
+  virtual void set_extent(float value) override { x1 = x0 + value; z1 = z0 + value; };
   // Deprecated begin
   virtual float get_area() const override;
   virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
@@ -251,7 +251,7 @@ class yz_rect : public hittable
 {
 public:
   yz_rect() : hittable("", hittable_class::yz_rect) {}
-  yz_rect(const yz_rect* rhs) { *this = *rhs; };
+  explicit yz_rect(const yz_rect* rhs) { *this = *rhs; };
   yz_rect(std::string&& in_material_id, float _y0, float _y1, float _z0, float _z1, float _x)
     : y0(_y0), y1(_y1), z0(_z0), z1(_z1), x(_x), hittable(std::move(in_material_id), hittable_class::yz_rect) { };
 
@@ -261,7 +261,7 @@ public:
   virtual vec3 get_origin() const override { return vec3(x, y0, z0); };
   virtual vec3 get_extent() const override { return vec3(0.0f, y1-y0, z1-z0); };
   virtual void set_origin(const vec3& value) override { y0 = value.y; z0 = value.z; };
-  virtual void set_extent(float value) { y1 = y0 + value; z1 = z0 + value; };
+  virtual void set_extent(float value) override { y1 = y0 + value; z1 = z0 + value; };
   // Deprecated begin
   virtual float get_area() const override;
   virtual float get_pdf_value(const vec3& origin, const vec3& v) const override;
@@ -295,15 +295,15 @@ class static_mesh : public hittable
 {
 public:
   static_mesh() : hittable("", hittable_class::static_mesh) {}
-  static_mesh(const static_mesh* rhs) { *this = *rhs; };
+  explicit static_mesh(const static_mesh* rhs) { *this = *rhs; };
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
   virtual void get_name(std::string& out_name, bool with_params) const override;
   virtual vec3 get_origin() const override { return origin; };
-  virtual vec3 get_extent() const override { return extent; };
+  virtual vec3 get_extent() const override { return vec3(extent); };
   virtual void set_origin(const vec3& value) override { origin = value; };
-  virtual void set_extent(float value) { extent = value; };
+  virtual void set_extent(float value) override { extent = value; };
 
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;

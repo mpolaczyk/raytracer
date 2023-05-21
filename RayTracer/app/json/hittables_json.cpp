@@ -91,7 +91,7 @@ void scene::deserialize(const nlohmann::json& j)
   nlohmann::json jobjects;
   if (TRY_PARSE(nlohmann::json, j, "objects", jobjects))
   {
-    for (auto& element : jobjects)
+    for (const auto& element : jobjects)
     {
       hittable_class type;
       if (TRY_PARSE(hittable_class, element, "type", type))

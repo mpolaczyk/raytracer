@@ -18,7 +18,7 @@ void preview_renderer::render()
   std::vector<chunk> chunks;
   chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * 32, job_state.image_width, job_state.image_height, chunks);
   
-  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch); });
+  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
 }
 
 void preview_renderer::render_chunk(const chunk& in_chunk)
@@ -27,8 +27,7 @@ void preview_renderer::render_chunk(const chunk& in_chunk)
 
   std::ostringstream oss;
   oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-  const char* name = oss.str().c_str();
-  benchmark::scope_counter benchmark_render_chunk(name, false);
+  benchmark::scope_counter benchmark_render_chunk(oss.str(), false);
 
   hittable* l = job_state.scene_root.lights[0];
   vec3 light = l->get_origin();

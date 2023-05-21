@@ -22,7 +22,7 @@ namespace bmp
     uint8_t a = 255;
     bmp_pixel() = default;
     bmp_pixel(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) { }
-    bmp_pixel(const vec3& color)
+    explicit bmp_pixel(const vec3& color)
     {
       // Detect NaNs
       assert(!isnan(color.x));

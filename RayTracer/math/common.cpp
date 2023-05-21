@@ -101,7 +101,7 @@ namespace random_seed
 
   vec3 cosine_direction(uint32_t seed)
   {
-    https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
+    // https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
     // Cosine distribution around positive z axis
     float r1 = RAND_SEED_FUNC(seed);
     float r2 = RAND_SEED_FUNC(seed);
@@ -209,7 +209,7 @@ namespace random_cache
 
   vec3 cosine_direction()
   {
-    https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
+    // https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
     // Cosine distribution around positive z axis
     float r1 = get_float_0_1();
     float r2 = get_float_0_1();

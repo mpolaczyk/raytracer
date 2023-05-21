@@ -25,7 +25,7 @@ void ispc_renderer::render()
 
   ispc::float3* output = new ispc::float3[job_state.image_width * job_state.image_height];
 
-  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](chunk ch) { render_chunk(ch, output); });
+  concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch, output); });
 
   // Convert from the output to bitmap - THIS IS STUPID
   int index = 0;
@@ -56,9 +56,7 @@ void ispc_renderer::render_chunk(const chunk& in_chunk, ispc::float3* output)
 
   std::ostringstream oss;
   oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-  const char* name = oss.str().c_str();
-
-  benchmark::scope_counter benchmark_render_chunk(name, false);
+  benchmark::scope_counter benchmark_render_chunk(oss.str(), false);
 
   vec3 resolution((float)job_state.image_width, (float)job_state.image_height, 0.0f);
 

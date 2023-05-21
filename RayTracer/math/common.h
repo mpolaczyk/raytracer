@@ -92,11 +92,11 @@ namespace math
   bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal);
   vec3 lerp_vec3(const vec3& a, const vec3& b, float f);
   vec3 clamp_vec3(float a, float b, const vec3& f);
-  inline bool is_near_zero(vec3& value)
+  inline bool is_near_zero(const vec3& value)
   {
     return (fabs(value[0]) < small_number) && (fabs(value[1]) < small_number) && (fabs(value[2]) < small_number);
   }
-  inline bool is_zero(vec3& value)
+  inline bool is_zero(const vec3& value)
   {
     return value.x == 0.0f && value.y == 0.0f && value.z == 0.0f;
   }
@@ -119,7 +119,7 @@ namespace math
 #ifdef USE_SIMD 
     __m128 a = _mm_mul_ps(v.R128, v.R128);
     a = _mm_hadd_ps(a, a);
-    return _mm_div_ps(v.R128, _mm_sqrt_ps(_mm_hadd_ps(a, a)));
+    return vec3(_mm_div_ps(v.R128, _mm_sqrt_ps(_mm_hadd_ps(a, a))));
 #else
     return v / length(v);
 #endif
@@ -200,7 +200,7 @@ namespace random_seed
   vec3 cosine_direction(uint32_t seed);
   inline vec3 in_unit_disk(uint32_t seed)
   {
-    vec3 dir = math::normalize(RAND_SEED_FUNC(seed));
+    vec3 dir = math::normalize(vec3(RAND_SEED_FUNC(seed)));
     return dir * RAND_SEED_FUNC(seed);
   }
   inline vec3 unit_in_hemisphere(const vec3& normal, uint32_t seed)

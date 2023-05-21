@@ -24,11 +24,10 @@ bool aabb::hit(const ray& in_ray, float t_min, float t_max) const
   for (int i = 0; i < 3; i++)
   {
     float o = in_ray.origin[i];
-    float d = in_ray.direction[i];
     float d_inv = 0.0f;
     {
       fpexcept::disabled_scope fpe;
-      d_inv = 1 / in_ray.direction[i];  // this is allowed to produce 1/0 = inf
+      d_inv = 1.0f / in_ray.direction[i];  // this is allowed to produce 1/0 = inf
     }
     float t0 = math::min1((minimum[i] - o) * d_inv, (maximum[i] - o) * d_inv);
     float t1 = math::max1((minimum[i] - o) * d_inv, (maximum[i] - o) * d_inv);

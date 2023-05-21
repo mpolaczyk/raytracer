@@ -17,8 +17,8 @@ private:
   seh_exception() {}
   unsigned int exception_code;
 public:
-  seh_exception(seh_exception& e) : exception_code(e.exception_code) {}
-  seh_exception(unsigned int in_exception_code) : exception_code(in_exception_code) { }
+  explicit seh_exception(seh_exception& e) : exception_code(e.exception_code) {}
+  explicit seh_exception(unsigned int in_exception_code) : exception_code(in_exception_code) { }
   ~seh_exception() {}
   virtual char const* what() const override;
 };
