@@ -81,12 +81,6 @@
     <ClCompile Include="math\hittables.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="math\materials.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="math\vec3.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="renderers\example_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>

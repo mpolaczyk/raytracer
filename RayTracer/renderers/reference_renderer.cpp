@@ -33,13 +33,13 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
   const char* name = oss.str().c_str();
   benchmark::scope_counter benchmark_render_chunk(name, false);
 
-  vec3 resolution(job_state.image_width, job_state.image_height, 0.0f);
+  vec3 resolution((float)job_state.image_width, (float)job_state.image_height, 0.0f);
 
   for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
   {
     for (int x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
     {
-      vec3 hdr_color = fragment(x, y, resolution);
+      vec3 hdr_color = fragment((float)x, (float)y, resolution);
 
       assert(isfinite(hdr_color.x));
       assert(isfinite(hdr_color.y));

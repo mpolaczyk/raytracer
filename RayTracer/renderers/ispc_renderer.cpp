@@ -60,7 +60,7 @@ void ispc_renderer::render_chunk(const chunk& in_chunk, ispc::float3* output)
 
   benchmark::scope_counter benchmark_render_chunk(name, false);
 
-  vec3 resolution(job_state.image_width, job_state.image_height, 0.0f);
+  vec3 resolution((float)job_state.image_width, (float)job_state.image_height, 0.0f);
 
   ispc::render_chunk((const ispc::float3&)resolution, (const ispc::chunk&)in_chunk, output);
 }

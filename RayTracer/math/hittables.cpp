@@ -265,9 +265,6 @@ float sphere::get_pdf_value(const vec3& look_from, const vec3& from_to) const
   //return  1 / solid_angle;
 
   // BOOK
-   
- 
-  
   float cos_theta_max = sqrt(1 - radius * radius / math::length_squared(origin - look_from));
   float solid_angle = 2 * math::pi * (1 - cos_theta_max);
   
@@ -311,20 +308,6 @@ float yz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
   auto cosine = fabs(math::dot(from_to, rec.normal) / math::length(from_to));
 
   return distance_squared / (cosine * area);
-
-  //float light_area = get_area();
-  //assert(light_area > 0.0f);
-  //float distance_squared = from_to.length_squared();
-  //assert(distance_squared > 0.0f);
-  //vec3 unit_from_to = unit_vector(from_to);
-  ////if (dot(to_light, hit.normal) < 0)
-  ////  return c_emissive;
-  //float light_cosine = fmax(small_number, fabs(unit_from_to.y)); // fmax to protect from divide by zero
-  ////if (light_cosine < 0.000001)
-  ////  return c_emissive;
-  //float pdf = distance_squared / (light_cosine * light_area);
-  //assert(pdf > 0.0f);
-  //return pdf;
 }
 
 

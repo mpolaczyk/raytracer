@@ -164,8 +164,6 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClCompile Include="math\aabb.cpp" />
     <ClCompile Include="math\common.cpp" />
     <ClCompile Include="math\hittables.cpp" />
-    <ClCompile Include="math\materials.cpp" />
-    <ClCompile Include="math\vec3.cpp" />
     <ClCompile Include="processing\async_renderer_base.cpp" />
     <ClCompile Include="processing\benchmark.cpp" />
     <ClCompile Include="processing\chunk_generator.cpp" />

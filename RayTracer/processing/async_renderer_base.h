@@ -47,7 +47,7 @@ public:
 
   inline uint32_t get_type_hash() const
   {
-    return hash::combine(rays_per_pixel, ray_bounces, (int)type, white_point);
+    return hash::combine(rays_per_pixel, ray_bounces, (int)type, hash::get(white_point));
   }
 };
 
@@ -91,8 +91,8 @@ protected:
     bool is_working = false;
     bool requested_stop = false;
 
-    uint32_t image_height = 0;
-    uint32_t image_width = 0;
+    int image_height = 0;
+    int image_width = 0;
 
     renderer_config renderer_conf;
     camera cam;
