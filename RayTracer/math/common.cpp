@@ -131,7 +131,7 @@ namespace random_cache
   }
 
   template<typename T, int N>
-  int32_t cache<T, N>::len()
+  int cache<T, N>::len()
   {
     return N;
   }
@@ -141,7 +141,7 @@ namespace random_cache
     // Fill float cache
     std::uniform_real_distribution<float> distribution;
     distribution = std::uniform_real_distribution<float>(-1.0f, 1.0f);
-    uint32_t seed = std::chrono::system_clock::now().time_since_epoch().count();
+    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::mt19937 generator(seed);
     for (int s = 0; s < float_cache.len(); s++)
     {
@@ -189,9 +189,9 @@ namespace random_cache
     return vec3(fabs(float_cache.get()), fabs(float_cache.get()), fabs(float_cache.get()));
   }
 
-  int32_t get_int_0_N(int32_t N)
+  int get_int_0_N(int N)
   {
-    return round(get_float_0_1() * N);
+    return (int)round(get_float_0_1() * N);
   }
 
   vec3 get_cosine_direction()
@@ -326,11 +326,11 @@ namespace hash
   }
   uint32_t get(const void* a)
   {
-    return reinterpret_cast<size_t>(a);
+    return get(reinterpret_cast<size_t>(a));
   }
   uint32_t get(void* a)
   {
-    return reinterpret_cast<size_t>(a);
+    return get(reinterpret_cast<size_t>(a));
   }
   uint32_t get(bool a)
   {
@@ -458,7 +458,7 @@ namespace obj_helper
     }
 
     tinyobj::shape_t shape = shapes[shape_index];
-    int num_faces = shape.mesh.num_face_vertices.size();
+    size_t num_faces = shape.mesh.num_face_vertices.size();
     out_faces.reserve(num_faces);
     assert(num_faces > 0);
 

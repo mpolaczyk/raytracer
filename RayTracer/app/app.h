@@ -124,7 +124,7 @@ public:
   int output_height = 0;
   struct ID3D11ShaderResourceView* output_srv = nullptr;
   struct ID3D11Texture2D* output_texture = nullptr;
-  async_renderer_base* renderer;
+  async_renderer_base* renderer = nullptr;
   material* default_material = nullptr;
   vec3 center_of_scene;
   float distance_to_center_of_scene = 0.0f;

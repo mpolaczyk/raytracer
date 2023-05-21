@@ -21,8 +21,8 @@ public:
   std::vector<std::string> get_material_names() const;
   int get_index_by_name(const std::string& name) const;
   int get_index_by_id(const std::string& id) const;
-  nlohmann::json serialize();
-  void deserialize(const nlohmann::json& j);
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
 private:
   std::map<std::string, material*> registry;
@@ -32,7 +32,7 @@ class material : serializable<nlohmann::json>
 {
 public:
   material() {}
-  material(material_type type) : type(type) 
+  explicit material(material_type type) : type(type) 
   {
     if (type == material_type::light)
     {
@@ -53,12 +53,12 @@ public:
   float gloss_probability = 0.0f;
   vec3 gloss_color;
   float refraction_probability = 0.0f;
-  float refraction_index;
+  float refraction_index = 1.0f;
 
   void get_name(std::string& out_name, bool with_params=true) const;
   void draw_edit_panel();
-  nlohmann::json serialize();
-  void deserialize(const nlohmann::json& j);
+  virtual nlohmann::json serialize() override;
+  virtual void deserialize(const nlohmann::json& j) override;
 
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(material, type, id, smoothness, gloss_probability, refraction_probability, refraction_index); // to_json only
 };

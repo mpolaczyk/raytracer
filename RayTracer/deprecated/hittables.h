@@ -98,7 +98,7 @@ public:
   virtual vec3 get_pdf_direction(const vec3& look_from) const override;
   virtual vec3 get_random_point() const override;
   virtual void set_origin(const vec3& value) override { origin = value; };
-  virtual void set_extent(float value) { radius = value; };
+  virtual void set_extent(float value) override { radius = value; };
 
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
