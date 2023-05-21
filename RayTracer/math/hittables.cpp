@@ -274,7 +274,7 @@ float sphere::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 float xy_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 {
   hit_record rec;
-  if (!this->hit(ray(look_from, from_to), 0.001, math::infinity, rec))
+  if (!hit(ray(look_from, from_to), 0.001f, math::infinity, rec))
     return 0;
 
   auto area = get_area();
@@ -287,7 +287,7 @@ float xy_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 float xz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 {
   hit_record rec;
-  if (!this->hit(ray(look_from, from_to), 0.001, math::infinity, rec))
+  if (!hit(ray(look_from, from_to), 0.001f, math::infinity, rec))
     return 0;
 
   auto area = get_area();
@@ -300,7 +300,7 @@ float xz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 float yz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 {
   hit_record rec;
-  if (!this->hit(ray(look_from, from_to), 0.001, math::infinity, rec))
+  if (!hit(ray(look_from, from_to), 0.001f, math::infinity, rec))
     return 0;
 
   auto area = get_area();
@@ -393,50 +393,50 @@ bool static_mesh::get_bounding_box(aabb& out_box) const
 }
 
 
-inline uint32_t hittable::get_type_hash() const
+inline uint32_t hittable::get_hash() const
 {
   return hash::combine(hash::get(material_ptr), (int)type);
 }
 
-inline uint32_t sphere::get_type_hash() const
+inline uint32_t sphere::get_hash() const
 {
-  return hash::combine(hittable::get_type_hash(), hash::get(origin), hash::get(radius));
+  return hash::combine(hittable::get_hash(), hash::get(origin), hash::get(radius));
 }
 
-inline uint32_t scene::get_type_hash() const
+inline uint32_t scene::get_hash() const
 {
   uint32_t a = 0;
-  for (hittable* obj : objects)
+  for (const hittable* obj : objects)
   {
-    a = hash::combine(a, obj->get_type_hash());
+    a = hash::combine(a, obj->get_hash());
   }
   return a;
 }
 
-inline uint32_t xy_rect::get_type_hash() const
+inline uint32_t xy_rect::get_hash() const
 {
-  uint32_t a = hash::combine(hittable::get_type_hash(), hash::get(x0), hash::get(y0), hash::get(x1));
+  uint32_t a = hash::combine(hittable::get_hash(), hash::get(x0), hash::get(y0), hash::get(x1));
   uint32_t b = hash::combine(hash::get(y1), hash::get(z));
   return hash::combine(a, b);
 }
 
-inline uint32_t xz_rect::get_type_hash() const
+inline uint32_t xz_rect::get_hash() const
 {
-  uint32_t a = hash::combine(hittable::get_type_hash(), hash::get(x0), hash::get(z0), hash::get(x1));
+  uint32_t a = hash::combine(hittable::get_hash(), hash::get(x0), hash::get(z0), hash::get(x1));
   uint32_t b = hash::combine(hash::get(z1), hash::get(y));
   return hash::combine(a, b);
 }
 
-inline uint32_t yz_rect::get_type_hash() const
+inline uint32_t yz_rect::get_hash() const
 {
-  uint32_t a = hash::combine(hittable::get_type_hash(), hash::get(y0), hash::get(z0), hash::get(y1));
+  uint32_t a = hash::combine(hittable::get_hash(), hash::get(y0), hash::get(z0), hash::get(y1));
   uint32_t b = hash::combine(hash::get(z1), hash::get(x));
   return hash::combine(a, b);
 }
 
-inline uint32_t static_mesh::get_type_hash() const
+inline uint32_t static_mesh::get_hash() const
 {
-  uint32_t a = hash::combine(hittable::get_type_hash(), hash::get(origin), hash::get(extent), hash::get(rotation));
+  uint32_t a = hash::combine(hittable::get_hash(), hash::get(origin), hash::get(extent), hash::get(rotation));
   uint32_t b = hash::combine(hash::get(scale), hash::get(resources_dirty), shape_index, shape_index);
   return hash::combine(a, b);
 }

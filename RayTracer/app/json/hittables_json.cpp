@@ -22,10 +22,7 @@ nlohmann::json sphere::serialize()
 nlohmann::json scene::serialize()
 {
   nlohmann::json jarr = nlohmann::json::array();
-  for (hittable* object : objects)
-  {
-    jarr.push_back(object->serialize());
-  }
+  std::transform(objects.begin(), objects.end(), std::back_inserter(jarr), [](hittable* object) { return object->serialize(); });
   nlohmann::json j;
   hittable::to_json(j, *this);
   j["objects"] = jarr;

@@ -32,7 +32,7 @@ public:
     return answer;
   }
 
-  inline uint32_t get_type_hash() const
+  inline uint32_t get_hash() const
   {
     uint32_t a = hash::combine(hash::get(look_from), hash::get(look_dir), hash::get(field_of_view), hash::get(aspect_ratio_h));
     uint32_t b = hash::combine(hash::get(aspect_ratio_w), hash::get(aperture), hash::get(dist_to_focus), hash::get(type));
@@ -142,9 +142,9 @@ public:
     }
   }
 
-  inline uint32_t get_type_hash()
+  inline uint32_t get_hash()
   {
-    return camera_conf.get_type_hash();
+    return camera_conf.get_hash();
   }
 
 private:

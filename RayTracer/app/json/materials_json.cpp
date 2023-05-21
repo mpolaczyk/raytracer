@@ -7,10 +7,7 @@
 nlohmann::json material_instances::serialize()
 {
   nlohmann::json jarr = nlohmann::json::array();
-  for (std::pair<std::string, material*> pair : registry)
-  {
-    jarr.push_back(pair.second->serialize());
-  }
+  std::transform(registry.begin(), registry.end(), std::back_inserter(jarr), [](std::pair<std::string, material*> pair) { return pair.second->serialize(); });
   return jarr;
 }
 

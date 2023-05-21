@@ -45,7 +45,7 @@ public:
 
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(renderer_config, rays_per_pixel, ray_bounces, type, reuse_buffer, resolution_vertical, resolution_horizontal, white_point); // to_json only
 
-  inline uint32_t get_type_hash() const
+  inline uint32_t get_hash() const
   {
     return hash::combine(rays_per_pixel, ray_bounces, (int)type, hash::get(white_point));
   }

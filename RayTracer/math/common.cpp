@@ -141,8 +141,7 @@ namespace random_cache
     // Fill float cache
     std::uniform_real_distribution<float> distribution;
     distribution = std::uniform_real_distribution<float>(-1.0f, 1.0f);
-    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::mt19937 generator(seed);
+    std::mt19937 generator(std::chrono::system_clock::now().time_since_epoch().count());
     for (int s = 0; s < float_cache.len(); s++)
     {
       float_cache.add(distribution(generator));
@@ -318,11 +317,11 @@ namespace hash
   }
   uint32_t get(float a)
   {
-    return *(uint32_t*)&a;
+    return reinterpret_cast<uint32_t&>(a);
   }
   uint32_t get(double a)
   {
-    return get(*(uint64_t*)&a);
+    return get(reinterpret_cast<uint64_t&>(a));
   }
   uint32_t get(const void* a)
   {

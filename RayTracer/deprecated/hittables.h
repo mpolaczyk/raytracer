@@ -64,7 +64,7 @@ public:
   virtual void draw_edit_panel();
   virtual nlohmann::json serialize();
   virtual void deserialize(const nlohmann::json& j);
-  virtual uint32_t get_type_hash() const;
+  virtual uint32_t get_hash() const;
   virtual hittable* clone() const = 0;
 
   // Persistent members
@@ -103,7 +103,7 @@ public:
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-  virtual uint32_t get_type_hash() const override;
+  virtual uint32_t get_hash() const override;
   virtual sphere* clone() const override;
 
   // Persistent members
@@ -136,7 +136,7 @@ public:
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-  virtual uint32_t get_type_hash() const override;
+  virtual uint32_t get_hash() const override;
   virtual scene* clone() const override;
 
   void add(hittable* object);
@@ -177,7 +177,7 @@ public:
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-  virtual uint32_t get_type_hash() const override;
+  virtual uint32_t get_hash() const override;
   virtual xy_rect* clone() const override;
 
 public:
@@ -219,7 +219,7 @@ public:
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-  virtual uint32_t get_type_hash() const override;
+  virtual uint32_t get_hash() const override;
   virtual xz_rect* clone() const override;
 
 public:
@@ -261,7 +261,7 @@ public:
   virtual void draw_edit_panel() override;
   virtual nlohmann::json serialize() override;
   virtual void deserialize(const nlohmann::json& j) override;
-  virtual uint32_t get_type_hash() const override;
+  virtual uint32_t get_hash() const override;
   virtual yz_rect* clone() const override;
 
 public:
