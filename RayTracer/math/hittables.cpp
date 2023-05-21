@@ -119,8 +119,8 @@ bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hi
 
   // Normal always against the ray
   vec3 outward_normal = (out_hit.p - origin) / radius;
-  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, outward_normal, out_hit.normal);
-  get_sphere_uv(outward_normal, out_hit.u, out_hit.v);
+  out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, outward_normal, out_hit.normal);
+  math::get_sphere_uv(outward_normal, out_hit.u, out_hit.v);
   return true;
 }
 
@@ -151,7 +151,7 @@ bool scene::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit
 
 bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
-  if (is_almost_zero(in_ray.direction.z)) { return false; }
+  if (math::is_almost_zero(in_ray.direction.z)) { return false; }
   float t = (z - in_ray.origin.z) / in_ray.direction.z;
   if (t < t_min || t > t_max) { return false; }
   float x = in_ray.origin.x + t * in_ray.direction.x;
@@ -160,7 +160,7 @@ bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.u = (x - x0) / (x1 - x0);
   out_hit.v = (y - y0) / (y1 - y0);
   out_hit.t = t;
-  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 0.0f, 1.0f), out_hit.normal);
+  out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 0.0f, 1.0f), out_hit.normal);
   out_hit.material_ptr = material_ptr;
   out_hit.p = in_ray.at(t);
   return true;
@@ -168,7 +168,7 @@ bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
 
 bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
-  if (is_almost_zero(in_ray.direction.y)) { return false; }
+  if (math::is_almost_zero(in_ray.direction.y)) { return false; }
   if (in_ray.direction.y == 0.0f) { return false; }
   float t = (y - in_ray.origin.y) / in_ray.direction.y;
   if (t < t_min || t > t_max) { return false; }
@@ -178,7 +178,7 @@ bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.u = (x - x0) / (x1 - x0);
   out_hit.v = (z - z0) / (z1 - z0);
   out_hit.t = t;
-  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 1.0f, 0.0f), out_hit.normal);
+  out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 1.0f, 0.0f), out_hit.normal);
   out_hit.material_ptr = material_ptr;
   out_hit.p = in_ray.at(t);
   return true;
@@ -186,7 +186,7 @@ bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
 
 bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
-  if (is_almost_zero(in_ray.direction.x)) { return false; }
+  if (math::is_almost_zero(in_ray.direction.x)) { return false; }
   if (in_ray.direction.x == 0.0f) { return false; }
   float t = (x - in_ray.origin.x) / in_ray.direction.x;
   if (t < t_min || t > t_max) { return false; }
@@ -196,7 +196,7 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.u = (y - y0) / (y1 - y0);
   out_hit.v = (z - z0) / (z1 - z0);
   out_hit.t = t;
-  out_hit.front_face = flip_normal_if_front_face(in_ray.direction, vec3(1.0f, 0.0f, 0.0f), out_hit.normal);
+  out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, vec3(1.0f, 0.0f, 0.0f), out_hit.normal);
   out_hit.material_ptr = material_ptr;
   out_hit.p = in_ray.at(t);
   return true;
@@ -211,7 +211,7 @@ bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& o
 
 vec3 sphere::get_random_point() const
 {
-  return rand_normal_distribution() * radius;
+  return random_cache::normal_distribution() * radius;
 }
 
 vec3 xy_rect::get_random_point() const
@@ -269,7 +269,7 @@ float sphere::get_pdf_value(const vec3& look_from, const vec3& from_to) const
  
   
   float cos_theta_max = sqrt(1 - radius * radius / (origin - look_from).length_squared());
-  float solid_angle = 2 * pi * (1 - cos_theta_max);
+  float solid_angle = 2 * math::pi * (1 - cos_theta_max);
   
   return  1.0f / solid_angle;
 }
@@ -277,7 +277,7 @@ float sphere::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 float xy_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 {
   hit_record rec;
-  if (!this->hit(ray(look_from, from_to), 0.001, infinity, rec))
+  if (!this->hit(ray(look_from, from_to), 0.001, math::infinity, rec))
     return 0;
 
   auto area = get_area();
@@ -290,7 +290,7 @@ float xy_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 float xz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 {
   hit_record rec;
-  if (!this->hit(ray(look_from, from_to), 0.001, infinity, rec))
+  if (!this->hit(ray(look_from, from_to), 0.001, math::infinity, rec))
     return 0;
 
   auto area = get_area();
@@ -303,7 +303,7 @@ float xz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 float yz_rect::get_pdf_value(const vec3& look_from, const vec3& from_to) const
 {
   hit_record rec;
-  if (!this->hit(ray(look_from, from_to), 0.001, infinity, rec))
+  if (!this->hit(ray(look_from, from_to), 0.001, math::infinity, rec))
     return 0;
 
   auto area = get_area();
@@ -337,7 +337,7 @@ vec3 sphere::get_pdf_direction(const vec3& look_from) const
   auto distance_squared = direction.length_squared();
   onb uvw;
   uvw.build_from_w(direction);
-  return uvw.local(random_to_sphere(radius, distance_squared));
+  return uvw.local(random_cache::in_sphere(radius, distance_squared));
 }
 
 vec3 xy_rect::get_pdf_direction(const vec3& look_from) const
@@ -412,12 +412,12 @@ bool static_mesh::get_bounding_box(aabb& out_box) const
 
 inline uint32_t hittable::get_type_hash() const
 {
-  return hash_combine(::get_type_hash(material_ptr), (int)type);
+  return hash::combine(hash::get(material_ptr), (int)type);
 }
 
 inline uint32_t sphere::get_type_hash() const
 {
-  return hash_combine(hittable::get_type_hash(), origin.get_type_hash(), ::get_type_hash(radius));
+  return hash::combine(hittable::get_type_hash(), origin.get_type_hash(), hash::get(radius));
 }
 
 inline uint32_t scene::get_type_hash() const
@@ -425,37 +425,37 @@ inline uint32_t scene::get_type_hash() const
   uint32_t a = 0;
   for (hittable* obj : objects)
   {
-    a = hash_combine(a, obj->get_type_hash());
+    a = hash::combine(a, obj->get_type_hash());
   }
   return a;
 }
 
 inline uint32_t xy_rect::get_type_hash() const
 {
-  uint32_t a = hash_combine(hittable::get_type_hash(), ::get_type_hash(x0), ::get_type_hash(y0), ::get_type_hash(x1));
-  uint32_t b = hash_combine(::get_type_hash(y1), ::get_type_hash(z));
-  return hash_combine(a, b);
+  uint32_t a = hash::combine(hittable::get_type_hash(), hash::get(x0), hash::get(y0), hash::get(x1));
+  uint32_t b = hash::combine(hash::get(y1), hash::get(z));
+  return hash::combine(a, b);
 }
 
 inline uint32_t xz_rect::get_type_hash() const
 {
-  uint32_t a = hash_combine(hittable::get_type_hash(), ::get_type_hash(x0), ::get_type_hash(z0), ::get_type_hash(x1));
-  uint32_t b = hash_combine(::get_type_hash(z1), ::get_type_hash(y));
-  return hash_combine(a, b);
+  uint32_t a = hash::combine(hittable::get_type_hash(), hash::get(x0), hash::get(z0), hash::get(x1));
+  uint32_t b = hash::combine(hash::get(z1), hash::get(y));
+  return hash::combine(a, b);
 }
 
 inline uint32_t yz_rect::get_type_hash() const
 {
-  uint32_t a = hash_combine(hittable::get_type_hash(), ::get_type_hash(y0), ::get_type_hash(z0), ::get_type_hash(y1));
-  uint32_t b = hash_combine(::get_type_hash(z1), ::get_type_hash(x));
-  return hash_combine(a, b);
+  uint32_t a = hash::combine(hittable::get_type_hash(), hash::get(y0), hash::get(z0), hash::get(y1));
+  uint32_t b = hash::combine(hash::get(z1), hash::get(x));
+  return hash::combine(a, b);
 }
 
 inline uint32_t static_mesh::get_type_hash() const
 {
-  uint32_t a = hash_combine(hittable::get_type_hash(), origin.get_type_hash(), ::get_type_hash(extent), rotation.get_type_hash());
-  uint32_t b = hash_combine(scale.get_type_hash(), ::get_type_hash(resources_dirty), shape_index, shape_index);
-  return hash_combine(a, b);
+  uint32_t a = hash::combine(hittable::get_type_hash(), origin.get_type_hash(), hash::get(extent), rotation.get_type_hash());
+  uint32_t b = hash::combine(scale.get_type_hash(), hash::get(resources_dirty), shape_index, shape_index);
+  return hash::combine(a, b);
 }
 
 

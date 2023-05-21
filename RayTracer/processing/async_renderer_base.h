@@ -47,7 +47,7 @@ public:
 
   inline uint32_t get_type_hash() const
   {
-    return hash_combine(rays_per_pixel, ray_bounces, (int)type, white_point);
+    return hash::combine(rays_per_pixel, ray_bounces, (int)type, white_point);
   }
 };
 

@@ -49,12 +49,12 @@ void example_renderer::render_chunk(const chunk& in_chunk)
         if (x < job_state.image_width / 2)
         {
           // Cached noise
-          pixel_color = rand_direction();
+          pixel_color = random_cache::direction();
         }
         else
         {
           // Runtime noise
-          pixel_color = rand_direction(job_state.image_width * job_state.image_height);
+          pixel_color = random_seed::direction(job_state.image_width * job_state.image_height);
         }
       }
 

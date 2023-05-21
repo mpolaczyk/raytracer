@@ -37,7 +37,7 @@ void handle_input(app_instance& state)
     cam.set_camera(state.camera_conf);
     ray r = cam.get_ray(u, v);
     hit_record hit;
-    if (state.scene_root.hit(r, 0.0f, infinity, hit))
+    if (state.scene_root.hit(r, 0.0f, math::infinity, hit))
     {
       state.selected_object = hit.object;
     }

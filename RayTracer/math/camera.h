@@ -27,16 +27,16 @@ public:
   static camera_config lerp(const camera_config& a, const camera_config& b, float f)
   {
     camera_config answer = a;
-    answer.dist_to_focus = lerp_float(a.dist_to_focus, b.dist_to_focus, f);
-    answer.type = lerp_float(a.type, b.type, f);
+    answer.dist_to_focus = math::lerp_float(a.dist_to_focus, b.dist_to_focus, f);
+    answer.type = math::lerp_float(a.type, b.type, f);
     return answer;
   }
 
   inline uint32_t get_type_hash() const
   {
-    uint32_t a = hash_combine(look_from.get_type_hash(), look_dir.get_type_hash(), ::get_type_hash(field_of_view), ::get_type_hash(aspect_ratio_h));
-    uint32_t b = hash_combine(::get_type_hash(aspect_ratio_w), ::get_type_hash(aperture), ::get_type_hash(dist_to_focus), ::get_type_hash(type));
-    return ::hash_combine(a, b, a, look_dir.get_type_hash());
+    uint32_t a = hash::combine(look_from.get_type_hash(), look_dir.get_type_hash(), hash::get(field_of_view), hash::get(aspect_ratio_h));
+    uint32_t b = hash::combine(hash::get(aspect_ratio_w), hash::get(aperture), hash::get(dist_to_focus), hash::get(type));
+    return hash::combine(a, b, a, look_dir.get_type_hash());
   }
 
   // Camera movement
@@ -97,7 +97,7 @@ public:
   {
     camera_conf = in_camera_config;
 
-    float theta = degrees_to_radians(camera_conf.field_of_view);
+    float theta = math::degrees_to_radians(camera_conf.field_of_view);
     float h = tan(theta / 2.0f);
     viewport_height = 2.0f * h;                       // viewport size at the distance 1
     viewport_width = camera_conf.aspect_ratio_w / camera_conf.aspect_ratio_h * viewport_height;
@@ -122,7 +122,7 @@ public:
 
   ray inline get_ray(float uu, float vv) const 
   {
-    vec3 rd = lens_radius * random_in_unit_disk();
+    vec3 rd = lens_radius * random_cache::in_unit_disk();
     vec3 offset = u * rd.x + v * rd.y;
 
     if (camera_conf.type == 0.0f)

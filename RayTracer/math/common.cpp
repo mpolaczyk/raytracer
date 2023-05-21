@@ -6,150 +6,112 @@
 
 #include "common.h"
 
-
-float rand_iqint1(uint32_t seed)
+namespace math
 {
-  static uint32_t last = 0;
-  uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
-  state = (state << 13U) ^ state;
-  state = state * (state * state * 15731U + 789221U) + 1376312589U;
-  last = state;
-  return (float)state / (float)UINT_MAX;   // [0.0f, 1.0f]
-}
-
-float rand_pcg(uint32_t seed)
-{
-  static uint32_t last = 0;
-  uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
-  state = state * 747796405U + 2891336453U;
-  uint32_t word = ((state >> ((state >> 28U) + 4U)) ^ state) * 277803737U;
-  uint32_t result = ((word >> 22U) ^ word);
-  last = result;
-  return (float)result / (float)UINT_MAX;   // [0.0f, 1.0f]
-}
-
-float rand_normal_distribution()
-{
-  float theta = 2.0f * 3.1415926f * random_cache::get_float_0_1();
-  float rho = sqrt(-2.0f * log(random_cache::get_float_0_1()));
-  assert(isfinite(rho));
-  return rho * cos(theta);  // [-1.0f, 1.0f]
-}
-
-float rand_normal_distribution(uint32_t seed)
-{
-  float theta = 2.0f * 3.1415926f * RAND_SEED_FUNC(seed);
-  float rho = sqrt(-2.0f * log(RAND_SEED_FUNC(seed)));
-  assert(isfinite(rho));
-  return rho * cos(theta);  // [-1.0f, 1.0f]
-}
-
-vec3 rand_direction()
-{
-  float x = rand_normal_distribution();
-  float y = rand_normal_distribution();
-  float z = rand_normal_distribution();
-  return normalize(vec3(x, y, z));
-}
-
-vec3 rand_direction(uint32_t seed)
-{
-  float x = rand_normal_distribution(seed);
-  float y = rand_normal_distribution(seed);
-  float z = rand_normal_distribution(seed);
-  return normalize(vec3(x, y, z));
-}
-
-vec3 random_cosine_direction()
-{
-https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
-  // Cosine distribution around positive z axis
-  float r1 = random_cache::get_float_0_1();
-  float r2 = random_cache::get_float_0_1();
-  //float phi = 2 * pi * r1;
-  float r = 0.5;
-  float x = cos(2 * pi * r1) * sqrt(r);
-  float y = sin(2 * pi * r2) * sqrt(r);
-  float z = sqrt(1 - r);
-  return vec3(x, y, z);
-}
-vec3 random_cosine_direction(uint32_t seed)
-{
-https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
-  // Cosine distribution around positive z axis
-  float r1 = RAND_SEED_FUNC(seed);
-  float r2 = RAND_SEED_FUNC(seed);
-  //float phi = 2 * pi * r1;
-  float r = 0.5;
-  float x = cos(2 * pi * r1) * sqrt(r);
-  float y = sin(2 * pi * r2) * sqrt(r);
-  float z = sqrt(1 - r);
-  return vec3(x, y, z);
-}
-
-vec3 random_to_sphere(float radius, float distance_squared)
-{
-  float r1 = random_cache::get_float_0_1();
-  float r2 = random_cache::get_float_0_1();
-  float z = 1 + r2 * (sqrt(1 - radius * radius / distance_squared) - 1);
-
-  float phi = 2 * pi * r1;
-  float x = cos(phi) * sqrt(1 - z * z);
-  float y = sin(phi) * sqrt(1 - z * z);
-
-  return vec3(x, y, z);
-}
-
-
-vec3 reflect(const vec3& vec, const vec3& normal) 
-{
-  return vec - 2 * dot(vec, normal) * normal;
-}
-
-vec3 refract(const vec3& v, const vec3& n, float etai_over_etat) 
-{
-  float cos_theta = fmin(dot(-v, n), 1.0f);
-  vec3 r_out_perpendicular = etai_over_etat * (v + cos_theta * n);
-  vec3 r_out_parallel = -sqrt(fabs(1.0f - r_out_perpendicular.length_squared())) * n;
-  return r_out_perpendicular + r_out_parallel;
-}
-
-float reflectance(float cosine, float ref_idx)
-{
-  // Use Schlick's approximation for reflectance.
-  float r0 = (1.0f - ref_idx) / (1.0f + ref_idx);
-  r0 = r0 * r0;
-  return r0 + (1.0f - r0) * pow((1.0f - cosine), 5.0f);
-}
-
-bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal)
-{
-  if (dot(in_ray_direction, in_outward_normal) < 0)
+  vec3 reflect(const vec3& vec, const vec3& normal)
   {
-    // Ray is inside
-    out_normal = in_outward_normal;
-    return true;
+    return vec - 2 * dot(vec, normal) * normal;
   }
-  else
+
+  vec3 refract(const vec3& v, const vec3& n, float etai_over_etat)
   {
-    // Ray is outside
-    out_normal = -in_outward_normal;
-    return false;
+    float cos_theta = fmin(dot(-v, n), 1.0f);
+    vec3 r_out_perpendicular = etai_over_etat * (v + cos_theta * n);
+    vec3 r_out_parallel = -sqrt(fabs(1.0f - r_out_perpendicular.length_squared())) * n;
+    return r_out_perpendicular + r_out_parallel;
+  }
+
+  float reflectance(float cosine, float ref_idx)
+  {
+    // Use Schlick's approximation for reflectance.
+    float r0 = (1.0f - ref_idx) / (1.0f + ref_idx);
+    r0 = r0 * r0;
+    return r0 + (1.0f - r0) * pow((1.0f - cosine), 5.0f);
+  }
+
+  bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal)
+  {
+    if (dot(in_ray_direction, in_outward_normal) < 0)
+    {
+      // Ray is inside
+      out_normal = in_outward_normal;
+      return true;
+    }
+    else
+    {
+      // Ray is outside
+      out_normal = -in_outward_normal;
+      return false;
+    }
+  }
+
+  vec3 lerp_vec3(const vec3& a, const vec3& b, float f)
+  {
+    return vec3(math::lerp_float(a.x, b.x, f), math::lerp_float(a.y, b.y, f), math::lerp_float(a.z, b.z, f));
+  }
+
+  vec3 clamp_vec3(float a, float b, const vec3& f)
+  {
+    vec3 ans;
+    ans.x = math::clamp(f.x, a, b);
+    ans.y = math::clamp(f.y, a, b);
+    ans.z = math::clamp(f.z, a, b);
+    return ans;
   }
 }
 
-vec3 lerp_vec3(const vec3& a, const vec3& b, float f)
+namespace random_seed
 {
-  return vec3(lerp_float(a.x, b.x, f), lerp_float(a.y, b.y, f), lerp_float(a.z, b.z, f));
-}
+  float rand_iqint1(uint32_t seed)
+  {
+    static uint32_t last = 0;
+    uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
+    state = (state << 13U) ^ state;
+    state = state * (state * state * 15731U + 789221U) + 1376312589U;
+    last = state;
+    return (float)state / (float)UINT_MAX;   // [0.0f, 1.0f]
+  }
 
-vec3 clamp_vec3(float a, float b, const vec3& f)
-{
-  vec3 ans;
-  ans.x = clamp(f.x, a, b);
-  ans.y = clamp(f.y, a, b);
-  ans.z = clamp(f.z, a, b);
-  return ans;
+  float rand_pcg(uint32_t seed)
+  {
+    static uint32_t last = 0;
+    uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
+    state = state * 747796405U + 2891336453U;
+    uint32_t word = ((state >> ((state >> 28U) + 4U)) ^ state) * 277803737U;
+    uint32_t result = ((word >> 22U) ^ word);
+    last = result;
+    return (float)result / (float)UINT_MAX;   // [0.0f, 1.0f]
+  }
+
+  vec3 direction(uint32_t seed)
+  {
+    float x = normal_distribution(seed);
+    float y = normal_distribution(seed);
+    float z = normal_distribution(seed);
+    return normalize(vec3(x, y, z));
+  }
+  
+  float normal_distribution(uint32_t seed)
+  {
+    float theta = 2.0f * math::pi * RAND_SEED_FUNC(seed);
+    float rho = sqrt(-2.0f * log(RAND_SEED_FUNC(seed)));
+    assert(isfinite(rho));
+    return rho * cos(theta);  // [-1.0f, 1.0f]
+  }
+
+  vec3 cosine_direction(uint32_t seed)
+  {
+    https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
+    // Cosine distribution around positive z axis
+    float r1 = RAND_SEED_FUNC(seed);
+    float r2 = RAND_SEED_FUNC(seed);
+    //float phi = 2 * pi * r1;
+    float r = 0.5;
+    float x = cos(2 * math::pi * r1) * sqrt(r);
+    float y = sin(2 * math::pi * r2) * sqrt(r);
+    float z = sqrt(1 - r);
+    return vec3(x, y, z);
+  }
 }
 
 namespace random_cache
@@ -189,7 +151,7 @@ namespace random_cache
     // Fill cosine direction cache
     for (int s = 0; s < cosine_direction_cache.len(); s++)
     {
-      cosine_direction_cache.add(random_cosine_direction());
+      cosine_direction_cache.add(cosine_direction());
     } 
   }
 
@@ -236,13 +198,56 @@ namespace random_cache
   {
     return cosine_direction_cache.get();
   }
+
+  vec3 direction()
+  {
+    float x = normal_distribution();
+    float y = normal_distribution();
+    float z = normal_distribution();
+    return normalize(vec3(x, y, z));
+  }
+
+  vec3 cosine_direction()
+  {
+    https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
+    // Cosine distribution around positive z axis
+    float r1 = get_float_0_1();
+    float r2 = get_float_0_1();
+    //float phi = 2 * pi * r1;
+    float r = 0.5;
+    float x = cos(2 * math::pi * r1) * sqrt(r);
+    float y = sin(2 * math::pi * r2) * sqrt(r);
+    float z = sqrt(1 - r);
+    return vec3(x, y, z);
+  }
+
+  vec3 in_sphere(float radius, float distance_squared)
+  {
+    float r1 = get_float_0_1();
+    float r2 = get_float_0_1();
+    float z = 1 + r2 * (sqrt(1 - radius * radius / distance_squared) - 1);
+
+    float phi = 2 * math::pi * r1;
+    float x = cos(phi) * sqrt(1 - z * z);
+    float y = sin(phi) * sqrt(1 - z * z);
+
+    return vec3(x, y, z);
+  }
+
+  float normal_distribution()
+  {
+    float theta = 2.0f * math::pi * get_float_0_1();
+    float rho = sqrt(-2.0f * log(get_float_0_1()));
+    assert(isfinite(rho));
+    return rho * cos(theta);  // [-1.0f, 1.0f]
+  }
 }
 
 namespace tone_mapping
 {
   vec3 trivial(const vec3& v)
   {
-    return clamp_vec3(0.0f, 1.0f, v);
+    return math::clamp_vec3(0.0f, 1.0f, v);
   }
   vec3 reinhard(const vec3& v)
   {
@@ -277,6 +282,59 @@ namespace tone_mapping
     float numerator = l_old * (1.0f + (l_old / (max_white_l * max_white_l)));
     float l_new = numerator / (1.0f + l_old);
     return change_luminance(v, l_new);
+  }
+}
+
+namespace hash
+{
+  uint32_t combine(uint32_t a, uint32_t b)
+  {
+    uint32_t c = 0x9e3779b9;
+    a += c;
+
+    a -= c; a -= b; a ^= (b >> 13);
+    c -= b; c -= a; c ^= (a << 8);
+    b -= a; b -= c; b ^= (c >> 13);
+    a -= c; a -= b; a ^= (b >> 12);
+    c -= b; c -= a; c ^= (a << 16);
+    b -= a; b -= c; b ^= (c >> 5);
+    a -= c; a -= b; a ^= (b >> 3);
+    c -= b; c -= a; c ^= (a << 10);
+    b -= a; b -= c; b ^= (c >> 15);
+
+    return b;
+  }
+  uint32_t combine(uint32_t a, uint32_t b, uint32_t c, uint32_t d)
+  {
+    return combine(combine(a, b), combine(c, d));
+  }
+  uint32_t get(uint64_t a)
+  {
+    return (uint32_t)a + ((uint32_t)(a >> 32) * 23);
+  }
+  uint32_t get(int64_t a)
+  {
+    return (uint32_t)a + ((uint32_t)(a >> 32) * 23);
+  }
+  uint32_t get(float a)
+  {
+    return *(uint32_t*)&a;
+  }
+  uint32_t get(double a)
+  {
+    return get(*(uint64_t*)&a);
+  }
+  uint32_t get(const void* a)
+  {
+    return reinterpret_cast<size_t>(a);
+  }
+  uint32_t get(void* a)
+  {
+    return reinterpret_cast<size_t>(a);
+  }
+  uint32_t get(bool a)
+  {
+    return (uint32_t)a;
   }
 }
 
@@ -368,7 +426,6 @@ namespace paths
   }
 
 }
-
 
 #include "gfx/tiny_obj_loader.h"
 namespace obj_helper

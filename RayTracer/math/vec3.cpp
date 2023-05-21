@@ -4,5 +4,5 @@
 
 uint32_t vec3::get_type_hash() const
 {
-  return hash_combine(::get_type_hash(x), ::get_type_hash(y), ::get_type_hash(z), ::get_type_hash(padding));
+  return hash::combine(hash::get(x), hash::get(y), hash::get(z), hash::get(padding));
 }

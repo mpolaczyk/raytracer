@@ -30,10 +30,10 @@ bool aabb::hit(const ray& in_ray, float t_min, float t_max) const
       fpexcept::disabled_scope fpe;
       d_inv = 1 / in_ray.direction[i];  // this is allowed to produce 1/0 = inf
     }
-    float t0 = min1((minimum[i] - o) * d_inv, (maximum[i] - o) * d_inv);
-    float t1 = max1((minimum[i] - o) * d_inv, (maximum[i] - o) * d_inv);
-    t_min = max1(t0, t_min);
-    t_max = min1(t1, t_max);
+    float t0 = math::min1((minimum[i] - o) * d_inv, (maximum[i] - o) * d_inv);
+    float t1 = math::max1((minimum[i] - o) * d_inv, (maximum[i] - o) * d_inv);
+    t_min = math::max1(t0, t_min);
+    t_max = math::min1(t1, t_max);
     if (t_max <= t_min)
     {
       return false;

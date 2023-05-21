@@ -67,8 +67,8 @@ vec3 reference_renderer::fragment(float x, float y, const vec3& resolution)
   for (int i = 0; i < rays_per_pixel; ++i)
   {
     // Anti aliasing with ray variance
-    float u = (float(x) + rand_pcg(seed)) / (resolution.x - 1);
-    float v = (float(y) + rand_pcg(seed)) / (resolution.y - 1);
+    float u = (float(x) + random_seed::rand_pcg(seed)) / (resolution.x - 1);
+    float v = (float(y) + random_seed::rand_pcg(seed)) / (resolution.y - 1);
     // Trace the ray
     ray r = job_state.cam.get_ray(u, v);
     sum_colors += trace_ray(r, seed);
@@ -81,13 +81,13 @@ vec3 reference_renderer::fragment(float x, float y, const vec3& resolution)
 
 vec3 reference_renderer::enviroment_light(const ray& in_ray)
 {
-  static const vec3 sky_color_zenith = c_white_blue;
-  static const vec3 sky_color_horizon = c_white;
+  static const vec3 sky_color_zenith = colors::white_blue;
+  static const vec3 sky_color_horizon = colors::white;
   static const float sky_brightness = 0.4f;
 
-  float t = smoothstep(-0.6f, 0.2f, in_ray.direction.y);
-  vec3 light = lerp_vec3(sky_color_horizon, sky_color_zenith, t);
-  return clamp_vec3(0.0f, 1.0f, light) * sky_brightness;
+  float t = math::smoothstep(-0.6f, 0.2f, in_ray.direction.y);
+  vec3 light = math::lerp_vec3(sky_color_horizon, sky_color_zenith, t);
+  return math::clamp_vec3(0.0f, 1.0f, light) * sky_brightness;
 }
 
 vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
@@ -103,7 +103,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
   for (int i = 0; i < bounces; ++i)
   {
     hit_record hit;
-    if (job_state.scene_root.hit(in_ray, 0.01f, infinity, hit))
+    if (job_state.scene_root.hit(in_ray, 0.01f, math::infinity, hit))
     {
       // Don't bounce if ray has no color
       if (ray_color.length_squared() < 0.1f)
@@ -123,15 +123,15 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
 
       in_ray.origin = hit.p;
 
-      bool can_gloss_bounce = mat.gloss_probability >= rand_pcg(seed);
-      bool can_refract = mat.refraction_probability >= rand_pcg(seed);
+      bool can_gloss_bounce = mat.gloss_probability >= random_seed::rand_pcg(seed);
+      bool can_refract = mat.refraction_probability >= random_seed::rand_pcg(seed);
       
-      vec3 diffuse_dir = normalize(hit.normal + rand_direction(seed));
+      vec3 diffuse_dir = normalize(hit.normal + random_seed::direction(seed));
 
       if (!can_gloss_bounce && can_refract)
       {
         float refraction_ratio = hit.front_face ? (1.0f / mat.refraction_index) : mat.refraction_index;
-        vec3 refraction_dir = refract(in_ray.direction, hit.normal, refraction_ratio);
+        vec3 refraction_dir = math::refract(in_ray.direction, hit.normal, refraction_ratio);
 
         // Define next bounce
         in_ray.direction = refraction_dir + diffuse_dir*(1.0f-mat.smoothness);
@@ -145,7 +145,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
 
       // New directions
       
-      vec3 specular_dir = reflect(in_ray.direction, hit.normal);
+      vec3 specular_dir = math::reflect(in_ray.direction, hit.normal);
 
       // Define next bounce
       float blend = mat.smoothness;
@@ -153,11 +153,11 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
       {
         blend = mat.smoothness * can_gloss_bounce;
       }
-      in_ray.direction = lerp_vec3(diffuse_dir, specular_dir, blend);
+      in_ray.direction = math::lerp_vec3(diffuse_dir, specular_dir, blend);
 
       // Calculate color for this hit
       incoming_light += mat.emitted_color * ray_color;
-      ray_color *= lerp_vec3(mat.color, mat.gloss_color, can_gloss_bounce);
+      ray_color *= math::lerp_vec3(mat.color, mat.gloss_color, can_gloss_bounce);
       assert(ray_color.is_valid_color());
     }
     else
