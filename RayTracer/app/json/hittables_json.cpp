@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "math/hittables.h"
-
+#include "app/json/vec3_json.h"
 
 nlohmann::json hittable::serialize()
 {

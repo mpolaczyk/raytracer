@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "math/camera.h"
-
+#include "app/json/vec3_json.h"
 
 nlohmann::json camera_config::serialize()
 {

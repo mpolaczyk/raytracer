@@ -2,7 +2,7 @@
 
 #include "math/materials.h"
 #include "app/factories.h"
-
+#include "app/json/vec3_json.h"
 
 nlohmann::json material_instances::serialize()
 {

@@ -215,6 +215,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="renderers\reference_renderer.h" />
     <ClInclude Include="renderers\trace_ray.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="app\json\vec3_json.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes.txt" />

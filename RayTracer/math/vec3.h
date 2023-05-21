@@ -1,9 +1,5 @@
 #pragma once
 
-#include <iostream>
-
-#include "app/json/serializable.h"
-
 #ifdef USE_SIMD
 #include <intrin.h> // SSE3 required
 #endif
@@ -83,13 +79,3 @@ inline vec3 operator - (const vec3& u, const vec3& v) { return vec3(u.x - v.x, u
 inline vec3 operator * (const vec3& u, const vec3& v) { return vec3(u.x * v.x, u.y * v.y, u.z * v.z); }
 inline vec3 operator / (const vec3& u, const vec3& v) { return vec3(u.x / v.x, u.y / v.y, u.z / v.z); }
 #endif
-
-class vec3_serializer : serializable<nlohmann::json>
-{
-  // Separate serializer tool to reduce the sizeof(vec3) to 16 bytes
-public:
-  static nlohmann::json serialize(const vec3& value);
-  static vec3 deserialize(const nlohmann::json& j);
-};
-
-inline std::ostream& operator<<(std::ostream& out, const vec3& v) { return out << '[' << v.x << ',' << v.y << ',' << v.z << ']'; }
