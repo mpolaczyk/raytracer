@@ -5,6 +5,8 @@
 
 #include "vec3.h"
 
+#define RAND_SEED_FUNC(seed) rand_pcg(seed)
+
 namespace colors
 {
   const vec3 white = vec3(0.73f, .73f, .73f);
@@ -193,8 +195,6 @@ namespace random_seed
   float rand_iqint1(uint32_t seed);
   float rand_pcg(uint32_t seed);
 
-#define RAND_SEED_FUNC(seed) rand_pcg(seed)
-
   vec3 direction(uint32_t seed);
   float normal_distribution(uint32_t seed);
   vec3 cosine_direction(uint32_t seed);
@@ -286,7 +286,7 @@ namespace hash
   uint32_t get(const vec3& a);
 }
 
-namespace paths
+namespace io
 {
   // Directories
   std::string get_working_dir();

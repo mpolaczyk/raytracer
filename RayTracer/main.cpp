@@ -58,8 +58,8 @@ int main(int, char**)
 
   try
   {
-    std::cout << "Working dir: " << paths::get_working_dir().c_str() << std::endl;
-    std::cout << "Workspace dir: " << paths::get_workspace_dir().c_str() << std::endl;
+    std::cout << "Working dir: " << io::get_working_dir().c_str() << std::endl;
+    std::cout << "Workspace dir: " << io::get_workspace_dir().c_str() << std::endl;
 
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
@@ -85,7 +85,7 @@ int main(int, char**)
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     {
       // overwrite imgui config file name
-      std::string imgui_ini_filename = paths::get_imgui_file_path();
+      std::string imgui_ini_filename = io::get_imgui_file_path();
       char* buff = new char[imgui_ini_filename.size() + 1];
       strcpy(buff, imgui_ini_filename.c_str());  // returning char* is fucked up
       io.IniFilename = buff;

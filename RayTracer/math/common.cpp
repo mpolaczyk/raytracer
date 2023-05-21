@@ -342,7 +342,7 @@ namespace hash
   }
 }
 
-namespace paths
+namespace io
 {
   std::string get_working_dir()
   {
@@ -442,8 +442,8 @@ namespace obj_helper
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials; // not implemented
 
-    std::string dir = paths::get_objects_dir();
-    std::string path = paths::get_objects_file_path(file_name.c_str());
+    std::string dir = io::get_objects_dir();
+    std::string path = io::get_objects_file_path(file_name.c_str());
 
     std::string error;
     if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &error, path.c_str(), dir.c_str(), true))
