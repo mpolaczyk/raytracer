@@ -454,7 +454,7 @@ inline uint32_t yz_rect::get_type_hash() const
 inline uint32_t static_mesh::get_type_hash() const
 {
   uint32_t a = hash_combine(hittable::get_type_hash(), origin.get_type_hash(), ::get_type_hash(extent), rotation.get_type_hash());
-  uint32_t b = hash_combine(scale.get_type_hash(), ::get_type_hash(resources_dirty));
+  uint32_t b = hash_combine(scale.get_type_hash(), ::get_type_hash(resources_dirty), shape_index, shape_index);
   return hash_combine(a, b);
 }
 
@@ -523,7 +523,7 @@ void static_mesh::load_resources()
 {
   if (resources_dirty && file_name.length() > 0)
   {
-    bool success = obj_helper::load_obj(file_name, 0, faces);
+    bool success = obj_helper::load_obj(file_name, shape_index, faces);
     resources_dirty = !success;
   }
   // TODO find extent

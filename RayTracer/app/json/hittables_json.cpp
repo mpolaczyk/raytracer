@@ -142,6 +142,7 @@ void static_mesh::deserialize(const nlohmann::json& j)
   hittable::from_json(j, *this);
 
   TRY_PARSE(std::string, j, "file_name", file_name);
+  TRY_PARSE(int32_t, j, "shape_index", shape_index);
   
   nlohmann::json jorigin;
   if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { origin = vec3_serializer::deserialize(jorigin); }

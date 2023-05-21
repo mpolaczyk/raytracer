@@ -152,16 +152,19 @@ void static_mesh::draw_edit_panel()
   ImGui::DragFloat3("Origin", origin.e);
   ImGui::DragFloat3("Rotation", rotation.e);
   ImGui::DragFloat3("Scale", scale.e);
-  
   {
     assert(file_name.size() <= 256);
     char* buffer = new char[256];
     strcpy(buffer, file_name.c_str());
-    if (ImGui::InputText("Object file", buffer, 256, ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::InputText("Object file", buffer, 256))
     {
       file_name = buffer;
       resources_dirty = true;
     }
     delete[] buffer;
+  }
+  if (ImGui::InputInt("Shape index", &shape_index, 1))
+  {
+    resources_dirty = true;
   }
 }

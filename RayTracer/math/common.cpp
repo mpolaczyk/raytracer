@@ -390,44 +390,46 @@ namespace obj_helper
       std::cout << "Unable to load object file: " << file_name.c_str() << std::endl;
       return false;
     }
-
-    if (shape_index < shapes.size())
+    if (shape_index >= shapes.size())
     {
-      tinyobj::shape_t shape = shapes[shape_index];
-      int num_faces = shape.mesh.num_face_vertices.size();
-      out_faces.reserve(num_faces);
-      assert(num_faces > 0);
+      std::cout << "Object file: " << file_name.c_str() << " does not have shape index: " << shape_index << std::endl;
+      return false;
+    }
 
-      // loop over faces
-      for (size_t fi = 0; fi < num_faces; ++fi)
+    tinyobj::shape_t shape = shapes[shape_index];
+    int num_faces = shape.mesh.num_face_vertices.size();
+    out_faces.reserve(num_faces);
+    assert(num_faces > 0);
+
+    // loop over faces
+    for (size_t fi = 0; fi < num_faces; ++fi)
+    {
+      out_faces.push_back(triangle_face());
+      triangle_face& face = out_faces[fi];
+
+      // loop over the vertices in the face
+      assert(shape.mesh.num_face_vertices[fi] == 3);
+      for (size_t vi = 0; vi < 3; ++vi)
       {
-        out_faces.push_back(triangle_face());
-        triangle_face& face = out_faces[fi];
+        tinyobj::index_t idx = shape.mesh.indices[3 * fi + vi];
 
-        // loop over the vertices in the face
-        assert(shape.mesh.num_face_vertices[fi] == 3);
-        for (size_t vi = 0; vi < 3; ++vi)
+        float x = attributes.vertices[3 * idx.vertex_index + 0];
+        float y = attributes.vertices[3 * idx.vertex_index + 1];
+        float z = attributes.vertices[3 * idx.vertex_index + 2];
+
+        if (idx.normal_index != -1)
         {
-          tinyobj::index_t idx = shape.mesh.indices[3 * fi + vi];
+          face.has_normals = true;
+          face.normals[vi] = vec3(attributes.normals[3 * idx.normal_index + 0], attributes.normals[3 * idx.normal_index + 1], attributes.normals[3 * idx.normal_index + 2]);
+        }
 
-          float x = attributes.vertices[3 * idx.vertex_index + 0];
-          float y = attributes.vertices[3 * idx.vertex_index + 1];
-          float z = attributes.vertices[3 * idx.vertex_index + 2];
-
-          if (idx.normal_index != -1)
-          {
-            face.has_normals = true;
-            face.normals[vi] = vec3(attributes.normals[3 * idx.normal_index + 0], attributes.normals[3 * idx.normal_index + 1], attributes.normals[3 * idx.normal_index + 2]);
-          }
-
-          if (idx.texcoord_index != -1)
-          {
-            face.has_UVs = true;
-            face.UVs[vi] = vec3(attributes.texcoords[2 * idx.texcoord_index + 0], attributes.texcoords[2 * idx.texcoord_index + 1], 0.0f);
-          }
+        if (idx.texcoord_index != -1)
+        {
+          face.has_UVs = true;
+          face.UVs[vi] = vec3(attributes.texcoords[2 * idx.texcoord_index + 0], attributes.texcoords[2 * idx.texcoord_index + 1], 0.0f);
         }
       }
-      return true;
     }
+    return true;
   }
 }

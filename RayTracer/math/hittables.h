@@ -312,7 +312,7 @@ public:
   virtual static_mesh* clone() const override;
   virtual void load_resources() override;
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(static_mesh, file_name); // to_json only
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(static_mesh, file_name, shape_index); // to_json only
 
 private:
   
@@ -321,6 +321,7 @@ private:
   vec3 origin = { 0,0,0 };
   vec3 scale = { 1,1,1 };
   vec3 rotation = { 0,0,0 };
+  int32_t shape_index = 0;
 
   // Runtime state
   std::vector<obj_helper::triangle_face> faces;
