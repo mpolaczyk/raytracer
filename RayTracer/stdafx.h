@@ -1,11 +1,9 @@
 #pragma once
 
 // Common library headers
-#include <iostream> // std::cout
+#include <iostream>
 #include <sstream>
 #include <assert.h>
-//#include <iosfwd>
-
 #include <string>
 #include <map>
 #include <vector>

@@ -2,7 +2,6 @@
 
 #include "windows_minimal.h"
 
-#include <chrono>
 #include <thread>
 
 #include "imgui.h"

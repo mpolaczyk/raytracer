@@ -2,7 +2,6 @@
 
 #include <thread>
 #include <semaphore>
-#include <ppl.h>
 
 #include "async_renderer_base.h"
 
