@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
 #include <ppl.h>
-#include <math.h>
 
 #include "math/materials.h"
+#include "math/camera.h"
 #include "processing/benchmark.h"
 
 #include "reference_renderer.h"
@@ -45,7 +45,7 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
       assert(isfinite(hdr_color.y));
       assert(isfinite(hdr_color.z));
 
-      vec3 ldr_color = tone_mapping::reinhard_extended(hdr_color, job_state.renderer_conf.white_point);
+      vec3 ldr_color = tone_mapping::reinhard_extended(hdr_color, job_state.renderer_conf->white_point);
       
       bmp::bmp_pixel p(ldr_color);
       job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
@@ -59,9 +59,10 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
 
 vec3 reference_renderer::fragment(float x, float y, const vec3& resolution)
 {
+  assert(job_state.cam != nullptr);
   uint32_t seed = uint32_t(y * resolution.x + x);  // Each pixel has a unique seed, gradient from white to black
 
-  const int rays_per_pixel = job_state.renderer_conf.rays_per_pixel;
+  const int rays_per_pixel = job_state.renderer_conf->rays_per_pixel;
   vec3 sum_colors;
 
   for (int i = 0; i < rays_per_pixel; ++i)
@@ -70,7 +71,7 @@ vec3 reference_renderer::fragment(float x, float y, const vec3& resolution)
     float u = (float(x) + random_seed::rand_pcg(seed)) / (resolution.x - 1);
     float v = (float(y) + random_seed::rand_pcg(seed)) / (resolution.y - 1);
     // Trace the ray
-    ray r = job_state.cam.get_ray(u, v);
+    ray r = job_state.cam->get_ray(u, v);
     sum_colors += trace_ray(r, seed);
   }
   
@@ -92,6 +93,7 @@ vec3 reference_renderer::enviroment_light(const ray& in_ray)
 
 vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
 {
+  assert(job_state.scene_root != nullptr);
   // Defined by material color of all bounces, mixing colors (multiply to aggregate) [0.0f, 1.0f]
   vec3 ray_color = vec3(1.0f);
 
@@ -99,11 +101,11 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
   // Allow light to exceed 1.0f. Non-emissive materials can emit a little bit of light
   vec3 incoming_light = vec3(0.0f);
 
-  int bounces = job_state.renderer_conf.ray_bounces;
+  int bounces = job_state.renderer_conf->ray_bounces;
   for (int i = 0; i < bounces; ++i)
   {
     hit_record hit;
-    if (job_state.scene_root.hit(in_ray, 0.01f, math::infinity, hit))
+    if (job_state.scene_root->hit(in_ray, 0.01f, math::infinity, hit))
     {
       // Don't bounce if ray has no color
       if (math::length_squared(ray_color) < 0.1f)

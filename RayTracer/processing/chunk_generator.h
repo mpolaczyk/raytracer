@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 enum class chunk_strategy_type
 {
   none = 0,

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <limits>
-#include <random>
-
 #include "vec3.h"
 
 #define RAND_SEED_FUNC(seed) rand_pcg(seed)
@@ -31,10 +28,10 @@ namespace colors
 
 namespace math
 {
-  const float infinity = std::numeric_limits<float>::infinity();
+  const float infinity = HUGE_VALF;
   const float pi = 3.1415926535897932385f;
   const float small_number = 0.00000001f;
-  constexpr float epsilon = std::numeric_limits<float>::epsilon();
+  constexpr float epsilon = FLT_EPSILON;
 
   // FLOAT
   float reflectance(float cosine, float ref_idx);

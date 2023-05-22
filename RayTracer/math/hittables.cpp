@@ -3,17 +3,7 @@
 #include "hittables.h"
 #include "aabb.h"
 #include "materials.h"
-
-hittable* hittable::spawn_by_type(hittable_class type)
-{
-  if (type == hittable_class::scene) { return new scene(); }
-  else if (type == hittable_class::sphere) { return new sphere(); }
-  else if (type == hittable_class::xy_rect) { return new xy_rect(); }
-  else if (type == hittable_class::xz_rect) { return new xz_rect(); }
-  else if (type == hittable_class::yz_rect) { return new yz_rect(); }
-  else if (type == hittable_class::static_mesh) { return new static_mesh(); }
-  return nullptr;
-}
+#include "onb.h"
 
 scene::~scene()
 {

@@ -1,10 +1,8 @@
 #pragma once
 
-#include <chrono>
-#include <functional>
-#include <string>
-
-using namespace std::chrono;
+namespace std {
+  template<typename> class function;
+}
 
 namespace benchmark
 {
@@ -16,7 +14,7 @@ namespace benchmark
     inline uint64_t stop();
 
   private:
-    time_point<high_resolution_clock> start_point, end_point;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_point, end_point;
     std::string name;
     bool verbose = true;
   };

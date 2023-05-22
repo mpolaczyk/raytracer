@@ -1,5 +1,8 @@
 #include "stdafx.h"
 
+#include <functional>
+#include <chrono>
+
 #include "benchmark.h"
 
 #if USE_PIX
@@ -14,7 +17,7 @@ namespace benchmark
 #if USE_BENCHMARK
     name = in_name;
     verbose = in_verbose;
-    start_point = high_resolution_clock::now();
+    start_point = std::chrono::high_resolution_clock::now();
 #if USE_PIX
     PIXBeginEvent(PIX_COLOR(155, 112, 0), in_name.c_str());
 #endif
@@ -41,9 +44,9 @@ namespace benchmark
   uint64_t instance::stop()
   {
 #if USE_BENCHMARK
-    end_point = high_resolution_clock::now();
-    uint64_t begin = time_point_cast<microseconds>(start_point).time_since_epoch().count();
-    uint64_t end = time_point_cast<microseconds>(end_point).time_since_epoch().count();
+    end_point = std::chrono::high_resolution_clock::now();
+    uint64_t begin = time_point_cast<std::chrono::microseconds>(start_point).time_since_epoch().count();
+    uint64_t end = time_point_cast<std::chrono::microseconds>(end_point).time_since_epoch().count();
     uint64_t time = end - begin;
     if (verbose)
     {

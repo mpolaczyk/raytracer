@@ -1,34 +1,8 @@
 #pragma once
 
-#include <string>
-#include <map>
-
-#include "ray.h"
-#include "hittables.h"
-#include "textures.h"
-#include "pdf.h"
-#include "app/json/serializable.h"
 #include "app/factories.h"
 
-class material_instances : serializable<nlohmann::json>
-{
-public:
-  bool is_id_in_use(const std::string& id) const;
-  bool try_add(material* instance);
-  void remove(const std::string& id);
-  material* get_material(const std::string& id) const;
-  std::vector<std::string> get_material_ids() const;
-  std::vector<std::string> get_material_names() const;
-  int get_index_by_name(const std::string& name) const;
-  int get_index_by_id(const std::string& id) const;
-  virtual nlohmann::json serialize() override;
-  virtual void deserialize(const nlohmann::json& j) override;
-
-private:
-  std::map<std::string, material*> registry;
-};
-
-class material : serializable<nlohmann::json>
+class material
 {
 public:
   material() {}
@@ -56,9 +30,20 @@ public:
   float refraction_index = 1.0f;
 
   void get_name(std::string& out_name, bool with_params=true) const;
-  void draw_edit_panel();
-  virtual nlohmann::json serialize() override;
-  virtual void deserialize(const nlohmann::json& j) override;
+  void draw_edit_panel();  
+};
 
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(material, type, id, smoothness, gloss_probability, refraction_probability, refraction_index); // to_json only
+class material_instances
+{
+public:
+  bool is_id_in_use(const std::string& id) const;
+  bool try_add(material* instance);
+  void remove(const std::string& id);
+  material* get_material(const std::string& id) const;
+  std::vector<std::string> get_material_ids() const;
+  std::vector<std::string> get_material_names() const;
+  int get_index_by_name(const std::string& name) const;
+  int get_index_by_id(const std::string& id) const;
+
+  std::map<std::string, material*> registry;
 };

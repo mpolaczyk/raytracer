@@ -152,7 +152,6 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClCompile Include="app\app.cpp" />
     <ClCompile Include="app\exceptions.cpp" />
     <ClCompile Include="app\json\app_json.cpp" />
-    <ClCompile Include="app\json\camera_json.cpp" />
     <ClCompile Include="app\json\frame_renderer_json.cpp" />
     <ClCompile Include="app\json\hittables_json.cpp" />
     <ClCompile Include="app\json\materials_json.cpp" />
@@ -190,6 +189,10 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="..\ThirtParty\imgui_v1.87\imstb_truetype.h" />
     <ClInclude Include="app\app.h" />
     <ClInclude Include="app\exceptions.h" />
+    <ClInclude Include="app\json\app_json.h" />
+    <ClInclude Include="app\json\frame_renderer_json.h" />
+    <ClInclude Include="app\json\hittables_json.h" />
+    <ClInclude Include="app\json\materials_json.h" />
     <ClInclude Include="app\json\serializable.h" />
     <ClInclude Include="app\factories.h" />
     <ClInclude Include="gfx\bmp.h" />

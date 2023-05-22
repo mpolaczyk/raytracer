@@ -1,9 +1,7 @@
 #include "stdafx.h"
 
-#include <iosfwd>
-
-#include "math/materials.h"
 #include "imgui.h"
+#include "math/materials.h"
 
 bool material_instances::is_id_in_use(const std::string& id) const
 {
@@ -45,7 +43,10 @@ material* material_instances::get_material(const std::string& id) const
 std::vector<std::string> material_instances::get_material_ids() const
 {
   std::vector<std::string> names;
-  std::transform(registry.begin(), registry.end(), std::back_inserter(names), [](std::pair<std::string, material*> pair) { return pair.first; });
+  for (auto& pair : registry)
+  {
+    names.push_back(pair.first);
+  }
   return names;
 }
 

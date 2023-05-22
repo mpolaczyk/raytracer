@@ -1,8 +1,15 @@
 #pragma once
 
 // Common library headers
-#include <iostream>
+#include <iostream> // std::cout
+#include <sstream>
 #include <assert.h>
+//#include <iosfwd>
+
+#include <string>
+#include <map>
+#include <vector>
+#include <array>
 
 // Build type detection
 #ifdef _DEBUG

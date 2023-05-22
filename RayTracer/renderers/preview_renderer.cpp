@@ -4,6 +4,7 @@
 
 #include "math/materials.h"
 #include "math/hittables.h"
+#include "math/camera.h"
 #include "processing/benchmark.h"
 
 #include "preview_renderer.h"
@@ -25,13 +26,15 @@ void preview_renderer::render()
 
 void preview_renderer::render_chunk(const chunk& in_chunk)
 {
+  assert(job_state.scene_root != nullptr);
+  assert(job_state.cam != nullptr);
   std::thread::id thread_id = std::this_thread::get_id();
 
   std::ostringstream oss;
   oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
   benchmark::scope_counter benchmark_render_chunk(oss.str(), false);
 
-  hittable* l = job_state.scene_root.lights[0];
+  hittable* l = job_state.scene_root->lights[0];
   vec3 light = l->get_origin();
 
   for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
@@ -43,17 +46,17 @@ void preview_renderer::render_chunk(const chunk& in_chunk)
 
       float u = float(x) / (job_state.image_width - 1);
       float v = float(y) / (job_state.image_height - 1);
-      ray r = job_state.cam.get_ray(u, v);
+      ray r = job_state.cam->get_ray(u, v);
       hit_record h;
 
-      if (job_state.scene_root.hit(r, 0.01f, math::infinity, h))
+      if (job_state.scene_root->hit(r, 0.01f, math::infinity, h))
       {
         r.origin = h.p;
         vec3 light_dir = math::normalize(light - r.origin);
         r.direction = light_dir;
         hit_record sh;
         bool in_shadow = false;
-        if (job_state.scene_root.hit(r, 0.01f, math::infinity, sh))
+        if (job_state.scene_root->hit(r, 0.01f, math::infinity, sh))
         {
           assert(sh.material_ptr != nullptr);
           in_shadow = sh.material_ptr->type != material_type::light;

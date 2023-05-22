@@ -57,9 +57,6 @@
     <ClCompile Include="app\json\app_json.cpp">
       <Filter>app\json</Filter>
     </ClCompile>
-    <ClCompile Include="app\json\camera_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
     <ClCompile Include="app\json\frame_renderer_json.cpp">
       <Filter>app\json</Filter>
     </ClCompile>
@@ -208,6 +205,18 @@
       <Filter>app\json</Filter>
     </ClInclude>
     <ClInclude Include="windows_minimal.h" />
+    <ClInclude Include="app\json\frame_renderer_json.h">
+      <Filter>app\json</Filter>
+    </ClInclude>
+    <ClInclude Include="app\json\app_json.h">
+      <Filter>app\json</Filter>
+    </ClInclude>
+    <ClInclude Include="app\json\materials_json.h">
+      <Filter>app\json</Filter>
+    </ClInclude>
+    <ClInclude Include="app\json\hittables_json.h">
+      <Filter>app\json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

@@ -14,6 +14,7 @@
 #include "app/app.h"
 #include "gfx/dx11_helper.h"
 #include "math/materials.h"
+#include "processing/async_renderer_base.h"
 #include "math/fpexcept.h"
 #include "app/factories.h"
 
@@ -113,8 +114,8 @@ int main(int, char**)
     state.load_scene_state();
     state.load_rendering_state();
     state.load_window_state();
-    state.scene_root.load_resources();
-    state.renderer = object_factory::spawn_renderer(state.renderer_conf.type);
+    state.scene_root->load_resources();
+    state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);
     ::SetWindowPos(hwnd, NULL, state.window_conf.x, state.window_conf.y, state.window_conf.w, state.window_conf.h, NULL);
 
     // Auto render on startup
@@ -172,18 +173,18 @@ int main(int, char**)
             if (state.renderer->is_renderer_type_different(state.renderer_conf))
             {
               delete state.renderer;
-              state.renderer = object_factory::spawn_renderer(state.renderer_conf.type);
+              state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);
             }
 
-            state.scene_root.load_resources();
-            state.scene_root.build_boxes();
-            state.scene_root.update_materials(&state.materials);
-            state.scene_root.query_lights();
+            state.scene_root->load_resources();
+            state.scene_root->build_boxes();
+            state.scene_root->update_materials(state.materials);
+            state.scene_root->query_lights();
 
             update_default_spawn_position(state);
 
-            state.output_width = state.renderer_conf.resolution_horizontal;
-            state.output_height = state.renderer_conf.resolution_vertical;
+            state.output_width = state.renderer_conf->resolution_horizontal;
+            state.output_height = state.renderer_conf->resolution_vertical;
 
             state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
             state.renderer->render_single_async();

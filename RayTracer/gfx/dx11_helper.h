@@ -1,6 +1,11 @@
 #pragma once
 
-#include <d3d11.h>
+struct ID3D11Device;
+struct ID3D11DeviceContext;
+struct IDXGISwapChain;
+struct ID3D11RenderTargetView;
+struct ID3D11Texture2D;
+struct ID3D11ShaderResourceView;
 
 namespace dx11
 {
@@ -13,7 +18,6 @@ namespace dx11
   void CleanupDeviceD3D();
   void CreateRenderTarget();
   void CleanupRenderTarget();
-  LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
   bool UpdateTextureBuffer(unsigned char* buffer, int width, int height, ID3D11Texture2D* in_texture);
   bool LoadTextureFromBuffer(unsigned char* buffer, int width, int height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture);
   bool LoadTextureFromFile(const char* filename, int& out_width, int& out_height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture);

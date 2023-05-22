@@ -1,48 +1,67 @@
 #include "stdafx.h"
 
-#include "async_renderer_base.h"
-
-#include <vector>
+#include <thread>
+#include <semaphore>
 #include <ppl.h>
+
+#include "async_renderer_base.h"
 
 #include "gfx/bmp.h"
 #include "math/hittables.h"
 #include "math/materials.h"
 #include "math/pdf.h"
+#include "math/camera.h"
 #include "processing/benchmark.h"
 
 async_renderer_base::async_renderer_base()
 {
-  worker_thread = std::thread(&async_renderer_base::async_job, this);
+  worker_thread = new std::thread(&async_renderer_base::async_job, this);
+  worker_semaphore = new std::binary_semaphore(0);
 }
 async_renderer_base::~async_renderer_base()
 {
   job_state.requested_stop = true;
-  worker_semaphore.release();
-  worker_thread.join();
+  worker_semaphore->release();
+  worker_thread->join();
+  delete worker_semaphore;
+  delete worker_thread;
+  delete job_state.scene_root;
+  delete job_state.cam;
   if (job_state.img_rgb != nullptr) delete job_state.img_rgb;
   if (job_state.img_bgr != nullptr) delete job_state.img_bgr;
 }
 
-void async_renderer_base::set_config(const renderer_config& in_renderer_config, const scene& in_scene, const camera_config& in_camera_config)
+void async_renderer_base::set_config(const renderer_config* in_renderer_config, const scene* in_scene, const camera_config* in_camera_config)
 {
+  assert(in_scene != nullptr);
+  assert(in_camera_config != nullptr);
+  assert(in_renderer_config != nullptr);
+
   if (job_state.is_working) return;
 
-  bool force_recreate_buffers = job_state.image_width != in_renderer_config.resolution_horizontal || job_state.image_height != in_renderer_config.resolution_vertical;
+  bool force_recreate_buffers = job_state.image_width != in_renderer_config->resolution_horizontal || job_state.image_height != in_renderer_config->resolution_vertical;
 
   // Copy all objects on purpose
   // - allows original scene to be edited while this one is rendering
   // - allows to detect if existing is dirty
-  job_state.image_width = in_renderer_config.resolution_horizontal;
-  job_state.image_height = in_renderer_config.resolution_vertical;
-  job_state.renderer_conf = in_renderer_config;
-  job_state.scene_root = *in_scene.clone();
-  job_state.cam.set_camera(in_camera_config);
+  job_state.image_width = in_renderer_config->resolution_horizontal;
+  job_state.image_height = in_renderer_config->resolution_vertical;
+  if (job_state.renderer_conf == nullptr)
+  {
+    job_state.renderer_conf = new renderer_config();
+  }
+  *job_state.renderer_conf = *in_renderer_config;
+  job_state.scene_root = in_scene->clone();
+  if (job_state.cam == nullptr)
+  {
+    job_state.cam = new camera();
+  }
+  job_state.cam->configure(in_camera_config);
 
   // Delete buffers 
   if (job_state.img_rgb != nullptr)
   {
-    if (force_recreate_buffers || !job_state.renderer_conf.reuse_buffer)
+    if (force_recreate_buffers || !job_state.renderer_conf->reuse_buffer)
     {
       delete job_state.img_rgb;
       delete job_state.img_bgr;
@@ -66,34 +85,48 @@ void async_renderer_base::render_single_async()
   if (job_state.is_working) return;
   
   job_state.is_working = true;
-  worker_semaphore.release();
+  worker_semaphore->release();
 }
 
-bool async_renderer_base::is_world_dirty(const scene& in_scene)
+bool async_renderer_base::is_world_dirty(const scene* in_scene)
 {
-  return job_state.scene_root.get_hash() != in_scene.get_hash();
+  assert(in_scene != nullptr);
+  assert(job_state.scene_root != nullptr);
+  return job_state.scene_root->get_hash() != in_scene->get_hash();
 }
 
-bool async_renderer_base::is_renderer_setting_dirty(const renderer_config& in_renderer_config)
+bool async_renderer_base::is_renderer_setting_dirty(const renderer_config* in_renderer_config)
 {
-  return job_state.renderer_conf.get_hash() != in_renderer_config.get_hash();
+  assert(in_renderer_config != nullptr);
+  if (job_state.renderer_conf == nullptr)
+  {
+    return true;
+  }
+  return job_state.renderer_conf->get_hash() != in_renderer_config->get_hash();
 }
 
-bool async_renderer_base::is_renderer_type_different(const renderer_config& in_renderer_config)
+bool async_renderer_base::is_renderer_type_different(const renderer_config* in_renderer_config)
 {
-  return job_state.renderer_conf.type != in_renderer_config.type;
+  assert(in_renderer_config != nullptr);
+  if (job_state.renderer_conf == nullptr)
+  {
+    return true;
+  }
+  return job_state.renderer_conf->type != in_renderer_config->type;
 }
 
-bool async_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_config)
+bool async_renderer_base::is_camera_setting_dirty(const camera_config* in_camera_config)
 {
-  return job_state.cam.get_hash() != in_camera_config.get_hash();
+  assert(in_camera_config != nullptr);
+  assert(job_state.cam != nullptr);
+  return job_state.cam->get_hash() != in_camera_config->get_hash();
 }
 
 void async_renderer_base::async_job()
 {
   while (true)
   {
-    worker_semaphore.acquire();
+    worker_semaphore->acquire();
     if(job_state.requested_stop) { break; }
 
     benchmark::instance benchmark_render;

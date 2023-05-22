@@ -1,24 +1,23 @@
 #pragma once
 
-#include "math/camera.h"
-#include "processing/async_renderer_base.h"
-#include "math/hittables.h"
-#include "math/materials.h"
+struct ID3D11ShaderResourceView;
+struct ID3D11Texture2D;
 
-#include "app/json/serializable.h"
+class async_renderer_base;
+class material;
+class hittable;
+class renderer_config;
+class material_instances;
+class scene;
+class camera_config;
 
-class window_config : serializable<nlohmann::json>
+class window_config
 {
 public:
   int x = 100;
   int y = 100;
   int w = 1920;
   int h = 1080;
-
-  virtual nlohmann::json serialize() override;
-  virtual void deserialize(const nlohmann::json& j) override;
-
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(window_config, x, y, w, h);  // to_json only
 };
 
 /*
@@ -87,28 +86,16 @@ struct scene_editor_window_model
 class app_instance
 {
 public:
+  app_instance();
+  ~app_instance();
 
-  app_instance()
-  {
-  }
-  ~app_instance()
-  {
-    if (renderer != nullptr)
-    {
-      delete renderer;
-    }
-    if (default_material != nullptr)
-    {
-      delete default_material;
-    }
-  }
   // Scene state
-  scene scene_root;
-  camera_config camera_conf;
+  scene* scene_root = nullptr;
+  camera_config* camera_conf = nullptr;
 
   // Rendering state
-  renderer_config renderer_conf;
-  material_instances materials;
+  renderer_config* renderer_conf = nullptr;
+  material_instances* materials = nullptr;
   
   // OS window state
   window_config window_conf;
@@ -122,8 +109,8 @@ public:
   bool is_running = true;
   int output_width = 0;
   int output_height = 0;
-  struct ID3D11ShaderResourceView* output_srv = nullptr;
-  struct ID3D11Texture2D* output_texture = nullptr;
+  ID3D11ShaderResourceView* output_srv = nullptr;
+  ID3D11Texture2D* output_texture = nullptr;
   async_renderer_base* renderer = nullptr;
   material* default_material = nullptr;
   vec3 center_of_scene;
@@ -131,7 +118,7 @@ public:
 
   float output_window_lmb_x = -1.0f;
   float output_window_lmb_y = -1.0f;
-  class hittable* selected_object = nullptr;
+  hittable* selected_object = nullptr;
   float move_speed = 15.0f;
 
   void load_scene_state();
@@ -142,6 +129,7 @@ public:
   void save_window_state();
 };
 
+// TODO: Move this to app_instance class
 void draw_camera_panel(camera_panel_model& model, app_instance& state);
 void draw_renderer_panel(renderer_panel_model& model, app_instance& state);
 void draw_hotkeys_panel(app_instance& state);

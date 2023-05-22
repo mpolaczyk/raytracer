@@ -3,8 +3,6 @@
 #include "vec3.h"
 #include "ray.h"
 
-#include "app/json/serializable.h"
-
 struct plane
 {
   vec3 horizontal;            // size horizontal
@@ -16,7 +14,7 @@ struct plane
   }
 };
 
-class camera_config : serializable<nlohmann::json>
+class camera_config
 {
 public: 
   camera_config() = default;
@@ -81,21 +79,15 @@ public:
   float aperture = 0.0f;       // defocus blur
   float dist_to_focus = 1.0f;  // distance from camera to the focus object
   float type = 0.0f;           // 0.0f perspective camera, 1.0f orthographic camera
-
-  virtual nlohmann::json serialize() override;
-  virtual void deserialize(const nlohmann::json& j) override;
-
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(camera_config, field_of_view, aspect_ratio_h, aspect_ratio_w, aperture, dist_to_focus, type); // to_json only
-
 };
 
 class camera
 {
 public:
 
-  void set_camera(const camera_config& in_camera_config)
+  void configure(const camera_config* in_camera_config)
   {
-    camera_conf = in_camera_config;
+    camera_conf = *in_camera_config;
 
     float theta = math::degrees_to_radians(camera_conf.field_of_view);
     float h = tan(theta / 2.0f);

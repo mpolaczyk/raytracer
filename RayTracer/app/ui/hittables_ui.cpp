@@ -1,15 +1,13 @@
 #include "stdafx.h"
 
+#include "imgui.h"
+
 #include "math/hittables.h"
 #include "math/materials.h"
 
-#include <iosfwd>
-
-#include "imgui.h"
-
 void hittable::get_name(std::string& out_name, bool with_params) const
 {
-  std::string base_name = hittable_class_names[(int)type];
+  std::string base_name = hittable_type_names[(int)type];
   
   std::ostringstream oss;
   oss << "/" << base_name << "/" << material_id;
@@ -18,7 +16,7 @@ void hittable::get_name(std::string& out_name, bool with_params) const
 
 void scene::get_name(std::string& out_name, bool with_params) const
 {
-  out_name = hittable_class_names[(int)hittable_class::scene];
+  out_name = hittable_type_names[(int)hittable_type::scene];
 }
 
 void sphere::get_name(std::string& out_name, bool with_params) const
