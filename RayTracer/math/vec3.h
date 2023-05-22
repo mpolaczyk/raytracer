@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef USE_SIMD
+#if USE_SIMD
 #include <intrin.h> // SSE3 required
 #endif
 
@@ -9,7 +9,7 @@ __declspec(align(16)) class vec3
 public:
   vec3() = default;
   vec3(float in_x, float in_y, float in_z) : e{ in_x, in_y, in_z } {}
-#ifdef USE_SIMD
+#if USE_SIMD
   explicit vec3(float f) { R128 = _mm_set_ps1(f); }
   explicit vec3(const __m128& r128) { R128 = r128; }
 #else
@@ -21,7 +21,7 @@ public:
 
   vec3 operator - () const { return vec3(-x, -y, -z); }
 
-#ifdef USE_SIMD
+#if USE_SIMD
   vec3& operator += (const vec3& v) { R128 = _mm_add_ps(R128, v.R128); return *this; }
   vec3& operator -= (const vec3& v) { R128 = _mm_sub_ps(R128, v.R128); return *this; }
   vec3& operator *= (const vec3& v) { R128 = _mm_mul_ps(R128, v.R128); return *this; }
@@ -52,7 +52,7 @@ public:
   };
 };
 
-#ifdef USE_SIMD
+#if USE_SIMD
 inline vec3 operator + (const vec3& v, float t) { return vec3(_mm_add_ps(v.R128, _mm_set_ps1(t))); }
 inline vec3 operator - (const vec3& v, float t) { return vec3(_mm_sub_ps(v.R128, _mm_set_ps1(t))); }
 inline vec3 operator * (const vec3& v, float t) { return vec3(_mm_mul_ps(v.R128, _mm_set_ps1(t))); }

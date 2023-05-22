@@ -1,0 +1,3 @@
+vs2022_cmd_prompt_x64.bat
+vcperf /stop RayTracerBuildInsightsSession BuildInsights.etl
+pause

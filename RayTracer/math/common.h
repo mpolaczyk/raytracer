@@ -103,7 +103,7 @@ namespace math
   }
   inline float dot(const vec3& u, const vec3& v)
   {
-#ifdef USE_SIMD 
+#if USE_SIMD 
     __m128 a = _mm_mul_ps(u.R128, v.R128);
     a = _mm_hadd_ps(a, a);
     return _mm_cvtss_f32(_mm_hadd_ps(a, a));
@@ -117,7 +117,7 @@ namespace math
   }
   inline vec3 normalize(const vec3& v)
   {
-#ifdef USE_SIMD 
+#if USE_SIMD 
     __m128 a = _mm_mul_ps(v.R128, v.R128);
     a = _mm_hadd_ps(a, a);
     return vec3(_mm_div_ps(v.R128, _mm_sqrt_ps(_mm_hadd_ps(a, a))));
@@ -127,7 +127,7 @@ namespace math
   }
   inline float length(const vec3& v)
   {
-#ifdef USE_SIMD 
+#if USE_SIMD 
     __m128 a = _mm_mul_ps(v.R128, v.R128);
     a = _mm_hadd_ps(a, a);
     return _mm_cvtss_f32(_mm_sqrt_ps(_mm_hadd_ps(a, a)));
@@ -138,7 +138,7 @@ namespace math
   inline float length_squared(const vec3& v)
   {
     // commented out, non vectorized is faster in that case
-    //#ifdef USE_SIMD 
+    //#if USE_SIMD 
     //    __m128 a = _mm_mul_ps(v.R128, v.R128);
     //    a = _mm_hadd_ps(a, a);
     //    return _mm_cvtss_f32(_mm_hadd_ps(a,a));

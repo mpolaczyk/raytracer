@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "math/fpexcept.h"
+
 #include "aabb.h"
 #include "vec3.h"
 

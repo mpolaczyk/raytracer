@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "math/materials.h"
+#include "processing/benchmark.h"
 
 #include "ispc_renderer.h"
 

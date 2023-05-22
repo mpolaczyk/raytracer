@@ -157,7 +157,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
   draw_delete_object_panel(model.d_model, state);
 
   int num_objects = (int)state.scene_root.objects.size();
-  if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, min(20, num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
+  if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, math::min1(20, (float)num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
   {
     for (int n = 0; n < num_objects; n++)
     {

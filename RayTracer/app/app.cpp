@@ -82,7 +82,7 @@ void handle_input(app_instance& state)
 
   // Handle speed
   float wheel_delta = ImGui::GetIO().MouseWheel;
-  state.move_speed = max(0.5f, state.move_speed + wheel_delta / 2.0f);
+  state.move_speed = math::max1(0.5f, state.move_speed + wheel_delta / 2.0f);
 
   // Handle camera movement
   if (!io.WantCaptureKeyboard)

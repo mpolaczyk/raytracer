@@ -1,5 +1,12 @@
 #include "stdafx.h"
 
+
+#include "windows_minimal.h"
+
+#include <sstream>
+
+#include "app/exceptions.h"
+
 int describe_seh_exception(_EXCEPTION_POINTERS* p_exp)
 {
   // https://randomascii.wordpress.com/2012/04/21/exceptional-floating-point/

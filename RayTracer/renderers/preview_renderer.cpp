@@ -2,9 +2,11 @@
 
 #include <ppl.h>
 
-#include "preview_renderer.h"
 #include "math/materials.h"
 #include "math/hittables.h"
+#include "processing/benchmark.h"
+
+#include "preview_renderer.h"
 
 std::string preview_renderer::get_name() const
 {
@@ -58,7 +60,7 @@ void preview_renderer::render_chunk(const chunk& in_chunk)
         }
 
         assert(h.material_ptr != nullptr);
-        pixel_color = h.material_ptr->color * max(0.2f, math::dot(h.normal, light_dir));
+        pixel_color = h.material_ptr->color * math::max1(0.2f, math::dot(h.normal, light_dir));
         if (in_shadow)
         {
           pixel_color *= vec3(.9f, .9f, .9f);

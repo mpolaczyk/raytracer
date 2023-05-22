@@ -2,6 +2,8 @@
 
 #include <ppl.h>
 
+#include "processing/benchmark.h"
+
 #include "example_renderer.h"
 
 std::string example_renderer::get_name() const

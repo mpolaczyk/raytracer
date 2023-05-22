@@ -9,6 +9,7 @@
 #include "math/hittables.h"
 #include "math/materials.h"
 #include "math/pdf.h"
+#include "processing/benchmark.h"
 
 async_renderer_base::async_renderer_base()
 {

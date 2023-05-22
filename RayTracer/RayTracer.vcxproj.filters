@@ -207,6 +207,7 @@
     <ClInclude Include="app\json\vec3_json.h">
       <Filter>app\json</Filter>
     </ClInclude>
+    <ClInclude Include="windows_minimal.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

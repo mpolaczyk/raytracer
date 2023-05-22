@@ -3,7 +3,6 @@
 #include "hittables.h"
 #include "aabb.h"
 #include "materials.h"
-#include "common.h"
 
 hittable* hittable::spawn_by_type(hittable_class type)
 {

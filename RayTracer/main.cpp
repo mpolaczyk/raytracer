@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "windows_minimal.h"
+
 #include <chrono>
 #include <thread>
 
@@ -12,7 +14,7 @@
 #include "app/app.h"
 #include "gfx/dx11_helper.h"
 #include "math/materials.h"
-
+#include "math/fpexcept.h"
 #include "app/factories.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -146,7 +148,10 @@ int main(int, char**)
       handle_input(state);
 
       // Draw UI
+#ifdef _DEBUG
+      // Debug UI only in debug mode
       if (0) { ImGui::ShowDemoWindow(); }
+#endif
       draw_raytracer_window(state.rw_model, state);
       draw_output_window(state.ow_model, state);
       draw_scene_editor_window(state.sew_model, state);
