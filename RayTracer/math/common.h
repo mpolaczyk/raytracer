@@ -318,3 +318,46 @@ namespace obj_helper
 
   bool load_obj(const std::string& file_name, int shape_index, std::vector<triangle_face>& out_faces);
 }
+
+
+#include "spdlog/spdlog.h"
+namespace logger
+{
+  void init();
+
+  template<typename... Args>
+  void trace(std::string_view format, Args &&... args)
+  {
+    spdlog::get("console")->trace(format, std::forward<Args>(args)...);
+  }
+
+  template<typename... Args>
+  void debug(std::string_view format, Args &&... args)
+  {
+    spdlog::get("console")->debug(format, std::forward<Args>(args)...);
+  }
+
+  template<typename... Args>
+  void info(std::string_view format, Args &&... args)
+  {
+    spdlog::get("console")->info(format, std::forward<Args>(args)...);
+  }
+
+  template<typename... Args>
+  void warn(std::string_view format, Args &&... args)
+  {
+    spdlog::get("console")->warn(format, std::forward<Args>(args)...);
+  }
+
+  template<typename... Args>
+  void error(std::string_view format, Args &&... args)
+  {
+    spdlog::get("console")->error(format, std::forward<Args>(args)...);
+  }
+
+  template<typename... Args>
+  void critical(std::string_view format, Args &&... args)
+  {
+    spdlog::get("console")->critical(format, std::forward<Args>(args)...);
+  }
+}

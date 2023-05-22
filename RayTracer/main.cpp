@@ -17,12 +17,23 @@
 #include "math/fpexcept.h"
 #include "app/factories.h"
 
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
 
 // Win32 message handler
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+  logger::init();
+  logger::trace("trace {0}    {1}   {2}", 23, "kkkk", 1.23456f);
+  logger::debug("debug {0}    {1}   {2}", 23, "kkkk", 1.23456f);
+  logger::info("info {0}    {1}   {2}", 23, "kkkk", 1.23456f);
+  logger::warn("warn {0}    {1}   {2}", 23, "kkkk", 1.23456f);
+  logger::error("error {0}    {1}   {2}", 23, "kkkk", 1.23456f);
+  logger::critical("critical {0}    {1}   {2}", 23, "kkkk", 1.23456f);
+
   if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
     return true;
 
@@ -148,7 +159,7 @@ int main(int, char**)
       handle_input(state);
 
       // Draw UI
-#ifdef _DEBUG
+#ifndef IMGUI_DISABLE_DEMO_WINDOWS
       // Debug UI only in debug mode
       if (0) { ImGui::ShowDemoWindow(); }
 #endif

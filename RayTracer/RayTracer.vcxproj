@@ -220,6 +220,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="third_party\imgui_v1.87\imstb_rectpack.h" />
     <ClInclude Include="third_party\imgui_v1.87\imstb_textedit.h" />
     <ClInclude Include="third_party\imgui_v1.87\imstb_truetype.h" />
+    <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
     <ClInclude Include="windows_minimal.h" />
   </ItemGroup>
   <ItemGroup>

@@ -73,25 +73,25 @@
       <Filter>renderers</Filter>
     </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\imgui.cpp">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\imgui_demo.cpp">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\imgui_draw.cpp">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\backends\imgui_impl_dx11.cpp">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\backends\imgui_impl_win32.cpp">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\imgui_tables.cpp">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,34 +194,34 @@
       <Filter>app\json</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imconfig.h">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imgui.h">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\backends\imgui_impl_dx11.h">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\backends\imgui_impl_win32.h">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imgui_internal.h">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imstb_rectpack.h">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imstb_textedit.h">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imstb_truetype.h">
-      <Filter>imgui</Filter>
+      <Filter>third_party\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp">
+      <Filter>third_party</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="imgui">
-      <UniqueIdentifier>{f5bcb8ed-7e79-47a2-8101-c72f6f11618b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="gfx">
       <UniqueIdentifier>{f3a219ff-2773-4511-96db-7a99edbb2a8a}</UniqueIdentifier>
     </Filter>
@@ -242,6 +242,12 @@
     </Filter>
     <Filter Include="math">
       <UniqueIdentifier>{baec1bfd-a43e-4749-98b8-f37ed9248f5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party">
+      <UniqueIdentifier>{d3b5586e-ddd7-4ae0-af04-61d06235d413}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\imgui">
+      <UniqueIdentifier>{f5bcb8ed-7e79-47a2-8101-c72f6f11618b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -492,3 +492,18 @@ namespace obj_helper
     return true;
   }
 }
+
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+
+namespace logger
+{
+  static auto console = spdlog::stdout_color_mt("console");
+
+  void init()
+  {
+    spdlog::flush_every(std::chrono::seconds(3));
+    spdlog::set_level(spdlog::level::trace);
+    spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] [%l] %^%v%$");
+  }
+}
