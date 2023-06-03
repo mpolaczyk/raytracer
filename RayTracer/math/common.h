@@ -1,6 +1,8 @@
 #pragma once
 
 #include "vec3.h"
+#include "ray.h"
+#include "hit.h"
 
 #define RAND_SEED_FUNC(seed) rand_pcg(seed)
 
@@ -30,7 +32,8 @@ namespace math
 {
   const float infinity = HUGE_VALF;
   const float pi = 3.1415926535897932385f;
-  const float small_number = 0.00000001f;
+  const float small_number = 0.0001f;
+  const float very_small_number = 0.00000001f;
   constexpr float epsilon = FLT_EPSILON;
 
   // FLOAT
@@ -90,9 +93,10 @@ namespace math
   bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal);
   vec3 lerp_vec3(const vec3& a, const vec3& b, float f);
   vec3 clamp_vec3(float a, float b, const vec3& f);
+  bool ray_triangle(const ray& ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit);
   inline bool is_near_zero(const vec3& value)
   {
-    return (fabs(value[0]) < small_number) && (fabs(value[1]) < small_number) && (fabs(value[2]) < small_number);
+    return (fabs(value[0]) < very_small_number) && (fabs(value[1]) < very_small_number) && (fabs(value[2]) < very_small_number);
   }
   inline bool is_zero(const vec3& value)
   {
@@ -149,14 +153,12 @@ namespace math
     float c = cosf(yaw);
     return vec3(c * u.x - s * u.y, s * u.x + c * u.y, u.z);
   }
-
   inline vec3 rotate_pitch(const vec3& u, float pitch)
   {
     float s = sinf(pitch);
     float c = cosf(pitch);
     return vec3(u.x, c * u.y - s * u.z, s * u.y + c * u.z);
   }
-
   inline vec3 rotate_roll(const vec3& u, float roll)
   {
     float s = sinf(roll);
@@ -305,22 +307,11 @@ namespace io
 
 namespace obj_helper
 {
-  struct triangle_face
-  {
-    vec3 vertices[3];
-
-    bool has_normals = false;
-    vec3 normals[3];
-
-    bool has_UVs = false;
-    vec3 UVs[3]; //xy
-  };
-
   bool load_obj(const std::string& file_name, int shape_index, std::vector<triangle_face>& out_faces);
 }
 
-
 #include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 namespace logger
 {
   void init();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ray.h"
+#include "hit.h"
 #include "aabb.h"
 
 #include "app/factories.h"
@@ -9,18 +10,6 @@ class material;
 class material_instances;
 
 constexpr int32_t MAX_LIGHTS = 50;
-
-struct hit_record
-{
-  vec3 p;         // hit point
-  vec3 normal;
-  float t;        // distance to hit point
-  float u;
-  float v;
-  material* material_ptr = nullptr;
-  bool front_face;
-  class hittable* object = nullptr;
-};
 
 /* Warning! Adding new hittables:
 * 1. Add child class in this header.
@@ -56,6 +45,7 @@ public:
   virtual uint32_t get_hash() const;
   virtual hittable* clone() const = 0;
   virtual void load_resources() {};
+  virtual void pre_render() {};
 
   // Persistent members
   hittable_type type = hittable_type::scene;
@@ -117,6 +107,7 @@ public:
   virtual uint32_t get_hash() const override;
   virtual scene* clone() const override;
   virtual void load_resources() override;
+  virtual void pre_render() override;
 
   void add(hittable* object);
   void remove(int object_id);
@@ -273,16 +264,18 @@ public:
   virtual uint32_t get_hash() const override;
   virtual static_mesh* clone() const override;
   virtual void load_resources() override;
+  virtual void pre_render() override;
   
   // Persistent state
   std::string file_name;
   vec3 origin = { 0,0,0 };
   vec3 scale = { 1,1,1 };
-  vec3 rotation = { 0,0,0 };
+  vec3 rotation = { 0,0,0 };  // degrees
   int32_t shape_index = 0;
 
   // Runtime state
-  std::vector<obj_helper::triangle_face> faces;
+  std::vector<triangle_face> faces; // World coordinates.
+  std::vector<triangle_face> asset; // TODO copy for now, but convert to a pointer to a static mesh asset. No world coordinates
   float extent = 0.0f;
   bool resources_dirty = true;
 };

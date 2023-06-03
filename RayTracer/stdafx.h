@@ -1,13 +1,8 @@
 #pragma once
 
-// Common library headers
-#include <iostream>
-#include <sstream>
-#include <assert.h>
+//// Common library headers
 #include <string>
-#include <map>
 #include <vector>
-#include <array>
 
 // Build type detection
 #ifdef _DEBUG

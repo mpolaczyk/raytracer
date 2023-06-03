@@ -35,7 +35,7 @@ void chunk_generator::generate_chunks(chunk_strategy_type strategy, uint32_t num
 
 void chunk_generator::generate_rectangles(uint32_t num_x, uint32_t num_y, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks)
 {
-  std::cout << "Grid num_x=" << num_x << " num_y=" << num_y << std::endl;
+  logger::info("Grid num_x={0} num_y={1}", num_x, num_y);
   uint32_t n = 0;
   for (uint32_t ny = 0; ny < num_y; ny++)
   {

@@ -93,6 +93,12 @@
     <ClCompile Include="third_party\imgui_v1.87\imgui_widgets.cpp">
       <Filter>third_party\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="app\json\serializable.cpp">
+      <Filter>app\json</Filter>
+    </ClCompile>
+    <ClCompile Include="renderers\preview_normals_renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -219,6 +225,12 @@
     </ClInclude>
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp">
       <Filter>third_party</Filter>
+    </ClInclude>
+    <ClInclude Include="math\hit.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers\preview_normals_renderer.h">
+      <Filter>renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

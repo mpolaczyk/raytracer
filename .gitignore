@@ -1,7 +1,6 @@
 .vs
 
 *.pdb
-*.obj
 *.ilk
 *.log
 *.recipe

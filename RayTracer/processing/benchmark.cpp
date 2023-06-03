@@ -50,7 +50,7 @@ namespace benchmark
     uint64_t time = end - begin;
     if (verbose)
     {
-      std::cout << name << ": " << time << "[us] = " << time / 1000 << "[ms] = " << time / 1000000 << "[s]" << std::endl;
+      logger::info("{0}: {1}[us] = {2}[ms] = {3}[s]", name, time, time / 1000, time / 1000000);
     }
 #if USE_PIX
     PIXEndEvent();

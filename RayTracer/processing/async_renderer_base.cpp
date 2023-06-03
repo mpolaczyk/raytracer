@@ -76,7 +76,7 @@ void async_renderer_base::set_config(const renderer_config* in_renderer_config, 
     job_state.img_bgr = new bmp::bmp_image(job_state.image_width, job_state.image_height);
   }
 
-  std::cout << "Frame renderer: " << job_state.image_width << "x" << job_state.image_height << std::endl;
+  logger::info("Frame renderer: {0}x{1}", job_state.image_width, job_state.image_height);
 }
 
 void async_renderer_base::render_single_async()

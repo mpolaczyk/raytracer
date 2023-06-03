@@ -7,6 +7,7 @@
 #include "processing/async_renderer_base.h"
 #include "renderers/example_renderer.h"
 #include "renderers/preview_renderer.h"
+#include "renderers/preview_normals_renderer.h"
 #include "renderers/reference_renderer.h"
 #include "renderers/ispc_renderer.h"
 
@@ -23,6 +24,7 @@ async_renderer_base* object_factory::spawn_renderer(renderer_type type)
 {
   if (type == renderer_type::example) { return new example_renderer(); }
   else if (type == renderer_type::preview) { return new preview_renderer(); }
+  else if (type == renderer_type::preview_normals) { return new preview_normals_renderer(); }
   else if (type == renderer_type::reference) { return new reference_renderer(); }
   else if (type == renderer_type::ispc) { return new ispc_renderer(); }
   return nullptr;

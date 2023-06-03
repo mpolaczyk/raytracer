@@ -4,7 +4,7 @@
 #include <intrin.h> // SSE3 required
 #endif
 
-__declspec(align(16)) class vec3
+__declspec(align(16)) struct vec3
 {
 public:
   vec3() = default;
@@ -80,4 +80,14 @@ inline vec3 operator * (const vec3& u, const vec3& v) { return vec3(u.x * v.x, u
 inline vec3 operator / (const vec3& u, const vec3& v) { return vec3(u.x / v.x, u.y / v.y, u.z / v.z); }
 #endif
 
-inline std::ostream& operator<<(std::ostream& out, const vec3& v) { return out << '[' << v.x << ',' << v.y << ',' << v.z << ']'; }
+__declspec(align(64)) struct triangle_face  // todo move somewhere else
+{
+  vec3 vertices[3];
+  vec3 pad1;
+  vec3 normals[3];  // vertex normals
+  vec3 pad2;
+  vec3 UVs[3]; //xy
+  vec3 pad3;
+
+  // TODO: compute face normal on load?
+};

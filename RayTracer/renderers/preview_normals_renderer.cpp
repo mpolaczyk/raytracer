@@ -7,14 +7,14 @@
 #include "math/camera.h"
 #include "processing/benchmark.h"
 
-#include "preview_renderer.h"
+#include "preview_normals_renderer.h"
 
-std::string preview_renderer::get_name() const
+std::string preview_normals_renderer::get_name() const
 {
-  return "CPU Preview";
+  return "CPU Preview Normals";
 }
 
-void preview_renderer::render()
+void preview_normals_renderer::render()
 {
   save_output = false;
 
@@ -24,7 +24,7 @@ void preview_renderer::render()
   concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
 }
 
-void preview_renderer::render_chunk(const chunk& in_chunk)
+void preview_normals_renderer::render_chunk(const chunk& in_chunk)
 {
   assert(job_state.scene_root != nullptr);
   assert(job_state.cam != nullptr);
@@ -52,23 +52,7 @@ void preview_renderer::render_chunk(const chunk& in_chunk)
 
       if (job_state.scene_root->hit(r, 0.01f, math::infinity, h))
       {
-        r.origin = h.p;
-        vec3 light_dir = math::normalize(light - r.origin);
-        r.direction = light_dir;
-        hit_record sh;
-        bool in_shadow = false;
-        if (job_state.scene_root->hit(r, 0.01f, math::infinity, sh))
-        {
-          assert(sh.material_ptr != nullptr);
-          in_shadow = sh.material_ptr->type != material_type::light;
-        }
-        
-        assert(h.material_ptr != nullptr);
-        pixel_color = h.material_ptr->color * math::max1(0.2f, math::dot(h.normal, light_dir));
-        if (in_shadow)
-        {
-          pixel_color *= vec3(.9f, .9f, .9f);
-        }
+        pixel_color = (h.normal + 1.0f) * .5f;
       }
       
       bmp::bmp_pixel p(pixel_color);

@@ -193,7 +193,16 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
 
 bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
-  // TODO
+  bool result = false;
+  for (int i = 0; i < faces.size(); i++)
+  {
+    const triangle_face* face = &faces[i];
+    if (math::ray_triangle(in_ray, t_min, t_max, face, out_hit))
+    {
+      out_hit.material_ptr = material_ptr;
+      return true;
+    }
+  }
   return false;
 }
 
@@ -495,8 +504,49 @@ void static_mesh::load_resources()
 {
   if (resources_dirty && file_name.length() > 0)
   {
-    bool success = obj_helper::load_obj(file_name, shape_index, faces);
+    asset.clear();
+    bool success = obj_helper::load_obj(file_name, shape_index, asset);
     resources_dirty = !success;
   }
-  // TODO find extent
+}
+
+
+void scene::pre_render()
+{
+  assert(objects.size() > 0);
+  for (hittable* object : objects)
+  {
+    assert(object != nullptr);
+    object->pre_render();
+  }
+}
+
+void static_mesh::pre_render()
+{
+  faces.clear();
+  faces = asset;  // clone
+
+  float y_rotation = rotation.y / 180.0f * math::pi;
+
+  // Translate asset vertices to the world coordinates
+  for (int f = 0; f < asset.size(); f++)
+  {
+    const triangle_face& in = asset[f];
+    
+    // calculate world location for each vertex
+    for (size_t vi = 0; vi < 3; ++vi)
+    {
+      faces[f].vertices[vi].x = (cosf(y_rotation) * in.vertices[vi].x - sinf(y_rotation) * in.vertices[vi].z) * scale.x + origin.x;
+      faces[f].vertices[vi].y = in.vertices[vi].y * scale.x + origin.y;
+      faces[f].vertices[vi].z = (sinf(y_rotation) * in.vertices[vi].x + cosf(y_rotation) * in.vertices[vi].z) * scale.x + origin.z;
+    }
+    
+    // convert normals too
+    //for (size_t ni = 0; ni < 3; ++ni)
+    //{
+    //  faces[f].normals[ni].x = (cosf(rotation.y) * in.normals[ni].x - sinf(rotation.y) * in.normals[ni].z);
+    //  faces[f].normals[ni].y = in.normals[ni].y;
+    //  faces[f].normals[ni].z = (sinf(rotation.y) * in.normals[ni].x + cosf(rotation.y) * in.normals[ni].z);
+    //}
+  }
 }

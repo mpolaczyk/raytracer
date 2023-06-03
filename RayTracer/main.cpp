@@ -17,23 +17,12 @@
 #include "math/fpexcept.h"
 #include "app/factories.h"
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
 
 // Win32 message handler
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-  logger::init();
-  logger::trace("trace {0}    {1}   {2}", 23, "kkkk", 1.23456f);
-  logger::debug("debug {0}    {1}   {2}", 23, "kkkk", 1.23456f);
-  logger::info("info {0}    {1}   {2}", 23, "kkkk", 1.23456f);
-  logger::warn("warn {0}    {1}   {2}", 23, "kkkk", 1.23456f);
-  logger::error("error {0}    {1}   {2}", 23, "kkkk", 1.23456f);
-  logger::critical("critical {0}    {1}   {2}", 23, "kkkk", 1.23456f);
-
   if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
     return true;
 
@@ -71,8 +60,8 @@ int main(int, char**)
 
   try
   {
-    std::cout << "Working dir: " << io::get_working_dir().c_str() << std::endl;
-    std::cout << "Workspace dir: " << io::get_workspace_dir().c_str() << std::endl;
+    logger::info("Working dir: {0}", io::get_working_dir());
+    logger::info("Workspace dir: {0}", io::get_workspace_dir());
 
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
@@ -187,6 +176,7 @@ int main(int, char**)
             }
 
             state.scene_root->load_resources();
+            state.scene_root->pre_render();
             state.scene_root->build_boxes();
             state.scene_root->update_materials(state.materials);
             state.scene_root->query_lights();
@@ -259,8 +249,8 @@ int main(int, char**)
   }
   catch (const std::exception& e)
   {
-    std::cout << "Exception handler:" << std::endl;
-    std::cout << e.what() << std::endl;
+    logger::critical("Exception handler:");
+    logger::critical("{0}", e.what());
     __debugbreak();
     system("pause");
   }

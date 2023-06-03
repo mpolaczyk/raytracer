@@ -3,6 +3,10 @@
 #include <filesystem>
 #include <random>
 
+#include "gfx/tiny_obj_loader.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+
 #include "common.h"
 
 namespace math
@@ -56,6 +60,76 @@ namespace math
     ans.y = math::clamp(f.y, a, b);
     ans.z = math::clamp(f.z, a, b);
     return ans;
+  }
+
+  bool ray_triangle(const ray& in_ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit)
+  {
+    assert(in_triangle != nullptr);
+    using namespace math;
+
+    // https://graphicscodex.courses.nvidia.com/app.html?page=_rn_rayCst "4. Ray-Triangle Intersection"
+    
+    // Vertices
+    const vec3& V0 = in_triangle->vertices[0];
+    const vec3& V1 = in_triangle->vertices[1];
+    const vec3& V2 = in_triangle->vertices[2];
+
+    // Edge vectors
+    const vec3& E1 = V1 - V0;
+    const vec3& E2 = V2 - V0;
+
+    // Face normal
+    const vec3& n = normalize(cross(E1, E2));
+
+    // Ray origin and direction
+    const vec3& P = in_ray.origin;
+    const vec3& w = in_ray.direction;
+
+    // Plane intersection what is q and a?
+    vec3 q = cross(w, E2);
+    float a = dot(E1, q);
+
+    // BAckface/ray parallel or close to the limit of precision?
+    if ((dot(n, w) >= 0) || fabsf(a) <= small_number) return false;
+
+    // ?
+    const vec3& s = (P - V0) / a;
+    const vec3& r = cross(s, E1);
+
+    // Barycentric coordinates
+    float b[3];
+    b[0] = dot(s, q);
+    b[1] = dot(r, w);
+    b[2] = 1.0f - (b[0] + b[1]);
+
+    // Intersection outside of triangle?
+    if ((b[0] < 0.0f) || (b[1] < 0.0f) || (b[2] < 0.0f)) return false;
+
+    // Distance to intersection
+    float t = dot(E2, r);
+
+    // Intersection outside of ray range?
+    if (t < t_min || t > t_max) return false;
+
+    // Intersected inside triangle
+    out_hit.t = t;
+    out_hit.p = in_ray.at(t);
+
+    // ?
+    vec3 barycentric(b[2], b[0], b[1]);
+    // this does not work, TODO translate normals?
+    //out_hit.normal = normalize(barycentric[0] * in_triangle->normals[0] + barycentric[1] * in_triangle->normals[1] + barycentric[2] * in_triangle->normals[2]);
+    out_hit.normal = n;
+
+    out_hit.front_face = true;
+
+    const vec3& uv = barycentric[0] * in_triangle->UVs[0] + barycentric[1] * in_triangle->UVs[1] + barycentric[2] * in_triangle->UVs[2];
+    out_hit.u = uv.x;
+    out_hit.v = uv.y;
+
+    return true;
+
+    return false;
   }
 }
 
@@ -429,7 +503,6 @@ namespace io
 
 }
 
-#include "gfx/tiny_obj_loader.h"
 namespace obj_helper
 {
   bool load_obj(const std::string& file_name, int shape_index, std::vector<triangle_face>& out_faces)
@@ -446,19 +519,23 @@ namespace obj_helper
     std::string error;
     if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &error, path.c_str(), dir.c_str(), true))
     {
-      std::cout << "Unable to load object file: " << file_name.c_str() << std::endl;
+      logger::error("Unable to load object file: {0}", file_name);
       return false;
     }
     if (shape_index >= shapes.size())
     {
-      std::cout << "Object file: " << file_name.c_str() << " does not have shape index: " << shape_index << std::endl;
+      logger::error("Object file: {0} does not have shape index: {1}", file_name, shape_index);
       return false;
     }
 
     tinyobj::shape_t shape = shapes[shape_index];
     size_t num_faces = shape.mesh.num_face_vertices.size();
+    if (num_faces == 0)
+    {
+      logger::error("Object file: {0} has no faces", file_name);
+      return false;
+    }
     out_faces.reserve(num_faces);
-    assert(num_faces > 0);
 
     // loop over faces
     for (size_t fi = 0; fi < num_faces; ++fi)
@@ -472,29 +549,40 @@ namespace obj_helper
       {
         tinyobj::index_t idx = shape.mesh.indices[3 * fi + vi];
 
-        float x = attributes.vertices[3 * idx.vertex_index + 0];
-        float y = attributes.vertices[3 * idx.vertex_index + 1];
-        float z = attributes.vertices[3 * idx.vertex_index + 2];
-
-        if (idx.normal_index != -1)
+        if (idx.vertex_index == -1)
         {
-          face.has_normals = true;
-          face.normals[vi] = vec3(attributes.normals[3 * idx.normal_index + 0], attributes.normals[3 * idx.normal_index + 1], attributes.normals[3 * idx.normal_index + 2]);
+          logger::error("Object file: {0} faces not found", file_name);
+          return false;
+        }
+        if (idx.normal_index == -1)
+        {
+          logger::error("Object file: {0} normals not found", file_name);
+          return false;
+        }
+        if (idx.texcoord_index == -1)
+        {
+          logger::error("Object file: {0} UVs not found", file_name);
+          return false;
         }
 
-        if (idx.texcoord_index != -1)
-        {
-          face.has_UVs = true;
-          face.UVs[vi] = vec3(attributes.texcoords[2 * idx.texcoord_index + 0], attributes.texcoords[2 * idx.texcoord_index + 1], 0.0f);
-        }
+        float vx = attributes.vertices[3 * idx.vertex_index + 0];
+        float vy = attributes.vertices[3 * idx.vertex_index + 1];
+        float vz = attributes.vertices[3 * idx.vertex_index + 2];
+        face.vertices[vi] = vec3(vx, vy, vz);
+
+        float nx = attributes.normals[3 * idx.normal_index + 1];
+        float ny = attributes.normals[3 * idx.normal_index + 2];
+        float nz = attributes.normals[3 * idx.normal_index + 0];
+        face.normals[vi] = vec3(nx, ny, nz);
+        
+        float uvx = attributes.texcoords[2 * idx.texcoord_index + 0];
+        float uvy = attributes.texcoords[2 * idx.texcoord_index + 1];
+        face.UVs[vi] = vec3(uvx, uvy, 0.0f);
       }
     }
     return true;
   }
 }
-
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace logger
 {
@@ -503,7 +591,11 @@ namespace logger
   void init()
   {
     spdlog::flush_every(std::chrono::seconds(3));
+#if BUILD_DEBUG
     spdlog::set_level(spdlog::level::trace);
+#elif BUILD_RELEASE
+    spdlog::set_level(spdlog::level::info);
+#endif
     spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] [%l] %^%v%$");
   }
 }

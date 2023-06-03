@@ -21,6 +21,7 @@ enum class renderer_type
 {
   example = 0,
   preview,
+  preview_normals,
   reference,
   ispc
 };
@@ -28,6 +29,7 @@ static inline const char* renderer_type_names[] =
 {
   "CPU Example",
   "CPU Preview",
+  "CPU Preview Normals",
   "CPU Reference",
   "CPU ISPC (Example only)"
 };

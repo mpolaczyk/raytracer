@@ -127,6 +127,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClCompile Include="app\json\frame_renderer_json.cpp" />
     <ClCompile Include="app\json\hittables_json.cpp" />
     <ClCompile Include="app\json\materials_json.cpp" />
+    <ClCompile Include="app\json\serializable.cpp" />
     <ClCompile Include="app\json\vec3_json.cpp" />
     <ClCompile Include="app\ui\app_ui.cpp" />
     <ClCompile Include="app\ui\hittables_ui.cpp" />
@@ -143,6 +144,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClCompile Include="processing\chunk_generator.cpp" />
     <ClCompile Include="renderers\example_renderer.cpp" />
     <ClCompile Include="renderers\ispc_renderer.cpp" />
+    <ClCompile Include="renderers\preview_normals_renderer.cpp" />
     <ClCompile Include="renderers\preview_renderer.cpp" />
     <ClCompile Include="renderers\reference_renderer.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -195,6 +197,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\common.h" />
     <ClInclude Include="math\fpexcept.h" />
+    <ClInclude Include="math\hit.h" />
     <ClInclude Include="math\hittables.h" />
     <ClInclude Include="math\materials.h" />
     <ClInclude Include="math\onb.h" />
@@ -207,6 +210,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="processing\chunk_generator.h" />
     <ClInclude Include="renderers\example_renderer.h" />
     <ClInclude Include="renderers\ispc_renderer.h" />
+    <ClInclude Include="renderers\preview_normals_renderer.h" />
     <ClInclude Include="renderers\preview_renderer.h" />
     <ClInclude Include="renderers\reference_renderer.h" />
     <ClInclude Include="renderers\trace_ray.h" />
