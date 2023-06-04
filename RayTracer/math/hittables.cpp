@@ -194,15 +194,33 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
 bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
   bool result = false;
+  hit_record best_hit;
+  int hits = 0;
+  // Multiple triangles can intersect, find the closest one.
   for (int i = 0; i < faces.size(); i++)
   {
     const triangle_face* face = &faces[i];
-    if (math::ray_triangle(in_ray, t_min, t_max, face, out_hit))
+    hit_record h;
+    if (math::ray_triangle(in_ray, t_min, t_max, face, h))
     {
-      out_hit.material_ptr = material_ptr;
-      return true;
+      if (hits == 0)
+      {
+        best_hit = h;
+        hits++;
+      }
+      else if (h.t < best_hit.t)
+      {
+        best_hit = h;
+      }
     }
   }
+  if (hits > 0)
+  {
+    out_hit = best_hit;
+    out_hit.material_ptr = material_ptr;
+    return true;
+  }
+
   return false;
 }
 

@@ -418,10 +418,10 @@
   "renderer_config": {
     "ray_bounces": 8,
     "rays_per_pixel": 20,
-    "resolution_horizontal": 800,
-    "resolution_vertical": 800,
+    "resolution_horizontal": 400,
+    "resolution_vertical": 400,
     "reuse_buffer": true,
-    "type": 1,
+    "type": 2,
     "white_point": 1.0
   }
 }

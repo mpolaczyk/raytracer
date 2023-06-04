@@ -79,7 +79,7 @@ namespace math
     const vec3& E2 = V2 - V0;
 
     // Face normal
-    const vec3& n = normalize(cross(E1, E2));
+    vec3 n = normalize(cross(E1, E2));
 
     // Ray origin and direction
     const vec3& P = in_ray.origin;
@@ -89,8 +89,21 @@ namespace math
     vec3 q = cross(w, E2);
     float a = dot(E1, q);
 
-    // BAckface/ray parallel or close to the limit of precision?
-    if ((dot(n, w) >= 0) || fabsf(a) <= small_number) return false;
+    // Ray parallel or close to the limit of precision?
+    if (fabsf(a) <= small_number) return false;
+
+    // Detect backface
+    // !!!! it works but should be the opposite! are faces left or right oriented?
+    if ((dot(n, w) < 0))
+    {
+      out_hit.front_face = true;
+     
+    }
+    else
+    {
+      out_hit.front_face = false;
+      n = n * -1;
+    }
 
     // ?
     const vec3& s = (P - V0) / a;
@@ -121,15 +134,11 @@ namespace math
     //out_hit.normal = normalize(barycentric[0] * in_triangle->normals[0] + barycentric[1] * in_triangle->normals[1] + barycentric[2] * in_triangle->normals[2]);
     out_hit.normal = n;
 
-    out_hit.front_face = true;
-
     const vec3& uv = barycentric[0] * in_triangle->UVs[0] + barycentric[1] * in_triangle->UVs[1] + barycentric[2] * in_triangle->UVs[2];
     out_hit.u = uv.x;
     out_hit.v = uv.y;
 
     return true;
-
-    return false;
   }
 }
 
