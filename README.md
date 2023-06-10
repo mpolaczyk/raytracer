@@ -5,6 +5,20 @@ Author: [planet620]
 
 ## Releases
 
+### [2.3]
+- Cornell box scene finalized
+- Static mesh rendering
+    - Backface detection for transparency
+    - No acceleration structude ofr triangles yet
+    - No static mesh assets yet
+- ISPC integrated with the project and used for basic 
+- Better compile times 
+- CppCheck and BuildInsights pass
+- Huge code refactor
+- Better logging with spdlog
+
+![Example output](ExampleOutput3.png)
+
 ### [2.2]
 - Full scene editor
     - Flying camera
@@ -94,6 +108,7 @@ DirectX 11
    [2.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.0>
    [2.1]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.1>
    [2.2]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.2>
+   [2.3]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.3>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>
