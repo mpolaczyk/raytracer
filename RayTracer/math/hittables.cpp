@@ -5,6 +5,8 @@
 #include "materials.h"
 #include "onb.h"
 
+int hittable::last_id = 0;
+
 scene::~scene()
 {
   for (hittable* obj : objects)
@@ -206,11 +208,13 @@ bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& o
       if (hits == 0)
       {
         best_hit = h;
+        best_hit.face_id = i;
         hits++;
       }
       else if (h.t < best_hit.t)
       {
         best_hit = h;
+        best_hit.face_id = i;
       }
     }
   }

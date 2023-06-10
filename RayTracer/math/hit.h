@@ -15,4 +15,5 @@ struct hit_record
   material* material_ptr = nullptr;
   bool front_face;
   hittable* object = nullptr;
+  int face_id = 0;
 };

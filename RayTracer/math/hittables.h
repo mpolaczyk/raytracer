@@ -23,7 +23,7 @@ constexpr int32_t MAX_LIGHTS = 50;
 class hittable
 {
 public:
-  hittable() {}
+  hittable() { }
   explicit hittable(const hittable* rhs) { *this = *rhs; };
   hittable(std::string&& in_material_id, hittable_type in_type) : material_id(std::move(in_material_id)), type(in_type) { };
 
@@ -54,6 +54,8 @@ public:
   // Runtime members
   material* material_ptr = nullptr; // no deep copy for now!
   aabb bounding_box;
+  int id;
+  static int last_id;
 };
 
 

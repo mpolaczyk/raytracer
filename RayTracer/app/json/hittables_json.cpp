@@ -10,6 +10,7 @@ nlohmann::json hittable_serializer::serialize(const hittable* value)
 {
   assert(value != nullptr);
   nlohmann::json j;
+  j["id"] = value->id;
   j["type"] = value->type;
   j["material_id"] = value->material_id;
   return j;
@@ -115,6 +116,7 @@ nlohmann::json static_mesh_serializer::serialize(const static_mesh* value)
 void hittable_serializer::deserialize(const nlohmann::json& j, hittable* out_value)
 {
   assert(out_value != nullptr);
+  TRY_PARSE(int, j, "id", out_value->id);
   TRY_PARSE(hittable_type, j, "type", out_value->type);
   TRY_PARSE(std::string, j, "material_id", out_value->material_id);
   assert(out_value->type != hittable_type::scene && !out_value->material_id.empty());

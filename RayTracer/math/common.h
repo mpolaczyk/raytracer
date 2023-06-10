@@ -26,6 +26,23 @@ namespace colors
     return color.x <= 1.0f && color.y <= 1.0f && color.z <= 1.0f
       && color.x >= 0.0f && color.y >= 0.0f && color.z >= 0.0f;
   }
+
+  const vec3 all[] =
+  {
+    white,
+    grey,
+    black,
+    red,
+    green,
+    blue,
+    white_blue,
+    yellow,
+    copper,
+    steel,
+    silver,
+    gold
+  };
+  const int num = 12;
 }
 
 namespace math

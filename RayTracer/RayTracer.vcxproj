@@ -144,6 +144,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClCompile Include="processing\chunk_generator.cpp" />
     <ClCompile Include="renderers\example_renderer.cpp" />
     <ClCompile Include="renderers\ispc_renderer.cpp" />
+    <ClCompile Include="renderers\preview_faces_renderer.cpp" />
     <ClCompile Include="renderers\preview_normals_renderer.cpp" />
     <ClCompile Include="renderers\preview_renderer.cpp" />
     <ClCompile Include="renderers\reference_renderer.cpp" />
@@ -210,6 +211,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="processing\chunk_generator.h" />
     <ClInclude Include="renderers\example_renderer.h" />
     <ClInclude Include="renderers\ispc_renderer.h" />
+    <ClInclude Include="renderers\preview_faces_renderer.h" />
     <ClInclude Include="renderers\preview_normals_renderer.h" />
     <ClInclude Include="renderers\preview_renderer.h" />
     <ClInclude Include="renderers\reference_renderer.h" />

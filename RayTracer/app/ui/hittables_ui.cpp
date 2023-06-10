@@ -10,7 +10,7 @@ void hittable::get_name(std::string& out_name, bool with_params) const
   std::string base_name = hittable_type_names[(int)type];
   
   std::ostringstream oss;
-  oss << "/" << base_name << "/" << material_id;
+  oss << "[" << id << "]" << "/" << base_name << "/" << material_id;
   out_name = oss.str();
 }
 

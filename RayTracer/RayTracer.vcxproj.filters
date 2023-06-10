@@ -99,6 +99,9 @@
     <ClCompile Include="renderers\preview_normals_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
+    <ClCompile Include="renderers\preview_faces_renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -230,6 +233,9 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="renderers\preview_normals_renderer.h">
+      <Filter>renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="renderers\preview_faces_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
   </ItemGroup>

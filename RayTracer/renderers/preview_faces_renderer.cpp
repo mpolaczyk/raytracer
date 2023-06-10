@@ -7,14 +7,14 @@
 #include "math/camera.h"
 #include "processing/benchmark.h"
 
-#include "preview_normals_renderer.h"
+#include "preview_faces_renderer.h"
 
-std::string preview_normals_renderer::get_name() const
+std::string preview_faces_renderer::get_name() const
 {
   return "CPU Preview Normals";
 }
 
-void preview_normals_renderer::render()
+void preview_faces_renderer::render()
 {
   save_output = false;
 
@@ -24,7 +24,7 @@ void preview_normals_renderer::render()
   concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
 }
 
-void preview_normals_renderer::render_chunk(const chunk& in_chunk)
+void preview_faces_renderer::render_chunk(const chunk& in_chunk)
 {
   assert(job_state.scene_root != nullptr);
   assert(job_state.cam != nullptr);
@@ -48,7 +48,8 @@ void preview_normals_renderer::render_chunk(const chunk& in_chunk)
 
       if (job_state.scene_root->hit(r, 0.01f, math::infinity, h))
       {
-        pixel_color = (h.normal + 1.0f) * .5f;
+        int color_index = (h.object->id + h.face_id) % colors::num;
+        pixel_color = colors::all[color_index];
       }
       
       bmp::bmp_pixel p(pixel_color);

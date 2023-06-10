@@ -421,7 +421,7 @@
     "resolution_horizontal": 400,
     "resolution_vertical": 400,
     "reuse_buffer": true,
-    "type": 2,
+    "type": 3,
     "white_point": 1.0
   }
 }
