@@ -86,6 +86,8 @@ Windows SDK: 10.0
 
 Toolset: v143
 
+Language standard: ISO C++20
+
 ### Third party dependencies
 DirectX 11
 
@@ -101,6 +103,8 @@ DirectX 11
 
 [spdlog] v1.x
 
+[ispc] v1.19.0
+
 [//]: # (links)
 
    [planet620]: <https://mpolaczyk.pl>
@@ -115,4 +119,5 @@ DirectX 11
    [STB Image]: <http://nothings.org/stb>
    [Tiny obj]: <https://github.com/tinyobjloader/tinyobjloader>
    [spdlog]: <https://github.com/gabime/spdlog/tree/v1.x>
+   [ispc]: <https://ispc.github.io/>
    [Ray Tracing in One Weekend]: <https://raytracing.github.io>

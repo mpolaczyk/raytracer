@@ -79,7 +79,7 @@
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>mkdir $(SolutionDir)Build\$(Platform)_$(Configuration) 2&gt; NUL
-ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)\renderers\trace_ray.h -g -O0 --arch=x86-64 --target=avx2-i32x16</Command>
+$(ProjectDir)third_party\ispc-v1.19.0-windows\bin\ispc.exe $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)\renderers\trace_ray.h --arch=x86-64 --target=avx2-i32x16</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -117,7 +117,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>mkdir $(SolutionDir)Build\$(Platform)_$(Configuration) 2&gt; NUL
-ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)\renderers\trace_ray.h --arch=x86-64 --target=avx2-i32x16</Command>
+$(ProjectDir)third_party\ispc-v1.19.0-windows\bin\ispc.exe $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)\renderers\trace_ray.h --arch=x86-64 --target=avx2-i32x16</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

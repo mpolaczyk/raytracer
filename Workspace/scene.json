@@ -17,9 +17,11 @@
     "type": 0.0
   },
   "scene": {
+    "id": 0,
     "material_id": "",
     "objects": [
       {
+        "id": 0,
         "material_id": "glossy_green",
         "type": 4,
         "x": 555.0,
@@ -29,6 +31,7 @@
         "z1": 555.0
       },
       {
+        "id": 1,
         "material_id": "glossy_red",
         "type": 4,
         "x": 0.0,
@@ -38,6 +41,7 @@
         "z1": 555.0
       },
       {
+        "id": 2,
         "material_id": "light",
         "type": 3,
         "x0": 102.0,
@@ -47,6 +51,7 @@
         "z1": 567.0
       },
       {
+        "id": 3,
         "material_id": "metal_white_polished",
         "type": 3,
         "x0": 0.0,
@@ -56,6 +61,7 @@
         "z1": 555.0
       },
       {
+        "id": 4,
         "material_id": "metal_gold",
         "origin": {
           "x": 452.0,
@@ -66,6 +72,7 @@
         "type": 1
       },
       {
+        "id": 5,
         "material_id": "metal_white_polished",
         "origin": {
           "x": 109.0,
@@ -76,6 +83,7 @@
         "type": 1
       },
       {
+        "id": 6,
         "material_id": "mirror",
         "type": 3,
         "x0": 0.0,
@@ -85,6 +93,7 @@
         "z1": 555.0
       },
       {
+        "id": 7,
         "material_id": "metal_white_polished",
         "type": 2,
         "x0": 0.0,
@@ -94,6 +103,7 @@
         "z": 552.0
       },
       {
+        "id": 8,
         "material_id": "glossy_green",
         "origin": {
           "x": 49.0,
@@ -104,6 +114,7 @@
         "type": 1
       },
       {
+        "id": 9,
         "material_id": "glossy_red",
         "origin": {
           "x": 500.0,
@@ -115,6 +126,7 @@
       },
       {
         "file_name": "cube.obj",
+        "id": 10,
         "material_id": "glass",
         "origin": {
           "x": 274.5233459472656,
@@ -136,6 +148,7 @@
       },
       {
         "file_name": "cube.obj",
+        "id": 11,
         "material_id": "glass_red",
         "origin": {
           "x": 431.7829895019531,
@@ -157,6 +170,7 @@
       },
       {
         "file_name": "cube.obj",
+        "id": 12,
         "material_id": "glass_green",
         "origin": {
           "x": 122.78299713134766,
@@ -178,6 +192,7 @@
       },
       {
         "file_name": "icosphere2.obj",
+        "id": 13,
         "material_id": "pearl",
         "origin": {
           "x": 275.7829895019531,
@@ -199,6 +214,7 @@
       },
       {
         "file_name": "icosphere1.obj",
+        "id": 14,
         "material_id": "glass",
         "origin": {
           "x": 452.0,
@@ -220,6 +236,7 @@
       },
       {
         "file_name": "icosphere1.obj",
+        "id": 15,
         "material_id": "glass",
         "origin": {
           "x": 109.0,

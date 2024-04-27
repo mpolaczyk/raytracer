@@ -416,12 +416,12 @@
     }
   ],
   "renderer_config": {
-    "ray_bounces": 8,
-    "rays_per_pixel": 20,
-    "resolution_horizontal": 400,
-    "resolution_vertical": 400,
+    "ray_bounces": 6,
+    "rays_per_pixel": 60,
+    "resolution_horizontal": 600,
+    "resolution_vertical": 600,
     "reuse_buffer": true,
-    "type": 3,
+    "type": 4,
     "white_point": 1.0
   }
 }
