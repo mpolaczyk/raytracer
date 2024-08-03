@@ -45,6 +45,7 @@ namespace colors
   const int num = 12;
 }
 
+#include <cmath>
 namespace math
 {
   const float infinity = HUGE_VALF;
@@ -121,7 +122,7 @@ namespace math
   }
   inline float dot(const vec3& u, const vec3& v)
   {
-#if USE_SIMD 
+#if 0 // USE_SIMD - disabled, turns out instruction parallelism does better job here 
     __m128 a = _mm_mul_ps(u.R128, v.R128);
     a = _mm_hadd_ps(a, a);
     return _mm_cvtss_f32(_mm_hadd_ps(a, a));
@@ -133,36 +134,35 @@ namespace math
   {
     return vec3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
   }
+  inline float length_squared(const vec3& v)
+  {
+#if 0 // USE_SIMD - disabled, turns out instruction parallelism does better job here 
+      __m128 a = _mm_mul_ps(v.R128, v.R128);
+      a = _mm_hadd_ps(a, a);
+      return _mm_cvtss_f32(_mm_hadd_ps(a,a));
+#else
+      return v.x * v.x + v.y * v.y + v.z * v.z;
+#endif
+  }
+  inline float length(const vec3& v)
+  {
+#if 0 // USE_SIMD - disabled, turns out instruction parallelism does better job here
+      __m128 a = _mm_mul_ps(v.R128, v.R128);
+      a = _mm_hadd_ps(a, a);
+      return _mm_cvtss_f32(_mm_sqrt_ps(_mm_hadd_ps(a, a)));
+#else
+      return std::sqrt(length_squared(v));
+#endif
+  }
   inline vec3 normalize(const vec3& v)
   {
-#if USE_SIMD 
+#if 0 // USE_SIMD - disabled, turns out instruction parallelism does better job here
     __m128 a = _mm_mul_ps(v.R128, v.R128);
     a = _mm_hadd_ps(a, a);
     return vec3(_mm_div_ps(v.R128, _mm_sqrt_ps(_mm_hadd_ps(a, a))));
 #else
     return v / length(v);
 #endif
-  }
-  inline float length(const vec3& v)
-  {
-#if USE_SIMD 
-    __m128 a = _mm_mul_ps(v.R128, v.R128);
-    a = _mm_hadd_ps(a, a);
-    return _mm_cvtss_f32(_mm_sqrt_ps(_mm_hadd_ps(a, a)));
-#else
-    return std::sqrt(length_squared(v));
-#endif
-  }
-  inline float length_squared(const vec3& v)
-  {
-    // commented out, non vectorized is faster in that case
-    //#if USE_SIMD 
-    //    __m128 a = _mm_mul_ps(v.R128, v.R128);
-    //    a = _mm_hadd_ps(a, a);
-    //    return _mm_cvtss_f32(_mm_hadd_ps(a,a));
-    //#else
-    return v.x * v.x + v.y * v.y + v.z * v.z;
-    //#endif
   }
   inline vec3 rotate_yaw(const vec3& u, float yaw)
   {
