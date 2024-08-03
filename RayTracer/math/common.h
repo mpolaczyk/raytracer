@@ -329,6 +329,8 @@ namespace obj_helper
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include <format>
+
 namespace logger
 {
   void init();
@@ -336,36 +338,36 @@ namespace logger
   template<typename... Args>
   void trace(std::string_view format, Args &&... args)
   {
-    spdlog::get("console")->trace(format, std::forward<Args>(args)...);
+    spdlog::get("console")->trace(std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
   }
 
   template<typename... Args>
   void debug(std::string_view format, Args &&... args)
   {
-    spdlog::get("console")->debug(format, std::forward<Args>(args)...);
+    spdlog::get("console")->debug(std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
   }
 
   template<typename... Args>
   void info(std::string_view format, Args &&... args)
   {
-    spdlog::get("console")->info(format, std::forward<Args>(args)...);
+    spdlog::get("console")->info(std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
   }
 
   template<typename... Args>
   void warn(std::string_view format, Args &&... args)
   {
-    spdlog::get("console")->warn(format, std::forward<Args>(args)...);
+    spdlog::get("console")->warn(std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
   }
 
   template<typename... Args>
   void error(std::string_view format, Args &&... args)
   {
-    spdlog::get("console")->error(format, std::forward<Args>(args)...);
+    spdlog::get("console")->error(std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
   }
 
   template<typename... Args>
   void critical(std::string_view format, Args &&... args)
   {
-    spdlog::get("console")->critical(format, std::forward<Args>(args)...);
+    spdlog::get("console")->critical(std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
   }
 }
