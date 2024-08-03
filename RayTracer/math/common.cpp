@@ -70,73 +70,63 @@ namespace math
     // https://graphicscodex.courses.nvidia.com/app.html?page=_rn_rayCst "4. Ray-Triangle Intersection"
     
     // Vertices
-    const vec3& V0 = in_triangle->vertices[0];
-    const vec3& V1 = in_triangle->vertices[1];
-    const vec3& V2 = in_triangle->vertices[2];
-
-    // Edge vectors
-    const vec3& E1 = V1 - V0;
-    const vec3& E2 = V2 - V0;
-
-    // Face normal
-    vec3 n = normalize(cross(E1, E2));
+    const __m128 V0 = in_triangle->vertices[0].R128;
+    const __m128 V1 = in_triangle->vertices[1].R128;
+    const __m128 V2 = in_triangle->vertices[2].R128;
 
     // Ray origin and direction
-    const vec3& P = in_ray.origin;
-    const vec3& w = in_ray.direction;
+    const __m128 P = in_ray.origin.R128;
+    const __m128 w = in_ray.direction.R128;
+      
+    // Edge vectors
+    const __m128 E1 = _mm_sub_ps(V1, V0);
+    const __m128 E2 = _mm_sub_ps(V2, V0);
+
+    // Face normal
+    __m128 n = vnormalize(vcross(E1, E2));
 
     // Plane intersection what is q and a?
-    vec3 q = cross(w, E2);
-    float a = dot(E1, q);
-
+    const __m128 q = vcross(w, E2);
+    const float a = vdot(E1, q);
+      
     // Ray parallel or close to the limit of precision?
-    if (fabsf(a) <= small_number) return false;
-
-    // Detect backface
-    // !!!! it works but should be the opposite! are faces left or right oriented?
-    if ((dot(n, w) < 0))
-    {
-      out_hit.front_face = true;
-     
-    }
-    else
-    {
-      out_hit.front_face = false;
-      n = n * -1;
-    }
+    if (fabsf(a) <= small_number) [[unlikely]] return false;
 
     // ?
-    const vec3& s = (P - V0) / a;
-    const vec3& r = cross(s, E1);
+    const __m128& s = _mm_div_ps(_mm_sub_ps(P, V0), _mm_set1_ps(a));
+    const __m128& r = vcross(s, E1);
 
     // Barycentric coordinates
     float b[3];
-    b[0] = dot(s, q);
-    b[1] = dot(r, w);
+    b[0] = vdot(s, q);
+    b[1] = vdot(r, w);
     b[2] = 1.0f - (b[0] + b[1]);
-
+      
     // Intersection outside of triangle?
-    if ((b[0] < 0.0f) || (b[1] < 0.0f) || (b[2] < 0.0f)) return false;
-
+    if ((b[0] < 0.0f) || (b[1] < 0.0f) || (b[2] < 0.0f)) [[likely]] return false;
+      
     // Distance to intersection
-    float t = dot(E2, r);
+    const float t = vdot(E2, r);
 
     // Intersection outside of ray range?
-    if (t < t_min || t > t_max) return false;
+    if (t < t_min || t > t_max) [[unlikely]] return false;
 
-    // Intersected inside triangle
-    out_hit.t = t;
-    out_hit.p = in_ray.at(t);
-
-    // ?
-    vec3 barycentric(b[2], b[0], b[1]);
+    // Detect backface
+    // !!!! it works but should be the opposite! are faces left or right oriented?
+    const float dot_n_w = vdot(n, w);
+    n = _mm_mul_ps(n, _mm_set1_ps(-1.0f * sign(dot_n_w)));
+      
+    const vec3 barycentric(b[2], b[0], b[1]);
     // this does not work, TODO translate normals?
     //out_hit.normal = normalize(barycentric[0] * in_triangle->normals[0] + barycentric[1] * in_triangle->normals[1] + barycentric[2] * in_triangle->normals[2]);
-    out_hit.normal = n;
+    const vec3 uv = barycentric[0] * in_triangle->UVs[0] + barycentric[1] * in_triangle->UVs[1] + barycentric[2] * in_triangle->UVs[2];
 
-    const vec3& uv = barycentric[0] * in_triangle->UVs[0] + barycentric[1] * in_triangle->UVs[1] + barycentric[2] * in_triangle->UVs[2];
+    out_hit.p = in_ray.at(t);
+    out_hit.normal = vec3(n);
+    out_hit.t = t;
     out_hit.u = uv.x;
     out_hit.v = uv.y;
+    out_hit.front_face = dot_n_w < 0.0f;
 
     return true;
   }

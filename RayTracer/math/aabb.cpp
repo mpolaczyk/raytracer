@@ -72,12 +72,12 @@ aabb aabb::merge(const aabb& box0, const aabb& box1)
   vec3 corner_min = vec3(_mm_min_ps(box0.minimum.R128, box1.minimum.R128));
   vec3 corner_max = vec3(_mm_min_ps(box0.maximum.R128, box1.maximum.R128));
 #else
-  vec3 corner_min(min1(box0.minimum.x, box1.minimum.x),
-    min1(box0.minimum.y, box1.minimum.y),
-    min1(box0.minimum.z, box1.minimum.z));
-  vec3 corner_max(max1(box0.maximum.x, box1.maximum.x),
-    max1(box0.maximum.y, box1.maximum.y),
-    max1(box0.maximum.z, box1.maximum.z));
+  vec3 corner_min(math::min1(box0.minimum.x, box1.minimum.x),
+                  math::min1(box0.minimum.y, box1.minimum.y),
+                  math::min1(box0.minimum.z, box1.minimum.z));
+  vec3 corner_max(math::max1(box0.maximum.x, box1.maximum.x),
+                  math::max1(box0.maximum.y, box1.maximum.y),
+                  math::max1(box0.maximum.z, box1.maximum.z));
 #endif
   return aabb(corner_min, corner_max);
 }

@@ -1,8 +1,6 @@
 #pragma once
 
-#if USE_SIMD
 #include <intrin.h> // SSE3 required
-#endif
 
 __declspec(align(16)) struct vec3
 {

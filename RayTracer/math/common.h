@@ -122,47 +122,56 @@ namespace math
   }
   inline float dot(const vec3& u, const vec3& v)
   {
-#if 0 // USE_SIMD - disabled, turns out instruction parallelism does better job here 
-    __m128 a = _mm_mul_ps(u.R128, v.R128);
-    a = _mm_hadd_ps(a, a);
-    return _mm_cvtss_f32(_mm_hadd_ps(a, a));
-#else
     return u.x * v.x + u.y * v.y + u.z * v.z;
-#endif
+  }
+  inline float vdot(const __m128& u, const __m128& v)
+  {
+      __m128 a = _mm_mul_ps(u, v);
+      a = _mm_hadd_ps(a, a);
+      return _mm_cvtss_f32(_mm_hadd_ps(a, a));
   }
   inline vec3 cross(const vec3& u, const vec3& v)
   {
-    return vec3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
+      return vec3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
+  }
+  inline __m128 vcross(const __m128& u, const __m128& v)
+  {
+      __m128 tmp0 = _mm_shuffle_ps(u,u,_MM_SHUFFLE(3,0,2,1));
+      __m128 tmp1 = _mm_shuffle_ps(v,v,_MM_SHUFFLE(3,1,0,2));
+      __m128 tmp2 = _mm_mul_ps(tmp0,v);
+      __m128 tmp3 = _mm_mul_ps(tmp0,tmp1);
+      __m128 tmp4 = _mm_shuffle_ps(tmp2,tmp2,_MM_SHUFFLE(3,0,2,1));
+      return _mm_sub_ps(tmp3,tmp4);
   }
   inline float length_squared(const vec3& v)
   {
-#if 0 // USE_SIMD - disabled, turns out instruction parallelism does better job here 
-      __m128 a = _mm_mul_ps(v.R128, v.R128);
+      return v.x * v.x + v.y * v.y + v.z * v.z;
+  }
+  inline float vlength_squared(const __m128& v)
+  {
+      __m128 a = _mm_mul_ps(v, v);
       a = _mm_hadd_ps(a, a);
       return _mm_cvtss_f32(_mm_hadd_ps(a,a));
-#else
-      return v.x * v.x + v.y * v.y + v.z * v.z;
-#endif
   }
   inline float length(const vec3& v)
   {
-#if 0 // USE_SIMD - disabled, turns out instruction parallelism does better job here
-      __m128 a = _mm_mul_ps(v.R128, v.R128);
+      return std::sqrt(length_squared(v));
+  }
+  inline float vlength(const __m128& v)
+  {
+      __m128 a = _mm_mul_ps(v, v);
       a = _mm_hadd_ps(a, a);
       return _mm_cvtss_f32(_mm_sqrt_ps(_mm_hadd_ps(a, a)));
-#else
-      return std::sqrt(length_squared(v));
-#endif
   }
   inline vec3 normalize(const vec3& v)
   {
-#if 0 // USE_SIMD - disabled, turns out instruction parallelism does better job here
-    __m128 a = _mm_mul_ps(v.R128, v.R128);
-    a = _mm_hadd_ps(a, a);
-    return vec3(_mm_div_ps(v.R128, _mm_sqrt_ps(_mm_hadd_ps(a, a))));
-#else
     return v / length(v);
-#endif
+  }
+  inline __m128 vnormalize(const __m128& v)
+  {
+      __m128 a = _mm_mul_ps(v, v);
+      a = _mm_hadd_ps(a, a);
+      return _mm_div_ps(v, _mm_sqrt_ps(_mm_hadd_ps(a, a)));
   }
   inline vec3 rotate_yaw(const vec3& u, float yaw)
   {
