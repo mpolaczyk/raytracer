@@ -126,9 +126,7 @@ namespace math
   }
   inline float vdot(const __m128& u, const __m128& v)
   {
-      __m128 a = _mm_mul_ps(u, v);
-      a = _mm_hadd_ps(a, a);
-      return _mm_cvtss_f32(_mm_hadd_ps(a, a));
+      return _mm_cvtss_f32(_mm_dp_ps(u,v,0xff));
   }
   inline vec3 cross(const vec3& u, const vec3& v)
   {
@@ -149,9 +147,7 @@ namespace math
   }
   inline float vlength_squared(const __m128& v)
   {
-      __m128 a = _mm_mul_ps(v, v);
-      a = _mm_hadd_ps(a, a);
-      return _mm_cvtss_f32(_mm_hadd_ps(a,a));
+      return _mm_cvtss_f32(_mm_dp_ps(v,v, 0xff));
   }
   inline float length(const vec3& v)
   {
@@ -159,9 +155,7 @@ namespace math
   }
   inline float vlength(const __m128& v)
   {
-      __m128 a = _mm_mul_ps(v, v);
-      a = _mm_hadd_ps(a, a);
-      return _mm_cvtss_f32(_mm_sqrt_ps(_mm_hadd_ps(a, a)));
+      return _mm_cvtss_f32(_mm_sqrt_ps(_mm_dp_ps(v,v,0xff)));
   }
   inline vec3 normalize(const vec3& v)
   {
@@ -169,9 +163,7 @@ namespace math
   }
   inline __m128 vnormalize(const __m128& v)
   {
-      __m128 a = _mm_mul_ps(v, v);
-      a = _mm_hadd_ps(a, a);
-      return _mm_div_ps(v, _mm_sqrt_ps(_mm_hadd_ps(a, a)));
+      return _mm_div_ps(v, _mm_sqrt_ps(_mm_dp_ps(v, v, 0xff)));
   }
   inline vec3 rotate_yaw(const vec3& u, float yaw)
   {
