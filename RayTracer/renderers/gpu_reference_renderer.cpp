@@ -336,47 +336,25 @@ bool gpu_reference_renderer::upload_camera_data()
 {
   assert(job_state.cam != nullptr);
 
-  // Convert camera to GPU format
-  // We need to extract the camera's internal state
-  // The camera class doesn't expose all internals, so we'll configure it here
-
+  // Convert camera to GPU format using the getters
   camera* cam = job_state.cam;
   
   GPUCamera gpu_camera;
   ZeroMemory(&gpu_camera, sizeof(GPUCamera));
 
-  // Access camera configuration (this is a bit of a workaround since camera internals are private)
-  // We'll need to compute camera basis vectors ourselves
-
-  const camera_config* cam_conf = job_state.renderer_conf; // This is wrong, we need the camera_config
-  // Actually, we need to find a way to get camera internals
-  // For now, let's create a simplified version based on what we know
-
-  // This won't work perfectly without access to camera internals
-  // We need to either:
-  // 1. Make camera members public
-  // 2. Add a method to camera to export GPU data
-  // 3. Reconstruct camera from config
-
-  // Let's reconstruct from config (option 3)
-  const camera_config* cc = nullptr;
-  // We don't have access to camera_config directly from camera object
-  // This is a design issue - for now, we'll have to work around it
-
-  // Temporary workaround: we'll need to modify the approach
-  // For now, let's just set dummy values and note this needs fixing
-  gpu_camera.look_from = vec3(0, 0, 0);
-  gpu_camera.lens_radius = 0.0f;
-  gpu_camera.lower_left_corner = vec3(-2, -1, -1);
-  gpu_camera.horizontal = vec3(4, 0, 0);
-  gpu_camera.vertical = vec3(0, 2, 0);
-  gpu_camera.viewport_width = 4.0f;
-  gpu_camera.viewport_height = 2.0f;
-  gpu_camera.dist_to_focus = 1.0f;
-  gpu_camera.u = vec3(1, 0, 0);
-  gpu_camera.v = vec3(0, 1, 0);
-  gpu_camera.w = vec3(0, 0, 1);
-  gpu_camera.type = 0.0f;
+  // Extract camera data
+  gpu_camera.look_from = cam->get_look_from();
+  gpu_camera.lens_radius = cam->get_lens_radius();
+  gpu_camera.lower_left_corner = cam->get_lower_left_corner();
+  gpu_camera.horizontal = cam->get_horizontal();
+  gpu_camera.vertical = cam->get_vertical();
+  gpu_camera.viewport_width = cam->get_viewport_width();
+  gpu_camera.viewport_height = cam->get_viewport_height();
+  gpu_camera.dist_to_focus = cam->get_dist_to_focus();
+  gpu_camera.u = cam->get_u();
+  gpu_camera.v = cam->get_v();
+  gpu_camera.w = cam->get_w();
+  gpu_camera.type = cam->get_type();
 
   // Create or update buffer
   if (camera_buffer == nullptr)
