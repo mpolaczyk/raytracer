@@ -5,6 +5,7 @@
 #define MAX_SPHERES 256
 #define MAX_BOUNCES 16
 #define PI 3.14159265359f
+#define MIN_RAY_COLOR_THRESHOLD 0.1f
 
 // Material types
 #define MATERIAL_UNIVERSAL 1
@@ -117,8 +118,13 @@ float3 random_in_unit_sphere(inout uint seed)
 
 float3 random_in_unit_disk(inout uint seed)
 {
-    float3 dir = normalize(float3(rand_pcg(seed), rand_pcg(seed), rand_pcg(seed)));
-    return dir * rand_pcg(seed);
+    // Generate random point in unit disk using rejection sampling
+    float3 p;
+    do
+    {
+        p = float3(2.0f * rand_pcg(seed) - 1.0f, 2.0f * rand_pcg(seed) - 1.0f, 0.0f);
+    } while (dot(p, p) >= 1.0f);
+    return p;
 }
 
 // Ray structure
@@ -226,7 +232,7 @@ float3 trace_ray(Ray r, inout uint seed)
         if (hit_scene(r, 0.01f, 1e30f, hit))
         {
             // Don't bounce if ray has no color
-            if (dot(ray_color, ray_color) < 0.1f)
+            if (dot(ray_color, ray_color) < MIN_RAY_COLOR_THRESHOLD)
                 break;
             
             // Read material
@@ -293,22 +299,12 @@ Ray get_camera_ray(float u, float v, inout uint seed)
     float3 rd = camera.lens_radius * random_in_unit_disk(seed);
     float3 offset = camera.u * rd.x + camera.v * rd.y;
     
-    if (camera.type == 0.0f)
-    {
-        // Perspective camera
-        float3 fpo = camera.lower_left_corner + camera.horizontal * u + camera.vertical * v;
-        float3 fpf = fpo - camera.w * camera.dist_to_focus;
-        r.origin = camera.look_from - offset;
-        r.direction = normalize(fpf - camera.look_from + offset);
-    }
-    else
-    {
-        // Orthographic camera (not fully implemented, using perspective)
-        float3 fpo = camera.lower_left_corner + camera.horizontal * u + camera.vertical * v;
-        float3 fpf = fpo - camera.w * camera.dist_to_focus;
-        r.origin = camera.look_from - offset;
-        r.direction = normalize(fpf - camera.look_from + offset);
-    }
+    // Only perspective camera is currently supported
+    // Shoot rays from the point to the focus plane
+    float3 fpo = camera.lower_left_corner + camera.horizontal * u + camera.vertical * v;
+    float3 fpf = fpo - camera.w * camera.dist_to_focus;
+    r.origin = camera.look_from - offset;
+    r.direction = normalize(fpf - camera.look_from + offset);
     
     return r;
 }

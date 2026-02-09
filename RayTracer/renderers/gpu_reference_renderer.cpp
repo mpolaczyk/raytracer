@@ -179,9 +179,6 @@ void gpu_reference_renderer::cleanup_directx()
 
 bool gpu_reference_renderer::compile_shader()
 {
-  // Find shader file path
-  const char* shader_path = "renderers/raytracer.hlsl";
-  
   ID3DBlob* shader_blob = nullptr;
   ID3DBlob* error_blob = nullptr;
 
@@ -424,18 +421,19 @@ bool gpu_reference_renderer::upload_config_data()
 bool gpu_reference_renderer::create_output_texture(int width, int height)
 {
   // Clean up old textures if they exist and size changed
-  static int last_width = 0;
-  static int last_height = 0;
-
-  if (output_texture != nullptr && (last_width != width || last_height != height))
+  if (output_texture != nullptr)
   {
-    if (output_uav) { output_uav->Release(); output_uav = nullptr; }
-    if (output_texture) { output_texture->Release(); output_texture = nullptr; }
-    if (staging_texture) { staging_texture->Release(); staging_texture = nullptr; }
+    // Check if size has changed
+    D3D11_TEXTURE2D_DESC desc;
+    output_texture->GetDesc(&desc);
+    
+    if (desc.Width != static_cast<UINT>(width) || desc.Height != static_cast<UINT>(height))
+    {
+      if (output_uav) { output_uav->Release(); output_uav = nullptr; }
+      if (output_texture) { output_texture->Release(); output_texture = nullptr; }
+      if (staging_texture) { staging_texture->Release(); staging_texture = nullptr; }
+    }
   }
-
-  last_width = width;
-  last_height = height;
 
   if (output_texture == nullptr)
   {
