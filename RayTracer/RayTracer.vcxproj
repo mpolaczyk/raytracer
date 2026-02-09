@@ -143,6 +143,7 @@ $(ProjectDir)third_party\ispc-v1.19.0-windows\bin\ispc.exe $(ProjectDir)\rendere
     <ClCompile Include="processing\benchmark.cpp" />
     <ClCompile Include="processing\chunk_generator.cpp" />
     <ClCompile Include="renderers\example_renderer.cpp" />
+    <ClCompile Include="renderers\gpu_reference_renderer.cpp" />
     <ClCompile Include="renderers\ispc_renderer.cpp" />
     <ClCompile Include="renderers\preview_faces_renderer.cpp" />
     <ClCompile Include="renderers\preview_normals_renderer.cpp" />
@@ -210,6 +211,7 @@ $(ProjectDir)third_party\ispc-v1.19.0-windows\bin\ispc.exe $(ProjectDir)\rendere
     <ClInclude Include="processing\benchmark.h" />
     <ClInclude Include="processing\chunk_generator.h" />
     <ClInclude Include="renderers\example_renderer.h" />
+    <ClInclude Include="renderers\gpu_reference_renderer.h" />
     <ClInclude Include="renderers\ispc_renderer.h" />
     <ClInclude Include="renderers\preview_faces_renderer.h" />
     <ClInclude Include="renderers\preview_normals_renderer.h" />
@@ -234,6 +236,7 @@ $(ProjectDir)third_party\ispc-v1.19.0-windows\bin\ispc.exe $(ProjectDir)\rendere
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
+    <None Include="renderers\raytracer.hlsl" />
     <None Include="renderers\trace_ray.ispc" />
     <None Include="renderers\trace_ray.isph" />
   </ItemGroup>

@@ -24,7 +24,8 @@ enum class renderer_type
   preview_normals,
   preview_faces,
   reference,
-  ispc
+  ispc,
+  gpu_reference
 };
 static inline const char* renderer_type_names[] =
 {
@@ -33,7 +34,8 @@ static inline const char* renderer_type_names[] =
   "CPU Preview Normals",
   "CPU Preview Faces",
   "CPU Reference",
-  "CPU ISPC (Example only)"
+  "CPU ISPC (Example only)",
+  "GPU Reference (DirectX 11)"
 };
 
 class hittable;
