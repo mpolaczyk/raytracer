@@ -75,7 +75,8 @@
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll</Command>
+      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll
+copy $(ProjectDir)renderers\raytracer.hlsl $(SolutionDir)Build\$(Platform)_$(Configuration)\raytracer.hlsl</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>mkdir $(SolutionDir)Build\$(Platform)_$(Configuration) 2&gt; NUL
@@ -113,7 +114,8 @@ $(ProjectDir)third_party\ispc-v1.19.0-windows\bin\ispc.exe $(ProjectDir)\rendere
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll</Command>
+      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll
+copy $(ProjectDir)renderers\raytracer.hlsl $(SolutionDir)Build\$(Platform)_$(Configuration)\raytracer.hlsl</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>mkdir $(SolutionDir)Build\$(Platform)_$(Configuration) 2&gt; NUL
@@ -133,6 +135,7 @@ $(ProjectDir)third_party\ispc-v1.19.0-windows\bin\ispc.exe $(ProjectDir)\rendere
     <ClCompile Include="app\ui\hittables_ui.cpp" />
     <ClCompile Include="app\ui\materials_ui.cpp" />
     <ClCompile Include="app\factories.cpp" />
+    <ClCompile Include="core\string_tools.cpp" />
     <ClCompile Include="gfx\bmp.cpp" />
     <ClCompile Include="gfx\dx11_helper.cpp" />
     <ClCompile Include="main.cpp" />
@@ -191,6 +194,7 @@ $(ProjectDir)third_party\ispc-v1.19.0-windows\bin\ispc.exe $(ProjectDir)\rendere
     <ClInclude Include="app\json\materials_json.h" />
     <ClInclude Include="app\json\serializable.h" />
     <ClInclude Include="app\factories.h" />
+    <ClInclude Include="core\string_tools.h" />
     <ClInclude Include="gfx\bmp.h" />
     <ClInclude Include="gfx\dx11_helper.h" />
     <ClInclude Include="gfx\stb_image.h" />
@@ -236,7 +240,16 @@ $(ProjectDir)third_party\ispc-v1.19.0-windows\bin\ispc.exe $(ProjectDir)\rendere
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
-    <None Include="renderers\raytracer.hlsl" />
+    <FxCompile Include="renderers\raytracer.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</EnableDebuggingInformation>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+    </FxCompile>
     <None Include="renderers\trace_ray.ispc" />
     <None Include="renderers\trace_ray.isph" />
   </ItemGroup>

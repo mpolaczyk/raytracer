@@ -328,6 +328,7 @@ bool gpu_reference_renderer::upload_scene_data()
     HRESULT hr = device->CreateBuffer(&desc, &init_data, &scene_buffer);
     if (FAILED(hr))
     {
+      logger::error("{}", "Create buffer failed");
       return false;
     }
   }
@@ -380,6 +381,7 @@ bool gpu_reference_renderer::upload_camera_data()
     HRESULT hr = device->CreateBuffer(&desc, &init_data, &camera_buffer);
     if (FAILED(hr))
     {
+      logger::error("{}", "Create buffer failed");
       return false;
     }
   }
@@ -417,6 +419,7 @@ bool gpu_reference_renderer::upload_config_data()
     HRESULT hr = device->CreateBuffer(&desc, &init_data, &config_buffer);
     if (FAILED(hr))
     {
+      logger::error("{}", "Create buffer failed");
       return false;
     }
   }
@@ -462,6 +465,7 @@ bool gpu_reference_renderer::create_output_texture(int width, int height)
     HRESULT hr = device->CreateTexture2D(&desc, nullptr, &output_texture);
     if (FAILED(hr))
     {
+      logger::error("{}", "Create texture failed");
       return false;
     }
 
@@ -475,6 +479,7 @@ bool gpu_reference_renderer::create_output_texture(int width, int height)
     hr = device->CreateUnorderedAccessView(output_texture, &uav_desc, &output_uav);
     if (FAILED(hr))
     {
+      logger::error("{}", "Create UAV failed");
       return false;
     }
 
@@ -486,6 +491,7 @@ bool gpu_reference_renderer::create_output_texture(int width, int height)
     hr = device->CreateTexture2D(&desc, nullptr, &staging_texture);
     if (FAILED(hr))
     {
+      logger::error("{}", "Create texture failed");
       return false;
     }
   }
@@ -503,6 +509,7 @@ bool gpu_reference_renderer::readback_results()
   HRESULT hr = context->Map(staging_texture, 0, D3D11_MAP_READ, 0, &mapped);
   if (FAILED(hr))
   {
+    logger::error("{}", "Map failed");
     return false;
   }
 

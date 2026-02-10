@@ -34,8 +34,8 @@ static inline const char* renderer_type_names[] =
   "CPU Preview Normals",
   "CPU Preview Faces",
   "CPU Reference",
-  "CPU ISPC (Example only)",
-  "GPU Reference (DirectX 11)"
+  "CPU ISPC (example)",
+  "GPU Reference"
 };
 
 class hittable;
