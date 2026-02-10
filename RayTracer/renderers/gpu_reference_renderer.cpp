@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <winerror.h>
+#include <algorithm>
 
 #include "math/materials.h"
 #include "math/camera.h"
@@ -66,6 +67,30 @@ struct GPUConfig
   float white_point;
   vec3 padding; // Alignment padding
 };
+
+namespace
+{
+constexpr uint32_t kMaxGpuSpheres = 256;
+constexpr uint32_t kMaxGpuMaterials = 256;
+constexpr uint32_t kThreadGroupSize = 8;
+constexpr uint32_t kMaxShaderBounces = 16; // Keep in sync with raytracer.hlsl
+
+static_assert(sizeof(GPUMaterial) % 16 == 0, "GPUMaterial must stay 16-byte aligned");
+static_assert(sizeof(GPUSphere) % 16 == 0, "GPUSphere must stay 16-byte aligned");
+static_assert(sizeof(GPUCamera) % 16 == 0, "GPUCamera must stay 16-byte aligned");
+static_assert(sizeof(GPUConfig) % 16 == 0, "GPUConfig must stay 16-byte aligned");
+
+bool log_failure(const char* action, HRESULT hr)
+{
+  if (FAILED(hr))
+  {
+    logger::error("{} ({})", action, describe_hresult(hr));
+    return true;
+  }
+
+  return false;
+}
+}
 
 gpu_reference_renderer::~gpu_reference_renderer()
 {
@@ -136,8 +161,8 @@ void gpu_reference_renderer::render()
   context->CSSetUnorderedAccessViews(0, 1, &output_uav, nullptr);
   
   // Dispatch compute shader (8x8 thread groups)
-  uint32_t dispatch_x = (job_state.image_width + 7) / 8;
-  uint32_t dispatch_y = (job_state.image_height + 7) / 8;
+  uint32_t dispatch_x = (job_state.image_width + (kThreadGroupSize - 1)) / kThreadGroupSize;
+  uint32_t dispatch_y = (job_state.image_height + (kThreadGroupSize - 1)) / kThreadGroupSize;
   context->Dispatch(dispatch_x, dispatch_y, 1);
   
   // Unbind UAV
@@ -213,9 +238,25 @@ bool gpu_reference_renderer::compile_shader()
     {
       oss << static_cast<const char*>(error_blob->GetBufferPointer());
       error_blob->Release();
+      error_blob = nullptr;
     }
     logger::error("{}", oss.str());
+    if (shader_blob)
+    {
+      shader_blob->Release();
+    }
     return false;
+  }
+  
+  if (error_blob)
+  {
+    const char* warnings = static_cast<const char*>(error_blob->GetBufferPointer());
+    if (warnings && warnings[0] != '\0')
+    {
+      logger::warn("Shader compile warnings:\n{}", warnings);
+    }
+    error_blob->Release();
+    error_blob = nullptr;
   }
 
   hr = device->CreateComputeShader(
@@ -224,6 +265,12 @@ bool gpu_reference_renderer::compile_shader()
     nullptr,
     &compute_shader
   );
+
+  if (log_failure("CreateComputeShader", hr))
+  {
+    shader_blob->Release();
+    return false;
+  }
 
   shader_blob->Release();
 
@@ -259,7 +306,7 @@ bool gpu_reference_renderer::upload_scene_data()
           material_index_map[sph->material_ptr] = mat_index;
 
           // Convert material to GPU format
-          GPUMaterial gpu_mat;
+          GPUMaterial gpu_mat{};
           gpu_mat.color = sph->material_ptr->color;
           gpu_mat.emitted_color = sph->material_ptr->emitted_color;
           gpu_mat.smoothness = sph->material_ptr->smoothness;
@@ -277,36 +324,50 @@ bool gpu_reference_renderer::upload_scene_data()
       }
 
       // Convert sphere to GPU format
-      GPUSphere gpu_sphere;
+      GPUSphere gpu_sphere{};
       gpu_sphere.origin = sph->origin;
       gpu_sphere.radius = sph->radius;
       gpu_sphere.material_index = mat_index;
       gpu_spheres.push_back(gpu_sphere);
     }
   }
+  
+  if (gpu_spheres.size() > kMaxGpuSpheres)
+  {
+    logger::error("Scene uses {} spheres but the GPU shader only supports {}", gpu_spheres.size(), kMaxGpuSpheres);
+    return false;
+  }
+  
+  if (gpu_materials.size() > kMaxGpuMaterials)
+  {
+    logger::error("Scene uses {} materials but the GPU shader only supports {}", gpu_materials.size(), kMaxGpuMaterials);
+    return false;
+  }
 
   // Create scene buffer (spheres + materials + counts)
   struct SceneData
   {
-    GPUSphere spheres[256];
-    GPUMaterial materials[256];
+    GPUSphere spheres[kMaxGpuSpheres];
+    GPUMaterial materials[kMaxGpuMaterials];
     uint32_t sphere_count;
     uint32_t material_count;
     float padding[2];
   };
 
-  SceneData scene_data;
-  memset(&scene_data, 0, sizeof(SceneData));
+  static_assert(sizeof(SceneData) % 16 == 0, "Scene constant buffer must be 16-byte aligned");
+  static_assert(sizeof(SceneData) <= D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT * 16, "Scene constant buffer exceeds D3D11 limits");
+ 
+  SceneData scene_data{};
 
   scene_data.sphere_count = static_cast<uint32_t>(gpu_spheres.size());
   scene_data.material_count = static_cast<uint32_t>(gpu_materials.size());
 
-  for (size_t i = 0; i < gpu_spheres.size() && i < 256; ++i)
+  for (size_t i = 0; i < gpu_spheres.size() && i < kMaxGpuSpheres; ++i)
   {
     scene_data.spheres[i] = gpu_spheres[i];
   }
 
-  for (size_t i = 0; i < gpu_materials.size() && i < 256; ++i)
+  for (size_t i = 0; i < gpu_materials.size() && i < kMaxGpuMaterials; ++i)
   {
     scene_data.materials[i] = gpu_materials[i];
   }
@@ -326,9 +387,8 @@ bool gpu_reference_renderer::upload_scene_data()
     init_data.SysMemSlicePitch = 0;
 
     HRESULT hr = device->CreateBuffer(&desc, &init_data, &scene_buffer);
-    if (FAILED(hr))
+    if (log_failure("Create scene constant buffer", hr))
     {
-      logger::error("{}", "Create buffer failed");
       return false;
     }
   }
@@ -336,6 +396,8 @@ bool gpu_reference_renderer::upload_scene_data()
   {
     context->UpdateSubresource(scene_buffer, 0, nullptr, &scene_data, 0, 0);
   }
+
+  logger::debug("Uploaded {} spheres / {} materials to GPU", scene_data.sphere_count, scene_data.material_count);
 
   return true;
 }
@@ -347,8 +409,7 @@ bool gpu_reference_renderer::upload_camera_data()
   // Convert camera to GPU format using the getters
   camera* cam = job_state.cam;
   
-  GPUCamera gpu_camera;
-  ZeroMemory(&gpu_camera, sizeof(GPUCamera));
+  GPUCamera gpu_camera{};
 
   // Extract camera data
   gpu_camera.look_from = cam->get_look_from();
@@ -379,9 +440,8 @@ bool gpu_reference_renderer::upload_camera_data()
     init_data.SysMemSlicePitch = 0;
 
     HRESULT hr = device->CreateBuffer(&desc, &init_data, &camera_buffer);
-    if (FAILED(hr))
+    if (log_failure("Create camera constant buffer", hr))
     {
-      logger::error("{}", "Create buffer failed");
       return false;
     }
   }
@@ -395,12 +455,30 @@ bool gpu_reference_renderer::upload_camera_data()
 
 bool gpu_reference_renderer::upload_config_data()
 {
+  if (job_state.renderer_conf == nullptr)
+  {
+    logger::error("Renderer configuration missing for GPU upload");
+    return false;
+  }
+  
   GPUConfig gpu_config;
   gpu_config.width = job_state.image_width;
   gpu_config.height = job_state.image_height;
   gpu_config.rays_per_pixel = job_state.renderer_conf->rays_per_pixel;
   gpu_config.ray_bounces = job_state.renderer_conf->ray_bounces;
   gpu_config.white_point = job_state.renderer_conf->white_point;
+  
+  if (gpu_config.ray_bounces > kMaxShaderBounces)
+  {
+    logger::warn("Clamping ray bounce count from {} to shader maximum {}", gpu_config.ray_bounces, kMaxShaderBounces);
+    gpu_config.ray_bounces = kMaxShaderBounces;
+  }
+  
+  if (gpu_config.rays_per_pixel == 0)
+  {
+    logger::warn("Rays per pixel was zero. Forcing minimum of 1 to avoid GPU division by zero");
+    gpu_config.rays_per_pixel = 1;
+  }
 
   // Create or update buffer
   if (config_buffer == nullptr)
@@ -417,9 +495,8 @@ bool gpu_reference_renderer::upload_config_data()
     init_data.SysMemSlicePitch = 0;
 
     HRESULT hr = device->CreateBuffer(&desc, &init_data, &config_buffer);
-    if (FAILED(hr))
+    if (log_failure("Create config constant buffer", hr))
     {
-      logger::error("{}", "Create buffer failed");
       return false;
     }
   }
@@ -463,9 +540,8 @@ bool gpu_reference_renderer::create_output_texture(int width, int height)
     desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
 
     HRESULT hr = device->CreateTexture2D(&desc, nullptr, &output_texture);
-    if (FAILED(hr))
+    if (log_failure("Create output texture", hr))
     {
-      logger::error("{}", "Create texture failed");
       return false;
     }
 
@@ -477,9 +553,8 @@ bool gpu_reference_renderer::create_output_texture(int width, int height)
     uav_desc.Texture2D.MipSlice = 0;
 
     hr = device->CreateUnorderedAccessView(output_texture, &uav_desc, &output_uav);
-    if (FAILED(hr))
+    if (log_failure("Create output UAV", hr))
     {
-      logger::error("{}", "Create UAV failed");
       return false;
     }
 
@@ -489,9 +564,8 @@ bool gpu_reference_renderer::create_output_texture(int width, int height)
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
     hr = device->CreateTexture2D(&desc, nullptr, &staging_texture);
-    if (FAILED(hr))
+    if (log_failure("Create staging texture", hr))
     {
-      logger::error("{}", "Create texture failed");
       return false;
     }
   }
@@ -507,9 +581,8 @@ bool gpu_reference_renderer::readback_results()
   // Map staging texture for CPU read
   D3D11_MAPPED_SUBRESOURCE mapped;
   HRESULT hr = context->Map(staging_texture, 0, D3D11_MAP_READ, 0, &mapped);
-  if (FAILED(hr))
+  if (log_failure("Map staging texture", hr))
   {
-    logger::error("{}", "Map failed");
     return false;
   }
 

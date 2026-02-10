@@ -13,6 +13,7 @@ namespace dx11
   extern ID3D11DeviceContext* g_pd3dDeviceContext;
   extern IDXGISwapChain* g_pSwapChain;
   extern ID3D11RenderTargetView* g_mainRenderTargetView;
+  extern bool g_debugLayerEnabled;
 
   bool CreateDeviceD3D(HWND hWnd);
   void CleanupDeviceD3D();

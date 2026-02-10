@@ -1,7 +1,10 @@
 #include "stdafx.h"
 
 #include <d3d11.h>
+#include <d3d11_4.h>
+#include <d3d11sdklayers.h>
 #include <winerror.h>
+#include <cstdlib>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -12,6 +15,71 @@ namespace dx11
   ID3D11DeviceContext* g_pd3dDeviceContext = nullptr;
   IDXGISwapChain* g_pSwapChain = nullptr;
   ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;
+  bool g_debugLayerEnabled = false;
+
+  namespace
+  {
+    bool ShouldRequestDebugLayer()
+    {
+      if (const char* env = std::getenv("DX11_DEBUG_LAYER"))
+      {
+        return env[0] != '0';
+      }
+
+#if BUILD_DEBUG
+      return true;
+#else
+      return false;
+#endif
+    }
+
+    void ConfigureDebugInterface(ID3D11Device* device)
+    {
+      if (device == nullptr)
+      {
+        return;
+      }
+
+      ID3D11InfoQueue* infoQueue = nullptr;
+      if (SUCCEEDED(device->QueryInterface(__uuidof(ID3D11InfoQueue), reinterpret_cast<void**>(&infoQueue))))
+      {
+        infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+        infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, TRUE);
+
+        infoQueue->Release();
+      }
+    }
+
+    void EnableMultithreadProtection(ID3D11DeviceContext* context)
+    {
+      if (context == nullptr)
+      {
+        return;
+      }
+
+      ID3D11Multithread* multithread = nullptr;
+      if (SUCCEEDED(context->QueryInterface(__uuidof(ID3D11Multithread), reinterpret_cast<void**>(&multithread))))
+      {
+        multithread->SetMultithreadProtected(TRUE);
+        multithread->Release();
+      }
+    }
+
+    void ReportLiveObjects(ID3D11Device* device)
+    {
+      if (device == nullptr)
+      {
+        return;
+      }
+
+      ID3D11Debug* debug = nullptr;
+      if (SUCCEEDED(device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug))))
+      {
+        debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        debug->Release();
+      }
+    }
+  }
 
   void CreateRenderTarget()
   {
@@ -40,12 +108,31 @@ namespace dx11
     sd.Windowed = TRUE;
     sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-    UINT createDeviceFlags = 0;
-    //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    bool requestDebugLayer = ShouldRequestDebugLayer();
+    UINT createDeviceFlags = requestDebugLayer ? D3D11_CREATE_DEVICE_DEBUG : 0;
     D3D_FEATURE_LEVEL featureLevel;
     const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
-    if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext) != S_OK)
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+
+    if (FAILED(hr) && requestDebugLayer)
+    {
+      requestDebugLayer = false;
+      createDeviceFlags = 0;
+      hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+    }
+
+    if (FAILED(hr))
+    {
       return false;
+    }
+
+    g_debugLayerEnabled = requestDebugLayer;
+    if (g_debugLayerEnabled)
+    {
+      ConfigureDebugInterface(g_pd3dDevice);
+    }
+
+    EnableMultithreadProtection(g_pd3dDeviceContext);
 
     CreateRenderTarget();
     return true;
@@ -61,12 +148,17 @@ namespace dx11
     CleanupRenderTarget();
     if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = NULL; }
     if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = NULL; }
+    if (g_debugLayerEnabled && g_pd3dDevice)
+    {
+      ReportLiveObjects(g_pd3dDevice);
+    }
     if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = NULL; }
+    g_debugLayerEnabled = false;
   }
 
   bool LoadTextureFromBuffer(unsigned char* buffer, int width, int height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture)
   {
-    if (buffer == nullptr) return false;
+    if (buffer == nullptr || out_srv == nullptr || out_texture == nullptr || g_pd3dDevice == nullptr) return false;
 
     D3D11_TEXTURE2D_DESC desc;
     ZeroMemory(&desc, sizeof(desc));
@@ -80,13 +172,13 @@ namespace dx11
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    D3D11_SUBRESOURCE_DATA* subResource = new D3D11_SUBRESOURCE_DATA();
-    subResource->pSysMem = buffer;
-    subResource->SysMemPitch = desc.Width * 4;
-    subResource->SysMemSlicePitch = 0;
+    D3D11_SUBRESOURCE_DATA subResource;
+    subResource.pSysMem = buffer;
+    subResource.SysMemPitch = desc.Width * 4;
+    subResource.SysMemSlicePitch = 0;
 
     ID3D11Texture2D* pTexture = nullptr;
-    if (SUCCEEDED(g_pd3dDevice->CreateTexture2D(&desc, subResource, &pTexture)) && pTexture)
+    if (SUCCEEDED(g_pd3dDevice->CreateTexture2D(&desc, &subResource, &pTexture)) && pTexture)
     {
       D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
       ZeroMemory(&srvDesc, sizeof(srvDesc));
@@ -97,19 +189,24 @@ namespace dx11
       if (SUCCEEDED(g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, out_srv)))
       {
         *out_texture = pTexture;
-        pTexture->Release();
         return true;
       }
+      pTexture->Release();
     }
     return false;
   }
 
   bool UpdateTextureBuffer(unsigned char* buffer, int width, int height, ID3D11Texture2D* in_texture)
   {
+    if (buffer == nullptr || in_texture == nullptr || g_pd3dDeviceContext == nullptr) return false;
+
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
     int rowspan = width * 4; // 4 bytes per px
-    g_pd3dDeviceContext->Map(in_texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    if (FAILED(g_pd3dDeviceContext->Map(in_texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+    {
+      return false;
+    }
     BYTE* mappedData = reinterpret_cast<BYTE*>(mappedResource.pData);
     for (int i = 0; i < height; ++i)
     {
@@ -134,6 +231,6 @@ namespace dx11
       stbi_image_free(image_data);
       return answer;
     }
-    return true;
+    return false;
   }
 }
