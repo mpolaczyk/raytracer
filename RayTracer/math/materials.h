@@ -7,7 +7,7 @@
 class material
 {
 public:
-  material() {}
+  material() = default;
   explicit material(material_type type) : type(type) 
   {
     if (type == material_type::light)
@@ -19,6 +19,7 @@ public:
   {
     id = std::move(id);
   }
+  ~material() = default;
 
   std::string id;
   material_type type = material_type::none;

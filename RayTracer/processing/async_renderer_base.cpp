@@ -135,7 +135,7 @@ void async_renderer_base::async_job()
 
     if (save_output)
     {
-      char image_file_name[300];  // Run-Time Check Failure #2 - Stack around the variable 'image_file_name' was corrupted.
+      char image_file_name[500];  // Run-Time Check Failure #2 - Stack around the variable 'image_file_name' was corrupted.
       std::sprintf(image_file_name, io::get_render_output_file_path().c_str());
 
       benchmark::instance benchmark_save;

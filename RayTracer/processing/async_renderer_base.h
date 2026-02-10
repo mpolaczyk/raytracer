@@ -56,7 +56,7 @@ class async_renderer_base
 {
 public:
   async_renderer_base();
-  ~async_renderer_base();
+  virtual ~async_renderer_base();
 
   // Renderer instance interface
   virtual std::string get_name() const = 0;
