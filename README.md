@@ -63,7 +63,7 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
 	- Monte Carlo based method, mix of light and surface cosine based probability density functions (PDF)
 	- Multiple renderer implementations:
 	    - **Reference CPU**: Full path tracing on CPU with PPL parallelization
-	    - **GPU Reference (DirectX 11)**: GPU-accelerated path tracing using compute shaders
+	    - **GPU Reference**: GPU-accelerated path tracing using compute shaders
 	    - **Preview**: Fast preview renderer for editing
 	    - **ISPC**: Intel SPMD Program Compiler version (example only)
 	- Multithreading: thread poll, PLL, none

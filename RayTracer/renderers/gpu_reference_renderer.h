@@ -13,8 +13,8 @@ struct ID3D11ShaderResourceView;
 class gpu_reference_renderer : public async_renderer_base
 {
 public:
-  gpu_reference_renderer();
-  ~gpu_reference_renderer();
+  gpu_reference_renderer() = default;
+  virtual ~gpu_reference_renderer();
 
   virtual std::string get_name() const override;
 

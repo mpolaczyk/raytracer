@@ -447,6 +447,21 @@ namespace io
     return oss.str();
   }
 
+  std::string get_vcxproj_dir()
+  {
+      std::string working_dir = get_working_dir();
+      std::ostringstream oss;
+      oss << working_dir << "..\\..\\RayTracer\\";
+      return oss.str();
+  }
+
+  std::string get_vcxproj_file_path(const char* file_name)
+  {
+      std::string vcxproj_dir = get_vcxproj_dir();
+      std::ostringstream oss;
+      oss << vcxproj_dir << file_name;
+      return oss.str();
+  }
 
   std::string get_workspace_file_path(const char* file_name)
   {
@@ -499,7 +514,6 @@ namespace io
     oss << "output_" << t << ".bmp";
     return get_images_file_path(oss.str().c_str());
   }
-
 }
 
 namespace obj_helper

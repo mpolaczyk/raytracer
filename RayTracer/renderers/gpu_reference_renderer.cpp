@@ -7,10 +7,12 @@
 #include "math/materials.h"
 #include "math/camera.h"
 #include "math/hittables.h"
+#include "core/string_tools.h"
 #include "processing/benchmark.h"
 #include "gfx/dx11_helper.h"
 
 #include "gpu_reference_renderer.h"
+#include <app/exceptions.h>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -65,10 +67,6 @@ struct GPUConfig
   vec3 padding; // Alignment padding
 };
 
-gpu_reference_renderer::gpu_reference_renderer()
-{
-}
-
 gpu_reference_renderer::~gpu_reference_renderer()
 {
   cleanup_directx();
@@ -76,7 +74,7 @@ gpu_reference_renderer::~gpu_reference_renderer()
 
 std::string gpu_reference_renderer::get_name() const
 {
-  return "GPU Reference (DirectX 11)";
+  return "GPU Reference";
 }
 
 void gpu_reference_renderer::render()
@@ -93,57 +91,63 @@ void gpu_reference_renderer::render()
       return;
     }
   }
-
+  
   // Compile shader if needed
   if (compute_shader == nullptr)
   {
     if (!compile_shader())
     {
+      logger::error("{}", "Failed to compile shader");
       return;
     }
   }
-
+  
   // Create output texture
   if (!create_output_texture(job_state.image_width, job_state.image_height))
   {
+    logger::error("{}", "Failed to create output texture");
     return;
   }
-
+  
   // Upload scene, camera, and config data to GPU
   if (!upload_scene_data())
   {
+    logger::error("{}", "Failed to upload scene data");
     return;
   }
-
+  
   if (!upload_camera_data())
   {
+    logger::error("{}", "Failed to upload camera data");
     return;
   }
-
+  
   if (!upload_config_data())
   {
+    logger::error("{}", "Failed to upload config data");
     return;
   }
-
+  
   // Set shader and resources
   context->CSSetShader(compute_shader, nullptr, 0);
   context->CSSetConstantBuffers(0, 1, &scene_buffer);
   context->CSSetConstantBuffers(1, 1, &camera_buffer);
   context->CSSetConstantBuffers(2, 1, &config_buffer);
   context->CSSetUnorderedAccessViews(0, 1, &output_uav, nullptr);
-
+  
   // Dispatch compute shader (8x8 thread groups)
   uint32_t dispatch_x = (job_state.image_width + 7) / 8;
   uint32_t dispatch_y = (job_state.image_height + 7) / 8;
   context->Dispatch(dispatch_x, dispatch_y, 1);
-
+  
   // Unbind UAV
   ID3D11UnorderedAccessView* null_uav = nullptr;
   context->CSSetUnorderedAccessViews(0, 1, &null_uav, nullptr);
-
+  
   // Read back results and apply tone mapping
   if (!readback_results())
   {
+    logger::error("{}", "Failed to readback results");
     return;
   }
 }
@@ -156,6 +160,7 @@ bool gpu_reference_renderer::initialize_directx()
 
   if (device == nullptr || context == nullptr)
   {
+    logger::error("{}", "Failed to use device");
     return false;
   }
 
@@ -183,12 +188,13 @@ bool gpu_reference_renderer::compile_shader()
   ID3DBlob* error_blob = nullptr;
 
   UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#ifdef _DEBUG
-  flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
 
+  flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+
+
+  const std::wstring shader = L"raytracer.hlsl";
   HRESULT hr = D3DCompileFromFile(
-    L"renderers/raytracer.hlsl",
+    shader.c_str(),
     nullptr,
     D3D_COMPILE_STANDARD_FILE_INCLUDE,
     "CSMain",
@@ -199,12 +205,16 @@ bool gpu_reference_renderer::compile_shader()
     &error_blob
   );
 
+  std::ostringstream oss;
   if (FAILED(hr))
   {
+    oss << describe_hresult(hr);
     if (error_blob)
     {
+      oss << static_cast<const char*>(error_blob->GetBufferPointer());
       error_blob->Release();
     }
+    logger::error("{}", oss.str());
     return false;
   }
 
