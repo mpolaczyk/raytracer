@@ -55,6 +55,7 @@ public:
 
   // Renderer instance interface
   virtual std::string get_name() const = 0;
+  virtual renderer_type get_renderer_type() const = 0;
   virtual void render() = 0;
   virtual bool wants_sync_render() const { return false; }
 

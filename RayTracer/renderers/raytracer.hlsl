@@ -429,8 +429,8 @@ void CSMain(uint3 threadID : SV_DispatchThreadID)
     float3 hdr_color = fragment(threadID.xy, seed);
     
     // Tone mapping
-    float3 ldr_color = reinhard_extended(hdr_color, config.white_point);
-    
+    float3 ldr_color = saturate(reinhard_extended(hdr_color, config.white_point));
+
     // Write to output (RGBA format)
     OutputTexture[threadID.xy] = float4(ldr_color, 1.0f);
 }

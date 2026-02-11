@@ -17,6 +17,9 @@ public:
   virtual ~gpu_reference_renderer();
 
   virtual std::string get_name() const override;
+  virtual renderer_type get_renderer_type() const override { return renderer_type::gpu_reference; }
+  ID3D11ShaderResourceView* get_output_srv() const { return output_srv; }
+  ID3D11Texture2D* get_output_texture() const { return output_texture; }
 
 private:
   virtual void render() override;
@@ -32,6 +35,7 @@ private:
   ID3D11Buffer* camera_buffer = nullptr;
   ID3D11Buffer* config_buffer = nullptr;
   ID3D11UnorderedAccessView* output_uav = nullptr;
+  ID3D11ShaderResourceView* output_srv = nullptr;
   ID3D11Texture2D* output_texture = nullptr;
   ID3D11Texture2D* staging_texture = nullptr;
 

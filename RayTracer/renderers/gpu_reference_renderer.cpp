@@ -223,6 +223,7 @@ void gpu_reference_renderer::cleanup_directx()
   if (triangle_buffer) { triangle_buffer->Release(); triangle_buffer = nullptr; }
   if (scene_buffer) { scene_buffer->Release(); scene_buffer = nullptr; }
   if (compute_shader) { compute_shader->Release(); compute_shader = nullptr; }
+  if (output_srv) { output_srv->Release(); output_srv = nullptr; }
   
   // Don't release device and context - they're owned by dx11_helper
   device = nullptr;
@@ -237,7 +238,6 @@ bool gpu_reference_renderer::compile_shader()
   UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
 
   flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-
 
   const std::wstring shader = L"raytracer.hlsl";
   HRESULT hr = D3DCompileFromFile(
@@ -281,12 +281,7 @@ bool gpu_reference_renderer::compile_shader()
     error_blob = nullptr;
   }
 
-  hr = device->CreateComputeShader(
-    shader_blob->GetBufferPointer(),
-    shader_blob->GetBufferSize(),
-    nullptr,
-    &compute_shader
-  );
+  hr = device->CreateComputeShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, &compute_shader);
 
   if (log_failure("CreateComputeShader", hr))
   {
@@ -312,80 +307,51 @@ bool gpu_reference_renderer::upload_scene_data()
   std::vector<GPUMaterial> gpu_materials;
   std::map<material*, uint32_t> material_index_map;
 
+  auto get_material_index = [&material_index_map, &gpu_materials](material* mat) -> uint32_t
+  {
+    if (mat == nullptr)
+    {
+      return 0u;
+    }
+
+    auto it = material_index_map.find(mat);
+    if (it != material_index_map.end())
+    {
+      return it->second;
+    }
+
+    const uint32_t mat_index = static_cast<uint32_t>(gpu_materials.size());
+    material_index_map[mat] = mat_index;
+
+    GPUMaterial gpu_mat{};
+    gpu_mat.color = mat->color;
+    gpu_mat.emitted_color = mat->emitted_color;
+    gpu_mat.smoothness = mat->smoothness;
+    gpu_mat.gloss_probability = mat->gloss_probability;
+    gpu_mat.gloss_color = mat->gloss_color;
+    gpu_mat.refraction_probability = mat->refraction_probability;
+    gpu_mat.refraction_index = mat->refraction_index;
+    gpu_mat.type = static_cast<uint32_t>(mat->type);
+    gpu_materials.emplace_back(gpu_mat);
+
+    return mat_index;
+  };
+
   for (auto* obj : sc->objects)
   {
+    uint32_t mat_index = get_material_index(obj->material_ptr);
     if (obj->type == hittable_type::sphere)
     {
       sphere* sph = static_cast<sphere*>(obj);
-      
-      // Get or create material index
-      uint32_t mat_index = 0;
-      if (sph->material_ptr != nullptr)
-      {
-        auto it = material_index_map.find(sph->material_ptr);
-        if (it == material_index_map.end())
-        {
-          mat_index = static_cast<uint32_t>(gpu_materials.size());
-          material_index_map[sph->material_ptr] = mat_index;
-
-          // Convert material to GPU format
-          GPUMaterial gpu_mat{};
-          gpu_mat.color = sph->material_ptr->color;
-          gpu_mat.emitted_color = sph->material_ptr->emitted_color;
-          gpu_mat.smoothness = sph->material_ptr->smoothness;
-          gpu_mat.gloss_probability = sph->material_ptr->gloss_probability;
-          gpu_mat.gloss_color = sph->material_ptr->gloss_color;
-          gpu_mat.refraction_probability = sph->material_ptr->refraction_probability;
-          gpu_mat.refraction_index = sph->material_ptr->refraction_index;
-          gpu_mat.type = static_cast<uint32_t>(sph->material_ptr->type);
-          gpu_materials.push_back(gpu_mat);
-        }
-        else
-        {
-          mat_index = it->second;
-        }
-      }
-
-      // Convert sphere to GPU format
       GPUSphere gpu_sphere{};
       gpu_sphere.origin = sph->origin;
       gpu_sphere.radius = sph->radius;
       gpu_sphere.material_index = mat_index;
-      gpu_spheres.push_back(gpu_sphere);
+      gpu_spheres.emplace_back(gpu_sphere);
     }
     else if (obj->type == hittable_type::static_mesh)
     {
       static_mesh* mesh = static_cast<static_mesh*>(obj);
-      
-      // Get or create material index
-      uint32_t mat_index = 0;
-      if (mesh->material_ptr != nullptr)
-      {
-        auto it = material_index_map.find(mesh->material_ptr);
-        if (it == material_index_map.end())
-        {
-          mat_index = static_cast<uint32_t>(gpu_materials.size());
-          material_index_map[mesh->material_ptr] = mat_index;
-
-          // Convert material to GPU format
-          GPUMaterial gpu_mat{};
-          gpu_mat.color = mesh->material_ptr->color;
-          gpu_mat.emitted_color = mesh->material_ptr->emitted_color;
-          gpu_mat.smoothness = mesh->material_ptr->smoothness;
-          gpu_mat.gloss_probability = mesh->material_ptr->gloss_probability;
-          gpu_mat.gloss_color = mesh->material_ptr->gloss_color;
-          gpu_mat.refraction_probability = mesh->material_ptr->refraction_probability;
-          gpu_mat.refraction_index = mesh->material_ptr->refraction_index;
-          gpu_mat.type = static_cast<uint32_t>(mesh->material_ptr->type);
-          gpu_materials.push_back(gpu_mat);
-        }
-        else
-        {
-          mat_index = it->second;
-        }
-      }
-
-      // Convert triangles to GPU format
       for (const auto& face : mesh->faces)
       {
         GPUTriangle gpu_tri{};
@@ -393,47 +359,19 @@ bool gpu_reference_renderer::upload_scene_data()
         gpu_tri.v1 = face.vertices[1];
         gpu_tri.v2 = face.vertices[2];
         gpu_tri.material_index = mat_index;
-        gpu_triangles.push_back(gpu_tri);
+        gpu_triangles.emplace_back(gpu_tri);
       }
     }
     else if (obj->type == hittable_type::xy_rect || obj->type == hittable_type::xz_rect || obj->type == hittable_type::yz_rect)
     {
-      // Get or create material index
-      uint32_t mat_index = 0;
-      if (obj->material_ptr != nullptr)
-      {
-        auto it = material_index_map.find(obj->material_ptr);
-        if (it == material_index_map.end())
-        {
-          mat_index = static_cast<uint32_t>(gpu_materials.size());
-          material_index_map[obj->material_ptr] = mat_index;
-
-          // Convert material to GPU format
-          GPUMaterial gpu_mat{};
-          gpu_mat.color = obj->material_ptr->color;
-          gpu_mat.emitted_color = obj->material_ptr->emitted_color;
-          gpu_mat.smoothness = obj->material_ptr->smoothness;
-          gpu_mat.gloss_probability = obj->material_ptr->gloss_probability;
-          gpu_mat.gloss_color = obj->material_ptr->gloss_color;
-          gpu_mat.refraction_probability = obj->material_ptr->refraction_probability;
-          gpu_mat.refraction_index = obj->material_ptr->refraction_index;
-          gpu_mat.type = static_cast<uint32_t>(obj->material_ptr->type);
-          gpu_materials.push_back(gpu_mat);
-        }
-        else
-        {
-          mat_index = it->second;
-        }
-      }
-
-      auto add_triangle = [&](const vec3& v0, const vec3& v1, const vec3& v2)
+      auto add_triangle = [&gpu_triangles, mat_index](const vec3& v0, const vec3& v1, const vec3& v2)
       {
         GPUTriangle gpu_tri{};
         gpu_tri.v0 = v0;
         gpu_tri.v1 = v1;
         gpu_tri.v2 = v2;
         gpu_tri.material_index = mat_index;
-        gpu_triangles.push_back(gpu_tri);
+        gpu_triangles.emplace_back(gpu_tri);
       };
 
       if (obj->type == hittable_type::xy_rect)
@@ -707,6 +645,7 @@ bool gpu_reference_renderer::create_output_texture(int width, int height)
     if (desc.Width != static_cast<UINT>(width) || desc.Height != static_cast<UINT>(height))
     {
       if (output_uav) { output_uav->Release(); output_uav = nullptr; }
+      if (output_srv) { output_srv->Release(); output_srv = nullptr; }
       if (output_texture) { output_texture->Release(); output_texture = nullptr; }
       if (staging_texture) { staging_texture->Release(); staging_texture = nullptr; }
     }
@@ -721,10 +660,10 @@ bool gpu_reference_renderer::create_output_texture(int width, int height)
     desc.Height = height;
     desc.MipLevels = 1;
     desc.ArraySize = 1;
-    desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     desc.SampleDesc.Count = 1;
     desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
+    desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
 
     HRESULT hr = device->CreateTexture2D(&desc, nullptr, &output_texture);
     if (log_failure("Create output texture", hr))
@@ -735,12 +674,25 @@ bool gpu_reference_renderer::create_output_texture(int width, int height)
     // Create UAV
     D3D11_UNORDERED_ACCESS_VIEW_DESC uav_desc;
     ZeroMemory(&uav_desc, sizeof(uav_desc));
-    uav_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    uav_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     uav_desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
     uav_desc.Texture2D.MipSlice = 0;
 
     hr = device->CreateUnorderedAccessView(output_texture, &uav_desc, &output_uav);
     if (log_failure("Create output UAV", hr))
+    {
+      return false;
+    }
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
+    ZeroMemory(&srv_desc, sizeof(srv_desc));
+    srv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srv_desc.Texture2D.MipLevels = 1;
+    srv_desc.Texture2D.MostDetailedMip = 0;
+
+    hr = device->CreateShaderResourceView(output_texture, &srv_desc, &output_srv);
+    if (log_failure("Create output SRV", hr))
     {
       return false;
     }
@@ -773,29 +725,29 @@ bool gpu_reference_renderer::readback_results()
     return false;
   }
 
-  // Copy data to output buffers
-  float* src = reinterpret_cast<float*>(mapped.pData);
+  const uint8_t* src = reinterpret_cast<uint8_t*>(mapped.pData);
+  const uint32_t src_row_stride = mapped.RowPitch;
+  const uint32_t row_stride = job_state.image_width * bmp::BYTES_PER_PIXEL;
+  uint8_t* rgb_buffer = job_state.img_rgb->get_buffer();
+  uint8_t* bgr_buffer = save_output ? job_state.img_bgr->get_buffer() : nullptr;
 
   for (int y = 0; y < job_state.image_height; ++y)
   {
-    for (int x = 0; x < job_state.image_width; ++x)
+    const uint8_t* src_row = src + (y * src_row_stride);
+    uint8_t* rgb_row = rgb_buffer + (y * row_stride);
+    memcpy(rgb_row, src_row, row_stride);
+
+    if (bgr_buffer)
     {
-      int src_offset = (y * mapped.RowPitch / sizeof(float)) + (x * 4);
-      
-      float r = src[src_offset + 0];
-      float g = src[src_offset + 1];
-      float b = src[src_offset + 2];
-
-      // The tone mapping is already done in the shader
-      // Convert to 8-bit color
-      vec3 ldr_color(r, g, b);
-      ldr_color = math::clamp_vec3(0.0f, 1.0f, ldr_color);
-
-      bmp::bmp_pixel p(ldr_color);
-      job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
-      if (save_output)
+      uint8_t* bgr_row = bgr_buffer + (y * row_stride);
+      for (int x = 0; x < job_state.image_width; ++x)
       {
-        job_state.img_bgr->draw_pixel(x, y, &p);
+        const uint8_t* rgb_pixel = rgb_row + (x * bmp::BYTES_PER_PIXEL);
+        uint8_t* bgr_pixel = bgr_row + (x * bmp::BYTES_PER_PIXEL);
+        bgr_pixel[0] = rgb_pixel[2];
+        bgr_pixel[1] = rgb_pixel[1];
+        bgr_pixel[2] = rgb_pixel[0];
+        bgr_pixel[3] = rgb_pixel[3];
       }
     }
   }
