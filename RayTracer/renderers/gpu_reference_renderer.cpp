@@ -41,6 +41,15 @@ struct GPUSphere
   float padding[2];
 };
 
+struct GPUTriangle
+{
+  vec3 v0;
+  vec3 v1;
+  vec3 v2;
+  uint32_t material_index;
+  float padding[3];
+};
+
 struct GPUCamera
 {
   vec3 look_from;
@@ -71,12 +80,14 @@ struct GPUConfig
 namespace
 {
 constexpr uint32_t kMaxGpuSpheres = 256;
+constexpr uint32_t kMaxGpuTriangles = 16384; // 16K triangles should be enough for most scenes
 constexpr uint32_t kMaxGpuMaterials = 256;
 constexpr uint32_t kThreadGroupSize = 8;
 constexpr uint32_t kMaxShaderBounces = 16; // Keep in sync with raytracer.hlsl
 
 static_assert(sizeof(GPUMaterial) % 16 == 0, "GPUMaterial must stay 16-byte aligned");
 static_assert(sizeof(GPUSphere) % 16 == 0, "GPUSphere must stay 16-byte aligned");
+static_assert(sizeof(GPUTriangle) % 16 == 0, "GPUTriangle must stay 16-byte aligned");
 static_assert(sizeof(GPUCamera) % 16 == 0, "GPUCamera must stay 16-byte aligned");
 static_assert(sizeof(GPUConfig) % 16 == 0, "GPUConfig must stay 16-byte aligned");
 
@@ -158,6 +169,10 @@ void gpu_reference_renderer::render()
   context->CSSetConstantBuffers(0, 1, &scene_buffer);
   context->CSSetConstantBuffers(1, 1, &camera_buffer);
   context->CSSetConstantBuffers(2, 1, &config_buffer);
+  if (triangle_srv != nullptr)
+  {
+    context->CSSetShaderResources(0, 1, &triangle_srv);
+  }
   context->CSSetUnorderedAccessViews(0, 1, &output_uav, nullptr);
   
   // Dispatch compute shader (8x8 thread groups)
@@ -165,9 +180,14 @@ void gpu_reference_renderer::render()
   uint32_t dispatch_y = (job_state.image_height + (kThreadGroupSize - 1)) / kThreadGroupSize;
   context->Dispatch(dispatch_x, dispatch_y, 1);
   
-  // Unbind UAV
+  // Unbind UAV and SRV
   ID3D11UnorderedAccessView* null_uav = nullptr;
   context->CSSetUnorderedAccessViews(0, 1, &null_uav, nullptr);
+  if (triangle_srv != nullptr)
+  {
+    ID3D11ShaderResourceView* null_srv = nullptr;
+    context->CSSetShaderResources(0, 1, &null_srv);
+  }
   
   // Read back results and apply tone mapping
   if (!readback_results())
@@ -199,6 +219,8 @@ void gpu_reference_renderer::cleanup_directx()
   if (output_uav) { output_uav->Release(); output_uav = nullptr; }
   if (config_buffer) { config_buffer->Release(); config_buffer = nullptr; }
   if (camera_buffer) { camera_buffer->Release(); camera_buffer = nullptr; }
+  if (triangle_srv) { triangle_srv->Release(); triangle_srv = nullptr; }
+  if (triangle_buffer) { triangle_buffer->Release(); triangle_buffer = nullptr; }
   if (scene_buffer) { scene_buffer->Release(); scene_buffer = nullptr; }
   if (compute_shader) { compute_shader->Release(); compute_shader = nullptr; }
   
@@ -286,6 +308,7 @@ bool gpu_reference_renderer::upload_scene_data()
 
   // Count spheres in the scene
   std::vector<GPUSphere> gpu_spheres;
+  std::vector<GPUTriangle> gpu_triangles;
   std::vector<GPUMaterial> gpu_materials;
   std::map<material*, uint32_t> material_index_map;
 
@@ -330,11 +353,60 @@ bool gpu_reference_renderer::upload_scene_data()
       gpu_sphere.material_index = mat_index;
       gpu_spheres.push_back(gpu_sphere);
     }
+    else if (obj->type == hittable_type::static_mesh)
+    {
+      static_mesh* mesh = static_cast<static_mesh*>(obj);
+      
+      // Get or create material index
+      uint32_t mat_index = 0;
+      if (mesh->material_ptr != nullptr)
+      {
+        auto it = material_index_map.find(mesh->material_ptr);
+        if (it == material_index_map.end())
+        {
+          mat_index = static_cast<uint32_t>(gpu_materials.size());
+          material_index_map[mesh->material_ptr] = mat_index;
+
+          // Convert material to GPU format
+          GPUMaterial gpu_mat{};
+          gpu_mat.color = mesh->material_ptr->color;
+          gpu_mat.emitted_color = mesh->material_ptr->emitted_color;
+          gpu_mat.smoothness = mesh->material_ptr->smoothness;
+          gpu_mat.gloss_probability = mesh->material_ptr->gloss_probability;
+          gpu_mat.gloss_color = mesh->material_ptr->gloss_color;
+          gpu_mat.refraction_probability = mesh->material_ptr->refraction_probability;
+          gpu_mat.refraction_index = mesh->material_ptr->refraction_index;
+          gpu_mat.type = static_cast<uint32_t>(mesh->material_ptr->type);
+          gpu_materials.push_back(gpu_mat);
+        }
+        else
+        {
+          mat_index = it->second;
+        }
+      }
+
+      // Convert triangles to GPU format
+      for (const auto& face : mesh->faces)
+      {
+        GPUTriangle gpu_tri{};
+        gpu_tri.v0 = face.vertices[0];
+        gpu_tri.v1 = face.vertices[1];
+        gpu_tri.v2 = face.vertices[2];
+        gpu_tri.material_index = mat_index;
+        gpu_triangles.push_back(gpu_tri);
+      }
+    }
   }
   
   if (gpu_spheres.size() > kMaxGpuSpheres)
   {
     logger::error("Scene uses {} spheres but the GPU shader only supports {}", gpu_spheres.size(), kMaxGpuSpheres);
+    return false;
+  }
+  
+  if (gpu_triangles.size() > kMaxGpuTriangles)
+  {
+    logger::error("Scene uses {} triangles but the GPU shader only supports {}", gpu_triangles.size(), kMaxGpuTriangles);
     return false;
   }
   
@@ -351,7 +423,8 @@ bool gpu_reference_renderer::upload_scene_data()
     GPUMaterial materials[kMaxGpuMaterials];
     uint32_t sphere_count;
     uint32_t material_count;
-    float padding[2];
+    uint32_t triangle_count;
+    float padding[1];
   };
 
   static_assert(sizeof(SceneData) % 16 == 0, "Scene constant buffer must be 16-byte aligned");
@@ -360,6 +433,7 @@ bool gpu_reference_renderer::upload_scene_data()
   SceneData scene_data{};
 
   scene_data.sphere_count = static_cast<uint32_t>(gpu_spheres.size());
+  scene_data.triangle_count = static_cast<uint32_t>(gpu_triangles.size());
   scene_data.material_count = static_cast<uint32_t>(gpu_materials.size());
 
   for (size_t i = 0; i < gpu_spheres.size() && i < kMaxGpuSpheres; ++i)
@@ -397,7 +471,49 @@ bool gpu_reference_renderer::upload_scene_data()
     context->UpdateSubresource(scene_buffer, 0, nullptr, &scene_data, 0, 0);
   }
 
-  logger::debug("Uploaded {} spheres / {} materials to GPU", scene_data.sphere_count, scene_data.material_count);
+  // Create triangle structured buffer
+  if (scene_data.triangle_count > 0)
+  {
+    // Clean up old triangle buffer if it exists
+    if (triangle_srv) { triangle_srv->Release(); triangle_srv = nullptr; }
+    if (triangle_buffer) { triangle_buffer->Release(); triangle_buffer = nullptr; }
+
+    // Create structured buffer for triangles
+    D3D11_BUFFER_DESC desc;
+    ZeroMemory(&desc, sizeof(desc));
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.ByteWidth = sizeof(GPUTriangle) * scene_data.triangle_count;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+    desc.StructureByteStride = sizeof(GPUTriangle);
+
+    D3D11_SUBRESOURCE_DATA init_data;
+    init_data.pSysMem = gpu_triangles.data();
+    init_data.SysMemPitch = 0;
+    init_data.SysMemSlicePitch = 0;
+
+    HRESULT hr = device->CreateBuffer(&desc, &init_data, &triangle_buffer);
+    if (log_failure("Create triangle structured buffer", hr))
+    {
+      return false;
+    }
+
+    // Create shader resource view for the structured buffer
+    D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
+    ZeroMemory(&srv_desc, sizeof(srv_desc));
+    srv_desc.Format = DXGI_FORMAT_UNKNOWN;
+    srv_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+    srv_desc.Buffer.FirstElement = 0;
+    srv_desc.Buffer.NumElements = scene_data.triangle_count;
+
+    hr = device->CreateShaderResourceView(triangle_buffer, &srv_desc, &triangle_srv);
+    if (log_failure("Create triangle SRV", hr))
+    {
+      return false;
+    }
+  }
+
+  logger::debug("Uploaded {} spheres / {} triangles / {} materials to GPU", scene_data.sphere_count, scene_data.triangle_count, scene_data.material_count);
 
   return true;
 }

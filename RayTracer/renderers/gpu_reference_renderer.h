@@ -27,6 +27,8 @@ private:
   ID3D11DeviceContext* context = nullptr;
   ID3D11ComputeShader* compute_shader = nullptr;
   ID3D11Buffer* scene_buffer = nullptr;
+  ID3D11Buffer* triangle_buffer = nullptr;
+  ID3D11ShaderResourceView* triangle_srv = nullptr;
   ID3D11Buffer* camera_buffer = nullptr;
   ID3D11Buffer* config_buffer = nullptr;
   ID3D11UnorderedAccessView* output_uav = nullptr;

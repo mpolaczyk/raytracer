@@ -3,6 +3,7 @@
 
 // Constants
 #define MAX_SPHERES 256
+#define MAX_TRIANGLES 16384
 #define MAX_BOUNCES 16
 #define PI 3.14159265359f
 #define MIN_RAY_COLOR_THRESHOLD 0.1f
@@ -31,6 +32,15 @@ struct GPUSphere
     uint material_index;
     float radius;
     float2 padding;
+};
+
+struct GPUTriangle
+{
+    float4 v0;
+    float4 v1;
+    float4 v2;
+    uint material_index;
+    float3 padding;
 };
 
 struct GPUCamera
@@ -67,7 +77,8 @@ cbuffer SceneData : register(b0)
     GPUMaterial materials[MAX_SPHERES];
     uint sphere_count;
     uint material_count;
-    float2 scene_padding;
+    uint triangle_count;
+    float scene_padding;
 };
 
 cbuffer CameraData : register(b1)
@@ -79,6 +90,9 @@ cbuffer ConfigData : register(b2)
 {
     GPUConfig config;
 };
+
+// Structured buffer for triangles
+StructuredBuffer<GPUTriangle> triangles : register(t0);
 
 // Output texture
 RWTexture2D<float4> OutputTexture : register(u0);
@@ -175,6 +189,61 @@ bool hit_sphere(GPUSphere sphere, Ray r, float t_min, float t_max, inout HitReco
     return true;
 }
 
+// Triangle intersection using Möller-Trumbore algorithm
+bool hit_triangle(GPUTriangle tri, Ray r, float t_min, float t_max, inout HitRecord rec)
+{
+    const float EPSILON = 0.0000001f;
+    
+    float3 v0 = tri.v0.xyz;
+    float3 v1 = tri.v1.xyz;
+    float3 v2 = tri.v2.xyz;
+    
+    float3 edge1 = v1 - v0;
+    float3 edge2 = v2 - v0;
+    
+    float3 h = cross(r.direction, edge2);
+    float a = dot(edge1, h);
+    
+    // Ray parallel to triangle?
+    if (abs(a) < EPSILON)
+        return false;
+    
+    float f = 1.0f / a;
+    float3 s = r.origin - v0;
+    float u = f * dot(s, h);
+    
+    // Intersection outside triangle?
+    if (u < 0.0f || u > 1.0f)
+        return false;
+    
+    float3 q = cross(s, edge1);
+    float v = f * dot(r.direction, q);
+    
+    // Intersection outside triangle?
+    if (v < 0.0f || u + v > 1.0f)
+        return false;
+    
+    float t = f * dot(edge2, q);
+    
+    // Intersection outside ray range?
+    if (t < t_min || t > t_max)
+        return false;
+    
+    rec.t = t;
+    rec.p = r.origin + r.direction * t;
+    
+    // Calculate face normal
+    float3 face_normal = normalize(cross(edge1, edge2));
+    
+    // Determine front face
+    float dot_n_w = dot(face_normal, r.direction);
+    rec.front_face = dot_n_w < 0.0f;
+    rec.normal = rec.front_face ? face_normal : -face_normal;
+    rec.material_index = tri.material_index;
+    
+    return true;
+}
+
 // Scene intersection
 bool hit_scene(Ray r, float t_min, float t_max, inout HitRecord rec)
 {
@@ -185,6 +254,16 @@ bool hit_scene(Ray r, float t_min, float t_max, inout HitRecord rec)
     for (uint i = 0; i < sphere_count; ++i)
     {
         if (hit_sphere(spheres[i], r, t_min, closest_so_far, temp_rec))
+        {
+            hit_anything = true;
+            closest_so_far = temp_rec.t;
+            rec = temp_rec;
+        }
+    }
+    
+    for (uint j = 0; j < triangle_count; ++j)
+    {
+        if (hit_triangle(triangles[j], r, t_min, closest_so_far, temp_rec))
         {
             hit_anything = true;
             closest_so_far = temp_rec.t;
