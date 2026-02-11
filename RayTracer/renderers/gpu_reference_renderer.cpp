@@ -396,6 +396,77 @@ bool gpu_reference_renderer::upload_scene_data()
         gpu_triangles.push_back(gpu_tri);
       }
     }
+    else if (obj->type == hittable_type::xy_rect || obj->type == hittable_type::xz_rect || obj->type == hittable_type::yz_rect)
+    {
+      // Get or create material index
+      uint32_t mat_index = 0;
+      if (obj->material_ptr != nullptr)
+      {
+        auto it = material_index_map.find(obj->material_ptr);
+        if (it == material_index_map.end())
+        {
+          mat_index = static_cast<uint32_t>(gpu_materials.size());
+          material_index_map[obj->material_ptr] = mat_index;
+
+          // Convert material to GPU format
+          GPUMaterial gpu_mat{};
+          gpu_mat.color = obj->material_ptr->color;
+          gpu_mat.emitted_color = obj->material_ptr->emitted_color;
+          gpu_mat.smoothness = obj->material_ptr->smoothness;
+          gpu_mat.gloss_probability = obj->material_ptr->gloss_probability;
+          gpu_mat.gloss_color = obj->material_ptr->gloss_color;
+          gpu_mat.refraction_probability = obj->material_ptr->refraction_probability;
+          gpu_mat.refraction_index = obj->material_ptr->refraction_index;
+          gpu_mat.type = static_cast<uint32_t>(obj->material_ptr->type);
+          gpu_materials.push_back(gpu_mat);
+        }
+        else
+        {
+          mat_index = it->second;
+        }
+      }
+
+      auto add_triangle = [&](const vec3& v0, const vec3& v1, const vec3& v2)
+      {
+        GPUTriangle gpu_tri{};
+        gpu_tri.v0 = v0;
+        gpu_tri.v1 = v1;
+        gpu_tri.v2 = v2;
+        gpu_tri.material_index = mat_index;
+        gpu_triangles.push_back(gpu_tri);
+      };
+
+      if (obj->type == hittable_type::xy_rect)
+      {
+        xy_rect* rect = static_cast<xy_rect*>(obj);
+        const vec3 v0(rect->x0, rect->y0, rect->z);
+        const vec3 v1(rect->x1, rect->y0, rect->z);
+        const vec3 v2(rect->x1, rect->y1, rect->z);
+        const vec3 v3(rect->x0, rect->y1, rect->z);
+        add_triangle(v0, v1, v2);
+        add_triangle(v0, v2, v3);
+      }
+      else if (obj->type == hittable_type::xz_rect)
+      {
+        xz_rect* rect = static_cast<xz_rect*>(obj);
+        const vec3 v0(rect->x0, rect->y, rect->z0);
+        const vec3 v1(rect->x0, rect->y, rect->z1);
+        const vec3 v2(rect->x1, rect->y, rect->z1);
+        const vec3 v3(rect->x1, rect->y, rect->z0);
+        add_triangle(v0, v1, v2);
+        add_triangle(v0, v2, v3);
+      }
+      else if (obj->type == hittable_type::yz_rect)
+      {
+        yz_rect* rect = static_cast<yz_rect*>(obj);
+        const vec3 v0(rect->x, rect->y0, rect->z0);
+        const vec3 v1(rect->x, rect->y1, rect->z0);
+        const vec3 v2(rect->x, rect->y1, rect->z1);
+        const vec3 v3(rect->x, rect->y0, rect->z1);
+        add_triangle(v0, v1, v2);
+        add_triangle(v0, v2, v3);
+      }
+    }
   }
   
   if (gpu_spheres.size() > kMaxGpuSpheres)
