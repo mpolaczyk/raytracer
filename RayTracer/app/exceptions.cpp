@@ -5,6 +5,7 @@
 
 #include <sstream>
 
+#include "core/string_tools.h"
 #include "app/exceptions.h"
 
 int describe_seh_exception(_EXCEPTION_POINTERS* p_exp)
@@ -82,4 +83,33 @@ char const* seh_exception::what() const
   char* buff = new char[str.size() + 1];
   strcpy(buff, str.c_str());  // returning char* is fucked up
   return buff;
+}
+
+namespace
+{
+    struct get_hresult_description_preallocation
+    {
+        wchar_t* message = nullptr;
+        DWORD num_chars{};
+    } ghdp_data;
+}
+void get_hresult_description(HRESULT hr, std::ostringstream& oss)
+{
+    ghdp_data.num_chars = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK, nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&ghdp_data.message, 0, nullptr);
+    if (ghdp_data.num_chars > 0)
+    {
+        oss << string_tools::to_utf8(ghdp_data.message) << "\n";
+    }
+    oss << std::system_category().message(hr);
+}
+
+char const* describe_hresult(HRESULT code)
+{
+    std::ostringstream oss;
+    oss << "HR code: " << std::to_string(static_cast<uint32_t>(code)) << "\n";
+    get_hresult_description(code, oss);
+    std::string str = oss.str();
+    char* buff = new char[str.size() + 1];
+    strcpy_s(buff, str.size() + 1, str.c_str());
+    return buff;
 }

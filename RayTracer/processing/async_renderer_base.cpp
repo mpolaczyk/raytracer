@@ -87,6 +87,14 @@ void async_renderer_base::render_single_async()
   worker_semaphore->release();
 }
 
+void async_renderer_base::render_single_sync()
+{
+  if (job_state.is_working) return;
+
+  job_state.is_working = true;
+  run_render_job();
+}
+
 bool async_renderer_base::is_world_dirty(const scene* in_scene)
 {
   assert(in_scene != nullptr);
@@ -128,24 +136,29 @@ void async_renderer_base::async_job()
     worker_semaphore->acquire();
     if(job_state.requested_stop) { break; }
 
-    benchmark::instance benchmark_render;
-    benchmark_render.start("Render");
-    render();
-    job_state.benchmark_render_time = benchmark_render.stop();
-
-    if (save_output)
-    {
-      char image_file_name[300];  // Run-Time Check Failure #2 - Stack around the variable 'image_file_name' was corrupted.
-      std::sprintf(image_file_name, io::get_render_output_file_path().c_str());
-
-      benchmark::instance benchmark_save;
-      benchmark_save.start("Save");
-      save(image_file_name);
-      job_state.benchmark_save_time = benchmark_save.stop();
-    }
-
-    job_state.is_working = false;
+    run_render_job();
   }
+}
+
+void async_renderer_base::run_render_job()
+{
+  benchmark::instance benchmark_render;
+  benchmark_render.start("Render");
+  render();
+  job_state.benchmark_render_time = benchmark_render.stop();
+
+  if (save_output)
+  {
+    char image_file_name[300];  // Run-Time Check Failure #2 - Stack around the variable 'image_file_name' was corrupted.
+    std::sprintf(image_file_name, io::get_render_output_file_path().c_str());
+
+    benchmark::instance benchmark_save;
+    benchmark_save.start("Save");
+    save(image_file_name);
+    job_state.benchmark_save_time = benchmark_save.stop();
+  }
+
+  job_state.is_working = false;
 }
 
 void async_renderer_base::save(const char* file_name)

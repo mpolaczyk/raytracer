@@ -311,8 +311,10 @@ namespace io
   std::string get_workspace_dir();
   std::string get_objects_dir();
   std::string get_images_dir();
+  std::string get_vcxproj_dir();
 
   // Files
+  std::string get_vcxproj_file_path(const char* file_name);
   std::string get_workspace_file_path(const char* file_name);
   std::string get_images_file_path(const char* file_name);
   std::string get_objects_file_path(const char* file_name);

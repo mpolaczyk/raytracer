@@ -11,6 +11,7 @@
 #include "renderers/preview_faces_renderer.h"
 #include "renderers/reference_renderer.h"
 #include "renderers/ispc_renderer.h"
+#include "renderers/gpu_reference_renderer.h"
 
 #include "math/hittables.h"
 
@@ -29,6 +30,7 @@ async_renderer_base* object_factory::spawn_renderer(renderer_type type)
   else if (type == renderer_type::preview_faces) { return new preview_faces_renderer(); }
   else if (type == renderer_type::reference) { return new reference_renderer(); }
   else if (type == renderer_type::ispc) { return new ispc_renderer(); }
+  else if (type == renderer_type::gpu_reference) { return new gpu_reference_renderer(); }
   return nullptr;
 }
 
