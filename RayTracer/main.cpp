@@ -49,6 +49,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int main(int, char**)
 {
+  const bool use_sync_render = true;
+  const bool force_render_every_frame = true;
 #if USE_FPEXCEPT
   if (!IsDebuggerPresent())
   {
@@ -160,14 +162,14 @@ int main(int, char**)
       if (state.renderer != nullptr)
       {
         bool is_working = state.renderer->is_working();
-        if (!is_working && (state.rw_model.rp_model.render_pressed || state.ow_model.auto_render))
+        if (force_render_every_frame || !is_working && (state.rw_model.rp_model.render_pressed || state.ow_model.auto_render))
         {
           bool do_render = state.rw_model.rp_model.render_pressed
             || state.renderer->is_world_dirty(state.scene_root)
             || state.renderer->is_renderer_setting_dirty(state.renderer_conf)
             || state.renderer->is_camera_setting_dirty(state.camera_conf);
           
-          if (do_render)
+          if (force_render_every_frame || do_render)
           {
             if (state.renderer->is_renderer_type_different(state.renderer_conf))
             {
@@ -187,7 +189,14 @@ int main(int, char**)
             state.output_height = state.renderer_conf->resolution_vertical;
 
             state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
-            state.renderer->render_single_async();
+            if (use_sync_render)
+            {
+              state.renderer->render_single_sync();
+            }
+            else
+            {
+              state.renderer->render_single_async();
+            }
 
             bool ret = dx11::LoadTextureFromBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
             IM_ASSERT(ret);

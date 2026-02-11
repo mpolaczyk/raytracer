@@ -67,6 +67,7 @@ public:
   void set_config(const renderer_config* in_renderer_config, const scene* in_scene, const camera_config* in_camera_config);
   // 2. Request work
   void render_single_async();
+  void render_single_sync();
   
   // State checks
   bool is_world_dirty(const scene* in_scene);
@@ -112,5 +113,6 @@ private:
   std::thread* worker_thread = nullptr;
   std::binary_semaphore* worker_semaphore = nullptr;
   void async_job();
+  void run_render_job();
   void save(const char* file_name);
 };
