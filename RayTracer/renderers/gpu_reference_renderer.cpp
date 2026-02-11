@@ -200,8 +200,8 @@ void build_bvh(const std::vector<GPUTriangle>& triangles,
     float extent_y = node.aabb_max[1] - node.aabb_min[1];
     float extent_z = node.aabb_max[2] - node.aabb_min[2];
     int axis = 0;
-    if (extent_y > extent_x && extent_y > extent_z) axis = 1;
-    else if (extent_z > extent_x && extent_z > extent_y) axis = 2;
+    if (extent_y > extent_x) axis = 1;
+    if (extent_z > (axis == 0 ? extent_x : extent_y)) axis = 2;
 
     float split = (node.aabb_min[axis] + node.aabb_max[axis]) * 0.5f;
 
@@ -218,7 +218,7 @@ void build_bvh(const std::vector<GPUTriangle>& triangles,
       }
     }
 
-    // If all triangles ended up on one side, force a split in the middle
+    // If all triangles ended up on one side, split at the median to guarantee progress
     if (mid == entry.first || mid == entry.first + entry.count)
     {
       mid = entry.first + entry.count / 2;
