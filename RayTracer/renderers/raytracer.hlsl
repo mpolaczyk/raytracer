@@ -36,9 +36,9 @@ struct GPUSphere
 
 struct GPUTriangle
 {
-    float4 v0;
-    float4 v1;
-    float4 v2;
+    float4 v0;  // Vertex 0 (xyz used, w is padding for 16-byte alignment)
+    float4 v1;  // Vertex 1 (xyz used, w is padding for 16-byte alignment)
+    float4 v2;  // Vertex 2 (xyz used, w is padding for 16-byte alignment)
     uint material_index;
     float3 padding;
 };
@@ -236,8 +236,8 @@ bool hit_triangle(GPUTriangle tri, Ray r, float t_min, float t_max, inout HitRec
     float3 face_normal = normalize(cross(edge1, edge2));
     
     // Determine front face
-    float dot_n_w = dot(face_normal, r.direction);
-    rec.front_face = dot_n_w < 0.0f;
+    float dot_normal_direction = dot(face_normal, r.direction);
+    rec.front_face = dot_normal_direction < 0.0f;
     rec.normal = rec.front_face ? face_normal : -face_normal;
     rec.material_index = tri.material_index;
     

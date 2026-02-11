@@ -43,9 +43,9 @@ struct GPUSphere
 
 struct GPUTriangle
 {
-  vec3 v0;
-  vec3 v1;
-  vec3 v2;
+  vec3 v0;  // Vertex 0 in world-space coordinates (transformed by static_mesh::pre_render)
+  vec3 v1;  // Vertex 1 in world-space coordinates
+  vec3 v2;  // Vertex 2 in world-space coordinates
   uint32_t material_index;
   float padding[3];
 };
@@ -80,7 +80,7 @@ struct GPUConfig
 namespace
 {
 constexpr uint32_t kMaxGpuSpheres = 256;
-constexpr uint32_t kMaxGpuTriangles = 16384; // 16K triangles should be enough for most scenes
+constexpr uint32_t kMaxGpuTriangles = 16384; // Maximum triangles supported (limited by structured buffer size and performance)
 constexpr uint32_t kMaxGpuMaterials = 256;
 constexpr uint32_t kThreadGroupSize = 8;
 constexpr uint32_t kMaxShaderBounces = 16; // Keep in sync with raytracer.hlsl
