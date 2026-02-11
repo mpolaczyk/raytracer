@@ -6,6 +6,7 @@ class preview_renderer : public async_renderer_base
 {
 public:
   virtual std::string get_name() const override;
+  virtual renderer_type get_renderer_type() const override { return renderer_type::preview; }
 
 private:
   virtual void render() override;

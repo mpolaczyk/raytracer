@@ -14,6 +14,7 @@
 #include "gfx/dx11_helper.h"
 #include "math/materials.h"
 #include "processing/async_renderer_base.h"
+#include "renderers/gpu_reference_renderer.h"
 #include "math/fpexcept.h"
 #include "app/factories.h"
 
@@ -159,19 +160,22 @@ int main(int, char**)
       // Check if rendering is needed and do it 
       if (state.renderer != nullptr)
       {
-        bool is_working = state.renderer->is_working();
-        if (!is_working && (state.rw_model.rp_model.render_pressed || state.ow_model.auto_render))
+        const bool force_frame = state.renderer->wants_sync_render();
+        const bool is_working = state.renderer->is_working();
+        if (force_frame || !is_working && (state.rw_model.rp_model.render_pressed || state.ow_model.auto_render))
         {
-          bool do_render = state.rw_model.rp_model.render_pressed
+          const bool do_render = state.rw_model.rp_model.render_pressed
             || state.renderer->is_world_dirty(state.scene_root)
             || state.renderer->is_renderer_setting_dirty(state.renderer_conf)
             || state.renderer->is_camera_setting_dirty(state.camera_conf);
           
-          if (do_render)
+          if (force_frame || do_render)
           {
             if (state.renderer->is_renderer_type_different(state.renderer_conf))
             {
               delete state.renderer;
+              state.output_srv = nullptr;
+              state.output_texture = nullptr;
               state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);
             }
 
@@ -187,10 +191,31 @@ int main(int, char**)
             state.output_height = state.renderer_conf->resolution_vertical;
 
             state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
-            state.renderer->render_single_async();
+            if (force_frame)
+            {
+              state.renderer->render_single_sync();
+            }
+            else
+            {
+              state.renderer->render_single_async();
+            }
 
-            bool ret = dx11::LoadTextureFromBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
-            IM_ASSERT(ret);
+            if (state.renderer->get_renderer_type() == renderer_type::gpu_reference)
+            {
+              auto* gpu_renderer = static_cast<gpu_reference_renderer*>(state.renderer);
+              ID3D11ShaderResourceView* renderer_srv = gpu_renderer->get_output_srv();
+              ID3D11Texture2D* renderer_texture = gpu_renderer->get_output_texture();
+              if (renderer_srv != nullptr && renderer_texture != nullptr)
+              {
+                state.output_srv = renderer_srv;
+                state.output_texture = renderer_texture;
+              }
+            }
+            if (state.output_texture == nullptr)
+            {
+              const bool ret = dx11::LoadTextureFromBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
+              IM_ASSERT(ret);
+            }
 
             state.rw_model.rp_model.render_pressed = false;
           }
@@ -199,7 +224,25 @@ int main(int, char**)
         // Update the output panel
         if (state.output_texture)
         {
-          dx11::UpdateTextureBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, state.output_texture);
+          if (state.renderer->get_renderer_type() == renderer_type::gpu_reference)
+          {
+            auto* gpu_renderer = static_cast<gpu_reference_renderer*>(state.renderer);
+            ID3D11ShaderResourceView* renderer_srv = gpu_renderer->get_output_srv();
+            ID3D11Texture2D* renderer_texture = gpu_renderer->get_output_texture();
+            if (renderer_srv != nullptr && renderer_texture != nullptr)
+            {
+              state.output_srv = renderer_srv;
+              state.output_texture = renderer_texture;
+            }
+            else
+            {
+              dx11::UpdateTextureBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, state.output_texture);
+            }
+          }
+          else
+          {
+            dx11::UpdateTextureBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, state.output_texture);
+          }
         }
       }
             

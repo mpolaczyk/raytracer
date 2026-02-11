@@ -1,9 +1,20 @@
 ## RayTracer
-**CPU Ray Tracer**
+**CPU and GPU Ray Tracer**
 
 Author: [planet620]
 
 ## Releases
+
+### [Development - GPU Renderer]
+- New GPU-based reference renderer using DirectX 11 compute shaders
+    - Ports the CPU ray tracing logic to run on the GPU
+    - Uses DirectX 11 compute shaders for parallel processing
+    - Supports scene data upload (spheres, materials, camera)
+    - Iterative ray tracing implementation (converted from recursive)
+    - PCG-based random number generation on GPU
+    - Same visual output as CPU reference renderer with GPU acceleration
+    - Thread-safe implementation compatible with async_renderer_base
+- Added camera data export methods for GPU compatibility
 
 ### [2.3]
 - Cornell box scene finalized
@@ -50,6 +61,11 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
     - Save output to BMP file
 - Renderer
 	- Monte Carlo based method, mix of light and surface cosine based probability density functions (PDF)
+	- Multiple renderer implementations:
+	    - **Reference CPU**: Full path tracing on CPU with PPL parallelization
+	    - **GPU Reference**: GPU-accelerated path tracing using compute shaders
+	    - **Preview**: Fast preview renderer for editing
+	    - **ISPC**: Intel SPMD Program Compiler version (example only)
 	- Multithreading: thread poll, PLL, none
 	- Support for SIMD
     - DirectX 11 based display

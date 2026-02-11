@@ -23,3 +23,4 @@ public:
   virtual char const* what() const override;
 };
 
+char const* describe_hresult(HRESULT code);

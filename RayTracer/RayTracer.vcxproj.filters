@@ -102,6 +102,8 @@
     <ClCompile Include="renderers\preview_faces_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
+    <ClCompile Include="core\string_tools.cpp" />
+    <ClCompile Include="renderers\gpu_reference_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -238,6 +240,8 @@
     <ClInclude Include="renderers\preview_faces_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
+    <ClInclude Include="core\string_tools.h" />
+    <ClInclude Include="renderers\gpu_reference_renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gfx">
@@ -279,5 +283,8 @@
     <None Include="renderers\trace_ray.isph">
       <Filter>renderers</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="renderers\raytracer.hlsl" />
   </ItemGroup>
 </Project>

@@ -139,6 +139,20 @@ public:
     return camera_conf.get_hash();
   }
 
+  // Getters for GPU export
+  inline const vec3& get_look_from() const { return camera_conf.look_from; }
+  inline float get_lens_radius() const { return lens_radius; }
+  inline const vec3& get_lower_left_corner() const { return f.lower_left_corner; }
+  inline const vec3& get_horizontal() const { return f.horizontal; }
+  inline const vec3& get_vertical() const { return f.vertical; }
+  inline float get_viewport_width() const { return viewport_width; }
+  inline float get_viewport_height() const { return viewport_height; }
+  inline float get_dist_to_focus() const { return camera_conf.dist_to_focus; }
+  inline const vec3& get_u() const { return u; }
+  inline const vec3& get_v() const { return v; }
+  inline const vec3& get_w() const { return w; }
+  inline float get_type() const { return camera_conf.type; }
+
 private:
   camera_config camera_conf;
   float lens_radius = 0.0f;
