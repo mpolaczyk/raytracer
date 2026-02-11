@@ -19,43 +19,43 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 // GPU-friendly data structures matching HLSL
+// Remember vec3 is 16 bytes
 struct GPUMaterial
 {
   vec3 color;
-  float smoothness;
   vec3 emitted_color;
-  float gloss_probability;
   vec3 gloss_color;
+  uint32_t type;
+  float smoothness;
+  float gloss_probability;
   float refraction_probability;
   float refraction_index;
-  uint32_t type;
-  vec3 padding; // Alignment padding
+  float padding[3];
 };
 
 struct GPUSphere
 {
   vec3 origin;
-  float radius;
   uint32_t material_index;
-  vec3 padding; // Alignment padding
+  float radius;
+  float padding[2];
 };
 
 struct GPUCamera
 {
   vec3 look_from;
-  float lens_radius;
   vec3 lower_left_corner;
-  float viewport_width;
   vec3 horizontal;
-  float viewport_height;
   vec3 vertical;
-  float dist_to_focus;
   vec3 u;
-  float type;
   vec3 v;
-  float padding;
   vec3 w;
-  float padding2;
+  float lens_radius;
+  float viewport_width;
+  float viewport_height;
+  float dist_to_focus;
+  float type;
+  float padding[3];
 };
 
 struct GPUConfig
@@ -65,7 +65,7 @@ struct GPUConfig
   uint32_t rays_per_pixel;
   uint32_t ray_bounces;
   float white_point;
-  vec3 padding; // Alignment padding
+  float padding[3];
 };
 
 namespace

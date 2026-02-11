@@ -14,41 +14,40 @@
 // GPU-friendly structures
 struct GPUMaterial
 {
-    float3 color;
+    float4 color;
+    float4 emitted_color;
+    float4 gloss_color;
+    uint type;
     float smoothness;
-    float3 emitted_color;
     float gloss_probability;
-    float3 gloss_color;
     float refraction_probability;
     float refraction_index;
-    uint type;
-    float2 padding;
+    float3 padding;
 };
 
 struct GPUSphere
 {
-    float3 origin;
-    float radius;
+    float4 origin;
     uint material_index;
-    float3 padding;
+    float radius;
+    float2 padding;
 };
 
 struct GPUCamera
 {
-    float3 look_from;
+    float4 look_from;
+    float4 lower_left_corner;
+    float4 horizontal;
+    float4 vertical;
+    float4 u;
+    float4 v;
+    float4 w;
     float lens_radius;
-    float3 lower_left_corner;
     float viewport_width;
-    float3 horizontal;
     float viewport_height;
-    float3 vertical;
     float dist_to_focus;
-    float3 u;
     float type;
-    float3 v;
-    float padding;
-    float3 w;
-    float padding2;
+    float3 padding;
 };
 
 struct GPUConfig
