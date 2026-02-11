@@ -48,6 +48,14 @@ struct GPUSphere {
     vec3 padding;                // 12 bytes (alignment)
 };
 
+struct GPUTriangle {
+    vec3 v0;                     // Vertex 0 (12 bytes)
+    vec3 v1;                     // Vertex 1 (12 bytes)
+    vec3 v2;                     // Vertex 2 (12 bytes)
+    uint32_t material_index;     // Material index (4 bytes)
+    float padding[3];            // 12 bytes (alignment)
+};
+
 struct GPUCamera {
     vec3 look_from;              // Camera position
     float lens_radius;           // For depth of field
@@ -78,12 +86,19 @@ struct GPUConfig {
 ### Ray Tracing Algorithm
 1. **Fragment**: Generate rays per pixel with anti-aliasing
 2. **Trace Ray**: Iterative loop for ray bounces
-   - Scene intersection (spheres only)
+   - Scene intersection (spheres and triangles)
    - Material evaluation (universal/light)
    - Color accumulation
    - Next bounce calculation
 3. **Environment Light**: Sky gradient for missed rays
 4. **Tone Mapping**: Reinhard extended on HDR result
+
+### Triangle Intersection
+Uses the Möller-Trumbore algorithm for fast ray-triangle intersection:
+- Efficiently computes barycentric coordinates
+- Early exit for parallel rays
+- Backface culling based on ray direction
+- Face normal computed from cross product of edges
 
 ### Random Number Generation
 Uses PCG (Permuted Congruential Generator) hash:
@@ -111,6 +126,7 @@ uint pcg_hash(uint seed) {
 
 ### Supported Features
 - ✅ Sphere primitives
+- ✅ Static mesh primitives (triangles)
 - ✅ Universal materials (diffuse, specular, refraction)
 - ✅ Emissive materials (lights)
 - ✅ Perspective camera
@@ -120,8 +136,9 @@ uint pcg_hash(uint seed) {
 - ✅ Tone mapping
 
 ### Limitations
-- Only sphere primitives (no rectangles or meshes yet)
+- Rectangles (xy_rect, xz_rect, yz_rect) not yet supported
 - Maximum 256 spheres and materials
+- Maximum 16,384 triangles per scene
 - Maximum 16 ray bounces (can be increased)
 - Orthographic camera not implemented
 - Requires DirectX 11 compatible GPU
@@ -131,13 +148,14 @@ uint pcg_hash(uint seed) {
 ### Memory Layout
 - Constant buffers are 16-byte aligned
 - Scene buffer: ~65KB (256 spheres + 256 materials)
+- Triangle buffer: Variable size structured buffer (48 bytes per triangle)
 - Camera buffer: ~128 bytes
 - Config buffer: ~32 bytes
 - Output texture: width × height × 16 bytes (RGBA32F)
 
 ### Optimization Opportunities
 1. Use BVH/acceleration structure for scene intersection
-2. Add support for more primitive types
+2. Add support for rectangle primitives
 3. Implement wavefront path tracing for better GPU utilization
 4. Add texture support
 5. Pre-compile shader for faster startup
@@ -173,22 +191,46 @@ public:
 };
 ```
 
+### Static Mesh Support
+Triangle data is uploaded to GPU via structured buffer:
+```cpp
+// Extract triangles from static_mesh objects
+for (const auto& face : mesh->faces) {
+    GPUTriangle gpu_tri{};
+    gpu_tri.v0 = face.vertices[0];
+    gpu_tri.v1 = face.vertices[1];
+    gpu_tri.v2 = face.vertices[2];
+    gpu_tri.material_index = mat_index;
+    gpu_triangles.push_back(gpu_tri);
+}
+
+// Create structured buffer for GPU access
+StructuredBuffer<GPUTriangle> triangles : register(t0);
+```
+
+The mesh's `pre_render()` method transforms triangles from model space to world space before GPU upload.
+
 ## Testing
 
 ### Validation
 1. Compare output with CPU reference renderer
 2. Verify visual quality matches
 3. Check performance improvement (should be significantly faster)
-4. Test with various scene configurations
-5. Verify correct handling of materials and lighting
+4. Test with various scene configurations:
+   - Scenes with only spheres
+   - Scenes with only static meshes
+   - Mixed scenes with both spheres and meshes
+   - Complex meshes (icospheres, cubes, etc.)
+5. Verify correct handling of materials and lighting on mesh surfaces
+6. Test with different mesh transformations (rotation, scale, translation)
 
 ### Known Issues
 None at this time.
 
 ## Future Enhancements
-1. Support for additional primitive types (rectangles, meshes)
-2. BVH acceleration structure
-3. Texture mapping
+1. BVH acceleration structure for both spheres and triangles
+2. Support for rectangle primitives (xy_rect, xz_rect, yz_rect)
+3. Texture mapping for meshes
 4. Pre-compiled shader pipeline
 5. Orthographic camera support
 6. Multiple light importance sampling
