@@ -1,5 +1,8 @@
 #pragma once
 
+#include <semaphore>
+#include <thread>
+
 #include "math/vec3.h"
 #include "math/hittables.h"
 #include "math/ray.h"
@@ -8,14 +11,6 @@
 
 #include "app/factories.h"
 
-namespace std
-{
-  class thread;
-  typedef ptrdiff_t;
-  template <ptrdiff_t _Least_max_value>
-  class counting_semaphore;
-  using binary_semaphore = counting_semaphore<1>;
-}
 namespace bmp
 {
   struct bmp_image;
@@ -61,6 +56,7 @@ public:
   // Renderer instance interface
   virtual std::string get_name() const = 0;
   virtual void render() = 0;
+  virtual bool wants_sync_render() const { return false; }
 
   // Renderer public interface. Usage:
   // 1. Set scene, camera and settings first
