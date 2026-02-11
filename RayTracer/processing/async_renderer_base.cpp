@@ -142,6 +142,7 @@ void async_renderer_base::async_job()
 
 void async_renderer_base::run_render_job()
 {
+  job_state.benchmark_gpu_time = 0;
   benchmark::instance benchmark_render;
   benchmark_render.start("Render");
   render();

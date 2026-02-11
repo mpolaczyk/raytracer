@@ -9,6 +9,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include "dx11_helper.h"
+
 namespace dx11
 {
   ID3D11Device* g_pd3dDevice = nullptr;
@@ -232,5 +234,105 @@ namespace dx11
       return answer;
     }
     return false;
+  }
+
+  bool InitializeGpuTimer(ID3D11Device* device, gpu_timer& timer)
+  {
+    if (device == nullptr)
+    {
+      return false;
+    }
+
+    if (timer.disjoint_query == nullptr)
+    {
+      D3D11_QUERY_DESC desc{};
+      desc.Query = D3D11_QUERY_TIMESTAMP_DISJOINT;
+      if (FAILED(device->CreateQuery(&desc, &timer.disjoint_query)))
+      {
+        return false;
+      }
+    }
+
+    if (timer.start_query == nullptr)
+    {
+      D3D11_QUERY_DESC desc{};
+      desc.Query = D3D11_QUERY_TIMESTAMP;
+      if (FAILED(device->CreateQuery(&desc, &timer.start_query)))
+      {
+        return false;
+      }
+    }
+
+    if (timer.end_query == nullptr)
+    {
+      D3D11_QUERY_DESC desc{};
+      desc.Query = D3D11_QUERY_TIMESTAMP;
+      if (FAILED(device->CreateQuery(&desc, &timer.end_query)))
+      {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  void BeginGpuTimer(ID3D11DeviceContext* context, gpu_timer& timer)
+  {
+    if (context == nullptr || timer.disjoint_query == nullptr || timer.start_query == nullptr)
+    {
+      return;
+    }
+
+    context->Begin(timer.disjoint_query);
+    context->End(timer.start_query);
+  }
+
+  void EndGpuTimer(ID3D11DeviceContext* context, gpu_timer& timer)
+  {
+    if (context == nullptr || timer.disjoint_query == nullptr || timer.end_query == nullptr)
+    {
+      return;
+    }
+
+    context->End(timer.end_query);
+    context->End(timer.disjoint_query);
+  }
+
+  bool ReadGpuTimeMs(ID3D11DeviceContext* context, gpu_timer& timer, double& out_ms)
+  {
+    out_ms = 0.0;
+    if (context == nullptr || timer.disjoint_query == nullptr || timer.start_query == nullptr || timer.end_query == nullptr)
+    {
+      return false;
+    }
+
+    D3D11_QUERY_DATA_TIMESTAMP_DISJOINT disjoint_data{};
+    while (context->GetData(timer.disjoint_query, &disjoint_data, sizeof(disjoint_data), 0) == S_FALSE)
+    {
+    }
+
+    if (disjoint_data.Disjoint || disjoint_data.Frequency == 0)
+    {
+      return false;
+    }
+
+    UINT64 start_time = 0;
+    UINT64 end_time = 0;
+    while (context->GetData(timer.start_query, &start_time, sizeof(start_time), 0) == S_FALSE)
+    {
+    }
+    while (context->GetData(timer.end_query, &end_time, sizeof(end_time), 0) == S_FALSE)
+    {
+    }
+
+    out_ms = (static_cast<double>(end_time - start_time) / static_cast<double>(disjoint_data.Frequency)) * 1000.0;
+    return true;
+  }
+
+  void ReleaseGpuTimer(gpu_timer& timer)
+  {
+    if (timer.disjoint_query) { timer.disjoint_query->Release(); timer.disjoint_query = nullptr; }
+    if (timer.start_query) { timer.start_query->Release(); timer.start_query = nullptr; }
+    if (timer.end_query) { timer.end_query->Release(); timer.end_query = nullptr; }
   }
 }

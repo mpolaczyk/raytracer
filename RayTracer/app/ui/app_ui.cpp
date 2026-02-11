@@ -84,6 +84,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     }
     ImGui::Text("Last render time = %lld [ms]", state.renderer->get_render_time() / 1000);
     ImGui::Text("Last save time = %lld [ms]", state.renderer->get_save_time() / 1000);
+    ImGui::Text("Last GPU time = %lld [ms]", state.renderer->get_gpu_time() / 1000);
   }
   else
   {

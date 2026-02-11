@@ -163,6 +163,11 @@ void gpu_reference_renderer::render()
     logger::error("{}", "Failed to upload config data");
     return;
   }
+
+  if (!dx11::InitializeGpuTimer(device, gpu_timer))
+  {
+    return;
+  }
   
   // Set shader and resources
   context->CSSetShader(compute_shader, nullptr, 0);
@@ -178,7 +183,9 @@ void gpu_reference_renderer::render()
   // Dispatch compute shader (8x8 thread groups)
   uint32_t dispatch_x = (job_state.image_width + (kThreadGroupSize - 1)) / kThreadGroupSize;
   uint32_t dispatch_y = (job_state.image_height + (kThreadGroupSize - 1)) / kThreadGroupSize;
+  dx11::BeginGpuTimer(context, gpu_timer);
   context->Dispatch(dispatch_x, dispatch_y, 1);
+  dx11::EndGpuTimer(context, gpu_timer);
   
   // Unbind UAV and SRV
   ID3D11UnorderedAccessView* null_uav = nullptr;
@@ -188,6 +195,8 @@ void gpu_reference_renderer::render()
     ID3D11ShaderResourceView* null_srv = nullptr;
     context->CSSetShaderResources(0, 1, &null_srv);
   }
+
+  log_gpu_time();
   
   // Read back results and apply tone mapping
   if (!readback_results())
@@ -224,6 +233,7 @@ void gpu_reference_renderer::cleanup_directx()
   if (scene_buffer) { scene_buffer->Release(); scene_buffer = nullptr; }
   if (compute_shader) { compute_shader->Release(); compute_shader = nullptr; }
   if (output_srv) { output_srv->Release(); output_srv = nullptr; }
+  dx11::ReleaseGpuTimer(gpu_timer);
   
   // Don't release device and context - they're owned by dx11_helper
   device = nullptr;
@@ -755,4 +765,14 @@ bool gpu_reference_renderer::readback_results()
   context->Unmap(staging_texture, 0);
 
   return true;
+}
+
+void gpu_reference_renderer::log_gpu_time()
+{
+    job_state.benchmark_gpu_time = 0;
+  double gpu_ms = 0.0;
+  if (dx11::ReadGpuTimeMs(context, gpu_timer, gpu_ms))
+  {
+    job_state.benchmark_gpu_time = static_cast<uint64_t>(gpu_ms * 1000.0);
+  }
 }

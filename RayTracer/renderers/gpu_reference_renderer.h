@@ -1,11 +1,13 @@
 #pragma once
 
 #include "processing/async_renderer_base.h"
+#include "gfx/dx11_helper.h"
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct ID3D11ComputeShader;
 struct ID3D11Buffer;
+struct ID3D11Query;
 struct ID3D11UnorderedAccessView;
 struct ID3D11Texture2D;
 struct ID3D11ShaderResourceView;
@@ -38,6 +40,7 @@ private:
   ID3D11ShaderResourceView* output_srv = nullptr;
   ID3D11Texture2D* output_texture = nullptr;
   ID3D11Texture2D* staging_texture = nullptr;
+  dx11::gpu_timer gpu_timer;
 
   // Helper methods
   bool initialize_directx();
@@ -48,4 +51,5 @@ private:
   bool upload_config_data();
   bool create_output_texture(int width, int height);
   bool readback_results();
+  void log_gpu_time();
 };

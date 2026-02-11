@@ -75,6 +75,7 @@ public:
 
   uint64_t get_render_time() const { return job_state.benchmark_render_time; }
   uint64_t get_save_time() const { return job_state.benchmark_save_time; }
+  uint64_t get_gpu_time() const { return job_state.benchmark_gpu_time; }
   uint8_t* get_img_bgr() { return job_state.img_bgr->get_buffer(); }
   uint8_t* get_img_rgb() { return job_state.img_rgb->get_buffer(); }
 
@@ -102,6 +103,7 @@ protected:
 
     uint64_t benchmark_render_time = 0;
     uint64_t benchmark_save_time = 0;
+    uint64_t benchmark_gpu_time = 0;
   } job_state; 
 
 private:
