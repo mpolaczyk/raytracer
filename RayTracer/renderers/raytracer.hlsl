@@ -36,9 +36,9 @@ struct GPUSphere
 
 struct GPUTriangle
 {
-    float4 v0;  // Vertex 0 (xyz used, w is padding for 16-byte alignment)
-    float4 v1;  // Vertex 1 (xyz used, w is padding for 16-byte alignment)
-    float4 v2;  // Vertex 2 (xyz used, w is padding for 16-byte alignment)
+    float4 v0;
+    float4 v1;
+    float4 v2;
     uint material_index;
     float3 padding;
 };

@@ -115,7 +115,7 @@ std::string gpu_reference_renderer::get_name() const
 
 void gpu_reference_renderer::render()
 {
-  save_output = false;
+  save_output = true;
 
   benchmark::scope_counter benchmark_render("GPU render", false);
 

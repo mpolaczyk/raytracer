@@ -20,7 +20,7 @@ public:
 
 private:
   virtual void render() override;
-  virtual bool wants_sync_render() const override { return true; }
+  virtual bool wants_sync_render() const override { return false; }
 
   // DirectX 11 resources
   ID3D11Device* device = nullptr;
