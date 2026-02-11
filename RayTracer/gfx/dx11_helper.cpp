@@ -236,9 +236,9 @@ namespace dx11
     return false;
   }
 
-  bool InitializeGpuTimer(ID3D11Device* device, gpu_timer& timer)
+  bool InitializeGpuTimer(gpu_timer& timer)
   {
-    if (device == nullptr)
+    if (g_pd3dDevice == nullptr)
     {
       return false;
     }
@@ -247,7 +247,7 @@ namespace dx11
     {
       D3D11_QUERY_DESC desc{};
       desc.Query = D3D11_QUERY_TIMESTAMP_DISJOINT;
-      if (FAILED(device->CreateQuery(&desc, &timer.disjoint_query)))
+      if (FAILED(g_pd3dDevice->CreateQuery(&desc, &timer.disjoint_query)))
       {
         return false;
       }
@@ -257,7 +257,7 @@ namespace dx11
     {
       D3D11_QUERY_DESC desc{};
       desc.Query = D3D11_QUERY_TIMESTAMP;
-      if (FAILED(device->CreateQuery(&desc, &timer.start_query)))
+      if (FAILED(g_pd3dDevice->CreateQuery(&desc, &timer.start_query)))
       {
         return false;
       }
@@ -267,7 +267,7 @@ namespace dx11
     {
       D3D11_QUERY_DESC desc{};
       desc.Query = D3D11_QUERY_TIMESTAMP;
-      if (FAILED(device->CreateQuery(&desc, &timer.end_query)))
+      if (FAILED(g_pd3dDevice->CreateQuery(&desc, &timer.end_query)))
       {
         return false;
       }
@@ -276,38 +276,38 @@ namespace dx11
     return true;
   }
 
-  void BeginGpuTimer(ID3D11DeviceContext* context, gpu_timer& timer)
+  void BeginGpuTimer(gpu_timer& timer)
   {
-    if (context == nullptr || timer.disjoint_query == nullptr || timer.start_query == nullptr)
+    if (g_pd3dDeviceContext == nullptr || timer.disjoint_query == nullptr || timer.start_query == nullptr)
     {
       return;
     }
 
-    context->Begin(timer.disjoint_query);
-    context->End(timer.start_query);
+    g_pd3dDeviceContext->Begin(timer.disjoint_query);
+    g_pd3dDeviceContext->End(timer.start_query);
   }
 
-  void EndGpuTimer(ID3D11DeviceContext* context, gpu_timer& timer)
+  void EndGpuTimer(gpu_timer& timer)
   {
-    if (context == nullptr || timer.disjoint_query == nullptr || timer.end_query == nullptr)
+    if (g_pd3dDeviceContext == nullptr || timer.disjoint_query == nullptr || timer.end_query == nullptr)
     {
       return;
     }
 
-    context->End(timer.end_query);
-    context->End(timer.disjoint_query);
+    g_pd3dDeviceContext->End(timer.end_query);
+    g_pd3dDeviceContext->End(timer.disjoint_query);
   }
 
-  bool ReadGpuTimeMs(ID3D11DeviceContext* context, gpu_timer& timer, double& out_ms)
+  bool ReadGpuTimeMs(gpu_timer& timer, double& out_ms)
   {
     out_ms = 0.0;
-    if (context == nullptr || timer.disjoint_query == nullptr || timer.start_query == nullptr || timer.end_query == nullptr)
+    if (g_pd3dDeviceContext == nullptr || timer.disjoint_query == nullptr || timer.start_query == nullptr || timer.end_query == nullptr)
     {
       return false;
     }
 
     D3D11_QUERY_DATA_TIMESTAMP_DISJOINT disjoint_data{};
-    while (context->GetData(timer.disjoint_query, &disjoint_data, sizeof(disjoint_data), 0) == S_FALSE)
+    while (g_pd3dDeviceContext->GetData(timer.disjoint_query, &disjoint_data, sizeof(disjoint_data), 0) == S_FALSE)
     {
     }
 
@@ -318,10 +318,10 @@ namespace dx11
 
     UINT64 start_time = 0;
     UINT64 end_time = 0;
-    while (context->GetData(timer.start_query, &start_time, sizeof(start_time), 0) == S_FALSE)
+    while (g_pd3dDeviceContext->GetData(timer.start_query, &start_time, sizeof(start_time), 0) == S_FALSE)
     {
     }
-    while (context->GetData(timer.end_query, &end_time, sizeof(end_time), 0) == S_FALSE)
+    while (g_pd3dDeviceContext->GetData(timer.end_query, &end_time, sizeof(end_time), 0) == S_FALSE)
     {
     }
 

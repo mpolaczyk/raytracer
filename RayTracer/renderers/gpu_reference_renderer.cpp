@@ -164,7 +164,7 @@ void gpu_reference_renderer::render()
     return;
   }
 
-  if (!dx11::InitializeGpuTimer(device, gpu_timer))
+  if (!dx11::InitializeGpuTimer(gpu_timer))
   {
     return;
   }
@@ -183,9 +183,9 @@ void gpu_reference_renderer::render()
   // Dispatch compute shader (8x8 thread groups)
   uint32_t dispatch_x = (job_state.image_width + (kThreadGroupSize - 1)) / kThreadGroupSize;
   uint32_t dispatch_y = (job_state.image_height + (kThreadGroupSize - 1)) / kThreadGroupSize;
-  dx11::BeginGpuTimer(context, gpu_timer);
+  dx11::BeginGpuTimer(gpu_timer);
   context->Dispatch(dispatch_x, dispatch_y, 1);
-  dx11::EndGpuTimer(context, gpu_timer);
+  dx11::EndGpuTimer(gpu_timer);
   
   // Unbind UAV and SRV
   ID3D11UnorderedAccessView* null_uav = nullptr;
@@ -771,7 +771,7 @@ void gpu_reference_renderer::log_gpu_time()
 {
     job_state.benchmark_gpu_time = 0;
   double gpu_ms = 0.0;
-  if (dx11::ReadGpuTimeMs(context, gpu_timer, gpu_ms))
+  if (dx11::ReadGpuTimeMs(gpu_timer, gpu_ms))
   {
     job_state.benchmark_gpu_time = static_cast<uint64_t>(gpu_ms * 1000.0);
   }
