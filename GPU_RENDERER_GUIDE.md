@@ -56,6 +56,13 @@ struct GPUTriangle {
     float padding[3];            // 12 bytes (alignment)
 };
 
+struct GPUBVHNode {
+    float aabb_min[3];           // AABB minimum corner (12 bytes)
+    uint32_t left_or_first;      // Left child index or first triangle index (4 bytes)
+    float aabb_max[3];           // AABB maximum corner (12 bytes)
+    uint32_t count;              // 0 = internal node, >0 = leaf triangle count (4 bytes)
+};
+
 struct GPUCamera {
     vec3 look_from;              // Camera position
     float lens_radius;           // For depth of field
@@ -100,6 +107,15 @@ Uses the Möller-Trumbore algorithm for fast ray-triangle intersection:
 - Backface culling based on ray direction
 - Face normal computed from cross product of edges
 
+### BVH Acceleration Structure
+A Bounding Volume Hierarchy (BVH) is built on the CPU and uploaded to the GPU for accelerated triangle intersection:
+- **CPU-side construction**: Top-down recursive subdivision using midpoint splitting along the longest AABB axis
+- **Leaf nodes**: Contain up to 4 triangles each
+- **GPU traversal**: Iterative stack-based traversal (max stack depth: 32)
+- **AABB test**: Slab method for fast ray-AABB intersection
+- **Fallback**: Linear search is used when no BVH is available (e.g., sphere-only scenes)
+- **Data layout**: BVH nodes stored in a StructuredBuffer at register t1, triangles reordered to match BVH leaf ordering
+
 ### Random Number Generation
 Uses PCG (Permuted Congruential Generator) hash:
 ```hlsl
@@ -127,6 +143,7 @@ uint pcg_hash(uint seed) {
 ### Supported Features
 - ✅ Sphere primitives
 - ✅ Static mesh primitives (triangles)
+- ✅ BVH acceleration structure for triangles
 - ✅ Universal materials (diffuse, specular, refraction)
 - ✅ Emissive materials (lights)
 - ✅ Perspective camera
@@ -149,12 +166,13 @@ uint pcg_hash(uint seed) {
 - Constant buffers are 16-byte aligned
 - Scene buffer: ~65KB (256 spheres + 256 materials)
 - Triangle buffer: Variable size structured buffer (48 bytes per triangle)
+- BVH buffer: Variable size structured buffer (32 bytes per node, up to ~2× triangle count nodes)
 - Camera buffer: ~128 bytes
 - Config buffer: ~32 bytes
 - Output texture: width × height × 16 bytes (RGBA32F)
 
 ### Optimization Opportunities
-1. Use BVH/acceleration structure for scene intersection
+1. ~~Use BVH/acceleration structure for scene intersection~~ ✅ Implemented
 2. Add support for rectangle primitives
 3. Implement wavefront path tracing for better GPU utilization
 4. Add texture support
@@ -228,7 +246,7 @@ The mesh's `pre_render()` method transforms triangles from model space to world 
 None at this time.
 
 ## Future Enhancements
-1. BVH acceleration structure for both spheres and triangles
+1. ~~BVH acceleration structure for both spheres and triangles~~ ✅ BVH for triangles implemented
 2. Support for rectangle primitives (xy_rect, xz_rect, yz_rect)
 3. Texture mapping for meshes
 4. Pre-compiled shader pipeline
@@ -236,3 +254,4 @@ None at this time.
 6. Multiple light importance sampling
 7. Volumetric rendering
 8. GPU-side denoising
+9. BVH acceleration for spheres

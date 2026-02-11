@@ -5,6 +5,7 @@
 #define MAX_SPHERES 256
 #define MAX_TRIANGLES 16384
 #define MAX_BOUNCES 16
+#define MAX_BVH_STACK 32
 #define PI 3.14159265359f
 #define MIN_RAY_COLOR_THRESHOLD 0.1f
 
@@ -43,6 +44,14 @@ struct GPUTriangle
     float3 padding;
 };
 
+struct GPUBVHNode
+{
+    float3 aabb_min;
+    uint left_or_first; // Left child index (internal) or first triangle index (leaf)
+    float3 aabb_max;
+    uint count;         // 0 = internal node, >0 = leaf with 'count' triangles
+};
+
 struct GPUCamera
 {
     float4 look_from;
@@ -78,7 +87,7 @@ cbuffer SceneData : register(b0)
     uint sphere_count;
     uint material_count;
     uint triangle_count;
-    float scene_padding;
+    uint bvh_node_count;
 };
 
 cbuffer CameraData : register(b1)
@@ -91,8 +100,9 @@ cbuffer ConfigData : register(b2)
     GPUConfig config;
 };
 
-// Structured buffer for triangles
+// Structured buffers
 StructuredBuffer<GPUTriangle> triangles : register(t0);
+StructuredBuffer<GPUBVHNode> bvh_nodes : register(t1);
 
 // Output texture
 RWTexture2D<float4> OutputTexture : register(u0);
@@ -189,6 +199,19 @@ bool hit_sphere(GPUSphere sphere, Ray r, float t_min, float t_max, inout HitReco
     return true;
 }
 
+// AABB-ray intersection test (slab method)
+bool hit_aabb(float3 aabb_min, float3 aabb_max, Ray r, float t_min, float t_max)
+{
+    float3 inv_dir = 1.0f / r.direction;
+    float3 t0 = (aabb_min - r.origin) * inv_dir;
+    float3 t1 = (aabb_max - r.origin) * inv_dir;
+    float3 t_near = min(t0, t1);
+    float3 t_far = max(t0, t1);
+    float t_enter = max(max(t_near.x, t_near.y), max(t_near.z, t_min));
+    float t_exit = min(min(t_far.x, t_far.y), min(t_far.z, t_max));
+    return t_enter <= t_exit;
+}
+
 // Triangle intersection using Möller-Trumbore algorithm
 bool hit_triangle(GPUTriangle tri, Ray r, float t_min, float t_max, inout HitRecord rec)
 {
@@ -261,13 +284,56 @@ bool hit_scene(Ray r, float t_min, float t_max, inout HitRecord rec)
         }
     }
     
-    for (uint j = 0; j < triangle_count; ++j)
+    // BVH traversal for triangles
+    if (bvh_node_count > 0 && triangle_count > 0)
     {
-        if (hit_triangle(triangles[j], r, t_min, closest_so_far, temp_rec))
+        uint stack[MAX_BVH_STACK];
+        int stack_ptr = 0;
+        stack[stack_ptr++] = 0; // Start with root node
+        
+        while (stack_ptr > 0)
         {
-            hit_anything = true;
-            closest_so_far = temp_rec.t;
-            rec = temp_rec;
+            uint node_index = stack[--stack_ptr];
+            GPUBVHNode node = bvh_nodes[node_index];
+            
+            if (!hit_aabb(node.aabb_min, node.aabb_max, r, t_min, closest_so_far))
+                continue;
+            
+            if (node.count > 0)
+            {
+                // Leaf node: test all triangles in this leaf
+                for (uint j = node.left_or_first; j < node.left_or_first + node.count; ++j)
+                {
+                    if (hit_triangle(triangles[j], r, t_min, closest_so_far, temp_rec))
+                    {
+                        hit_anything = true;
+                        closest_so_far = temp_rec.t;
+                        rec = temp_rec;
+                    }
+                }
+            }
+            else
+            {
+                // Internal node: push children onto stack
+                if (stack_ptr < MAX_BVH_STACK - 1)
+                {
+                    stack[stack_ptr++] = node.left_or_first;     // Left child
+                    stack[stack_ptr++] = node.left_or_first + 1; // Right child
+                }
+            }
+        }
+    }
+    else
+    {
+        // Fallback: linear search when no BVH is available
+        for (uint j = 0; j < triangle_count; ++j)
+        {
+            if (hit_triangle(triangles[j], r, t_min, closest_so_far, temp_rec))
+            {
+                hit_anything = true;
+                closest_so_far = temp_rec.t;
+                rec = temp_rec;
+            }
         }
     }
     

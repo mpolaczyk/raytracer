@@ -32,6 +32,8 @@ private:
   ID3D11Buffer* scene_buffer = nullptr;
   ID3D11Buffer* triangle_buffer = nullptr;
   ID3D11ShaderResourceView* triangle_srv = nullptr;
+  ID3D11Buffer* bvh_buffer = nullptr;
+  ID3D11ShaderResourceView* bvh_srv = nullptr;
   ID3D11Buffer* camera_buffer = nullptr;
   ID3D11Buffer* config_buffer = nullptr;
   ID3D11UnorderedAccessView* output_uav = nullptr;

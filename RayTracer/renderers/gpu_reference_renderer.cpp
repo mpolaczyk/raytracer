@@ -4,6 +4,8 @@
 #include <d3dcompiler.h>
 #include <winerror.h>
 #include <algorithm>
+#include <numeric>
+#include <stack>
 
 #include "math/materials.h"
 #include "math/camera.h"
@@ -50,6 +52,15 @@ struct GPUTriangle
   float padding[3];
 };
 
+// BVH node for GPU - matches HLSL GPUBVHNode
+struct GPUBVHNode
+{
+  float aabb_min[3];      // AABB minimum corner
+  uint32_t left_or_first; // Left child index (internal) or first triangle index (leaf)
+  float aabb_max[3];      // AABB maximum corner
+  uint32_t count;         // 0 = internal node, >0 = leaf with 'count' triangles
+};
+
 struct GPUCamera
 {
   vec3 look_from;
@@ -82,12 +93,14 @@ namespace
 constexpr uint32_t kMaxGpuSpheres = 256;
 constexpr uint32_t kMaxGpuTriangles = 16384; // Maximum triangles supported (limited by structured buffer size and performance)
 constexpr uint32_t kMaxGpuMaterials = 256;
+constexpr uint32_t kMaxBvhNodes = kMaxGpuTriangles * 2; // Upper bound: 2N-1 nodes for N triangles
 constexpr uint32_t kThreadGroupSize = 8;
 constexpr uint32_t kMaxShaderBounces = 16; // Keep in sync with raytracer.hlsl
 
 static_assert(sizeof(GPUMaterial) % 16 == 0, "GPUMaterial must stay 16-byte aligned");
 static_assert(sizeof(GPUSphere) % 16 == 0, "GPUSphere must stay 16-byte aligned");
 static_assert(sizeof(GPUTriangle) % 16 == 0, "GPUTriangle must stay 16-byte aligned");
+static_assert(sizeof(GPUBVHNode) == 32, "GPUBVHNode must be 32 bytes");
 static_assert(sizeof(GPUCamera) % 16 == 0, "GPUCamera must stay 16-byte aligned");
 static_assert(sizeof(GPUConfig) % 16 == 0, "GPUConfig must stay 16-byte aligned");
 
@@ -100,6 +113,143 @@ bool log_failure(const char* action, HRESULT hr)
   }
 
   return false;
+}
+
+// Compute AABB centroid for a triangle
+void triangle_centroid(const GPUTriangle& tri, float out_centroid[3])
+{
+  out_centroid[0] = (tri.v0.x + tri.v1.x + tri.v2.x) / 3.0f;
+  out_centroid[1] = (tri.v0.y + tri.v1.y + tri.v2.y) / 3.0f;
+  out_centroid[2] = (tri.v0.z + tri.v1.z + tri.v2.z) / 3.0f;
+}
+
+// Compute AABB for a range of triangles
+void compute_aabb(const std::vector<GPUTriangle>& triangles, const std::vector<uint32_t>& indices,
+                  uint32_t first, uint32_t count, float out_min[3], float out_max[3])
+{
+  out_min[0] = out_min[1] = out_min[2] = FLT_MAX;
+  out_max[0] = out_max[1] = out_max[2] = -FLT_MAX;
+
+  for (uint32_t i = first; i < first + count; ++i)
+  {
+    const GPUTriangle& tri = triangles[indices[i]];
+    const float* verts[] = { &tri.v0.x, &tri.v1.x, &tri.v2.x };
+    for (int v = 0; v < 3; ++v)
+    {
+      // vec3 is 16-byte aligned with x,y,z as first 3 floats
+      const float vx = verts[v][0];
+      const float vy = verts[v][1];
+      const float vz = verts[v][2];
+      out_min[0] = std::min(out_min[0], vx);
+      out_min[1] = std::min(out_min[1], vy);
+      out_min[2] = std::min(out_min[2], vz);
+      out_max[0] = std::max(out_max[0], vx);
+      out_max[1] = std::max(out_max[1], vy);
+      out_max[2] = std::max(out_max[2], vz);
+    }
+  }
+}
+
+// Build BVH from triangles using midpoint splitting
+// Reorders triangle_indices so that the triangles buffer can be reordered accordingly
+void build_bvh(const std::vector<GPUTriangle>& triangles,
+               std::vector<uint32_t>& triangle_indices,
+               std::vector<GPUBVHNode>& nodes)
+{
+  struct BuildEntry
+  {
+    uint32_t node_index;
+    uint32_t first;
+    uint32_t count;
+  };
+
+  nodes.clear();
+  const uint32_t num_triangles = static_cast<uint32_t>(triangle_indices.size());
+  if (num_triangles == 0) return;
+
+  // Reserve space
+  nodes.reserve(num_triangles * 2);
+
+  // Create root node
+  GPUBVHNode root{};
+  root.left_or_first = 0;
+  root.count = num_triangles;
+  compute_aabb(triangles, triangle_indices, 0, num_triangles, root.aabb_min, root.aabb_max);
+  nodes.push_back(root);
+
+  std::stack<BuildEntry> stack;
+  stack.push({ 0, 0, num_triangles });
+
+  while (!stack.empty())
+  {
+    BuildEntry entry = stack.top();
+    stack.pop();
+
+    GPUBVHNode& node = nodes[entry.node_index];
+
+    // Leaf condition: 4 or fewer triangles
+    if (entry.count <= 4)
+    {
+      node.left_or_first = entry.first;
+      node.count = entry.count;
+      continue;
+    }
+
+    // Find the longest axis of the AABB
+    float extent_x = node.aabb_max[0] - node.aabb_min[0];
+    float extent_y = node.aabb_max[1] - node.aabb_min[1];
+    float extent_z = node.aabb_max[2] - node.aabb_min[2];
+    int axis = 0;
+    if (extent_y > extent_x && extent_y > extent_z) axis = 1;
+    else if (extent_z > extent_x && extent_z > extent_y) axis = 2;
+
+    float split = (node.aabb_min[axis] + node.aabb_max[axis]) * 0.5f;
+
+    // Partition triangles
+    uint32_t mid = entry.first;
+    for (uint32_t i = entry.first; i < entry.first + entry.count; ++i)
+    {
+      float centroid[3];
+      triangle_centroid(triangles[triangle_indices[i]], centroid);
+      if (centroid[axis] < split)
+      {
+        std::swap(triangle_indices[i], triangle_indices[mid]);
+        mid++;
+      }
+    }
+
+    // If all triangles ended up on one side, force a split in the middle
+    if (mid == entry.first || mid == entry.first + entry.count)
+    {
+      mid = entry.first + entry.count / 2;
+    }
+
+    uint32_t left_count = mid - entry.first;
+    uint32_t right_count = entry.count - left_count;
+
+    // Create child nodes
+    uint32_t left_index = static_cast<uint32_t>(nodes.size());
+
+    GPUBVHNode left_node{};
+    compute_aabb(triangles, triangle_indices, entry.first, left_count, left_node.aabb_min, left_node.aabb_max);
+    left_node.left_or_first = entry.first;
+    left_node.count = left_count;
+    nodes.push_back(left_node);
+
+    GPUBVHNode right_node{};
+    compute_aabb(triangles, triangle_indices, mid, right_count, right_node.aabb_min, right_node.aabb_max);
+    right_node.left_or_first = mid;
+    right_node.count = right_count;
+    nodes.push_back(right_node);
+
+    // Mark current node as internal (count=0, left_or_first = left child index)
+    node.left_or_first = left_index;
+    node.count = 0;
+
+    // Push children onto stack for further subdivision
+    stack.push({ left_index, entry.first, left_count });
+    stack.push({ left_index + 1, mid, right_count });
+  }
 }
 }
 
@@ -173,6 +323,10 @@ void gpu_reference_renderer::render()
   {
     context->CSSetShaderResources(0, 1, &triangle_srv);
   }
+  if (bvh_srv != nullptr)
+  {
+    context->CSSetShaderResources(1, 1, &bvh_srv);
+  }
   context->CSSetUnorderedAccessViews(0, 1, &output_uav, nullptr);
   
   // Dispatch compute shader (8x8 thread groups)
@@ -187,6 +341,11 @@ void gpu_reference_renderer::render()
   {
     ID3D11ShaderResourceView* null_srv = nullptr;
     context->CSSetShaderResources(0, 1, &null_srv);
+  }
+  if (bvh_srv != nullptr)
+  {
+    ID3D11ShaderResourceView* null_srv = nullptr;
+    context->CSSetShaderResources(1, 1, &null_srv);
   }
   
   // Read back results and apply tone mapping
@@ -219,6 +378,8 @@ void gpu_reference_renderer::cleanup_directx()
   if (output_uav) { output_uav->Release(); output_uav = nullptr; }
   if (config_buffer) { config_buffer->Release(); config_buffer = nullptr; }
   if (camera_buffer) { camera_buffer->Release(); camera_buffer = nullptr; }
+  if (bvh_srv) { bvh_srv->Release(); bvh_srv = nullptr; }
+  if (bvh_buffer) { bvh_buffer->Release(); bvh_buffer = nullptr; }
   if (triangle_srv) { triangle_srv->Release(); triangle_srv = nullptr; }
   if (triangle_buffer) { triangle_buffer->Release(); triangle_buffer = nullptr; }
   if (scene_buffer) { scene_buffer->Release(); scene_buffer = nullptr; }
@@ -433,17 +594,36 @@ bool gpu_reference_renderer::upload_scene_data()
     uint32_t sphere_count;
     uint32_t material_count;
     uint32_t triangle_count;
-    float padding[1];
+    uint32_t bvh_node_count;
   };
 
   static_assert(sizeof(SceneData) % 16 == 0, "Scene constant buffer must be 16-byte aligned");
   static_assert(sizeof(SceneData) <= D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT * 16, "Scene constant buffer exceeds D3D11 limits");
- 
+
+  // Build BVH from triangles
+  std::vector<GPUBVHNode> bvh_nodes;
+  if (!gpu_triangles.empty())
+  {
+    // Create index array and build BVH (reorders indices)
+    std::vector<uint32_t> triangle_indices(gpu_triangles.size());
+    std::iota(triangle_indices.begin(), triangle_indices.end(), 0u);
+    build_bvh(gpu_triangles, triangle_indices, bvh_nodes);
+
+    // Reorder triangles to match BVH leaf ordering
+    std::vector<GPUTriangle> reordered(gpu_triangles.size());
+    for (uint32_t i = 0; i < gpu_triangles.size(); ++i)
+    {
+      reordered[i] = gpu_triangles[triangle_indices[i]];
+    }
+    gpu_triangles = std::move(reordered);
+  }
+
   SceneData scene_data{};
 
   scene_data.sphere_count = static_cast<uint32_t>(gpu_spheres.size());
   scene_data.triangle_count = static_cast<uint32_t>(gpu_triangles.size());
   scene_data.material_count = static_cast<uint32_t>(gpu_materials.size());
+  scene_data.bvh_node_count = static_cast<uint32_t>(bvh_nodes.size());
 
   for (size_t i = 0; i < gpu_spheres.size() && i < kMaxGpuSpheres; ++i)
   {
@@ -522,7 +702,47 @@ bool gpu_reference_renderer::upload_scene_data()
     }
   }
 
-  logger::debug("Uploaded {} spheres / {} triangles / {} materials to GPU", scene_data.sphere_count, scene_data.triangle_count, scene_data.material_count);
+  // Create BVH structured buffer
+  if (!bvh_nodes.empty())
+  {
+    // Clean up old BVH buffer if it exists
+    if (bvh_srv) { bvh_srv->Release(); bvh_srv = nullptr; }
+    if (bvh_buffer) { bvh_buffer->Release(); bvh_buffer = nullptr; }
+
+    D3D11_BUFFER_DESC desc;
+    ZeroMemory(&desc, sizeof(desc));
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.ByteWidth = sizeof(GPUBVHNode) * static_cast<uint32_t>(bvh_nodes.size());
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+    desc.StructureByteStride = sizeof(GPUBVHNode);
+
+    D3D11_SUBRESOURCE_DATA init_data;
+    init_data.pSysMem = bvh_nodes.data();
+    init_data.SysMemPitch = 0;
+    init_data.SysMemSlicePitch = 0;
+
+    HRESULT hr = device->CreateBuffer(&desc, &init_data, &bvh_buffer);
+    if (log_failure("Create BVH structured buffer", hr))
+    {
+      return false;
+    }
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
+    ZeroMemory(&srv_desc, sizeof(srv_desc));
+    srv_desc.Format = DXGI_FORMAT_UNKNOWN;
+    srv_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+    srv_desc.Buffer.FirstElement = 0;
+    srv_desc.Buffer.NumElements = static_cast<uint32_t>(bvh_nodes.size());
+
+    hr = device->CreateShaderResourceView(bvh_buffer, &srv_desc, &bvh_srv);
+    if (log_failure("Create BVH SRV", hr))
+    {
+      return false;
+    }
+  }
+
+  logger::debug("Uploaded {} spheres / {} triangles / {} BVH nodes / {} materials to GPU", scene_data.sphere_count, scene_data.triangle_count, scene_data.bvh_node_count, scene_data.material_count);
 
   return true;
 }
