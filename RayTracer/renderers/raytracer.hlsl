@@ -377,12 +377,17 @@ Ray get_camera_ray(float u, float v, inout uint seed)
     float3 rd = camera.lens_radius * random_in_unit_disk(seed);
     float3 offset = camera.u * rd.x + camera.v * rd.y;
     
-    // Only perspective camera is currently supported
-    // Shoot rays from the point to the focus plane
+    // Shoot rays from the plane that is proportionally smaller to focus plane
+    // 0.0f - perspective camera
+    // 1.0f - orthographic camera
+    float3 c_horizontal = camera.horizontal * camera.type;
+    float3 c_vertical = camera.vertical * camera.type;
+    float3 c_lower_left_corner = camera.look_from - c_horizontal / 2.0f - c_vertical / 2.0f;
+    float3 cpo = c_lower_left_corner + c_horizontal * u + c_vertical * v;
     float3 fpo = camera.lower_left_corner + camera.horizontal * u + camera.vertical * v;
     float3 fpf = fpo - camera.w * camera.dist_to_focus;
-    r.origin = camera.look_from - offset;
-    r.direction = normalize(fpf - camera.look_from + offset);
+    r.origin = cpo - offset;
+    r.direction = normalize(fpf - cpo + offset);
     
     return r;
 }

@@ -3,6 +3,7 @@
     "aperture": 0.0,
     "aspect_ratio_h": 1.0,
     "aspect_ratio_w": 1.0,
+    "dist_to_focus": 1000.0,
     "field_of_view": 38.0,
     "look_dir": {
       "x": 0.0019719875417649746,

@@ -35,6 +35,7 @@ nlohmann::json camera_config_serializer::serialize(const camera_config& value)
   j["aspect_ratio_h"] = value.aspect_ratio_h;
   j["aspect_ratio_w"] = value.aspect_ratio_w;
   j["aperture"] = value.aperture;
+  j["dist_to_focus"] = value.dist_to_focus;
   j["type"] = value.type;
   j["look_from"] = vec3_serializer::serialize(value.look_from);
   j["look_dir"] = vec3_serializer::serialize(value.look_dir);

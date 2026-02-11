@@ -77,7 +77,7 @@ public:
   float aspect_ratio_h = 9.0f;
   float aspect_ratio_w = 16.0f;
   float aperture = 0.0f;       // defocus blur
-  float dist_to_focus = 1.0f;  // distance from camera to the focus object
+  float dist_to_focus = 1000.0f;  // distance from camera to the focus object
   float type = 0.0f;           // 0.0f perspective camera, 1.0f orthographic camera
 };
 
@@ -121,15 +121,16 @@ public:
     {
       // Shoot rays from the point to the focus plane - perspective camera
       vec3 fpo = f.get_point(uu, vv);                     // point on the focus plane at origin
-      vec3 fpf = fpo - w * camera_conf.dist_to_focus;           // point on the focus plane at the focus distance forward camera
+      vec3 fpf = fpo - w * camera_conf.dist_to_focus;     // point on the plane (parallel to the focus plane) at the focus distance forward from the camera
       return ray(camera_conf.look_from - offset, math::normalize(fpf - camera_conf.look_from + offset));
     }
     else
     {
-      // Don't shoot rays from the point, shoot from the plane that is proportionally smaller to focus plane
-      vec3 cpo = c.get_point(uu, vv);             // point on the camera plane at origin
-      vec3 fpo = f.get_point(uu, vv);               // point on the focus plane at origin
-      vec3 fpf = fpo - w * camera_conf.dist_to_focus;     // point on the plane crossing frustum, forward camera
+      // Shoot from the plane that is proportionally smaller to focus plane
+      // For camera type > 0, this model approaches the orthographic projection 
+      vec3 cpo = c.get_point(uu, vv);                   // point on the camera plane at origin
+      vec3 fpo = f.get_point(uu, vv);                   // point on the focus plane at origin
+      vec3 fpf = fpo - w * camera_conf.dist_to_focus;   // point on the plane crossing frustum, forward camera
       return ray(cpo - offset, math::normalize(fpf - cpo + offset));
     }
   }
