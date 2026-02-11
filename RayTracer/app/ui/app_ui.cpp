@@ -78,7 +78,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     if (state.renderer->is_working())
     {
       ImGui::SameLine();
-      char name[50];
+      char name[250];    // Run-Time Check Failure #2 - Stack around the variable 'name' was corrupted.
       std::sprintf(name, "Rendering with %s renderer", state.renderer->get_name().c_str());
       ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
     }
