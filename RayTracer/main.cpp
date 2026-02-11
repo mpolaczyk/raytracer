@@ -174,6 +174,8 @@ int main(int, char**)
             if (state.renderer->is_renderer_type_different(state.renderer_conf))
             {
               delete state.renderer;
+              state.output_srv = nullptr;
+              state.output_texture = nullptr;
               state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);
             }
 
