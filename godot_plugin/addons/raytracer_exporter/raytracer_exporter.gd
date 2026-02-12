@@ -313,7 +313,7 @@ func _hash_vector2(value: Vector2) -> int:
 	return hash(str(value))
 
 func _hash_combine(a: int, b: int) -> int:
-	return int(a * 31 + b)
+	return hash([a, b])
 
 func _max_component(value: Vector3) -> float:
 	return max(value.x, max(value.y, value.z))

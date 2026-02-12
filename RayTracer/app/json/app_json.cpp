@@ -170,8 +170,12 @@ bool app_instance::reload_scene_state_if_changed()
   {
     scene_file_last_write_time = last_write_time;
     scene_file_time_known = true;
-    load_scene_state();
-    return true;
+    if (scene_root != nullptr && scene_root->objects.empty())
+    {
+      load_scene_state();
+      return true;
+    }
+    return false;
   }
 
   if (last_write_time == scene_file_last_write_time)
