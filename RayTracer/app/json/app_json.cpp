@@ -1,12 +1,15 @@
 #include "stdafx.h"
 
+#include <filesystem>
 #include <fstream>
+#include <system_error>
 
 #include "app/json/app_json.h"
 #include "app/json/vec3_json.h"
 #include "app/json/frame_renderer_json.h"
 #include "app/json/materials_json.h"
 #include "app/json/hittables_json.h"
+#include "math/hittables.h"
 
 nlohmann::json window_config_serializer::serialize(const window_config& value)
 {
@@ -63,15 +66,57 @@ camera_config camera_config_serializer::deserialize(const nlohmann::json& j)
 
 void app_instance::load_scene_state()
 {
-  std::ifstream input_stream(io::get_scene_file_path().c_str());
+  const std::string scene_path = io::get_scene_file_path();
+  std::ifstream input_stream(scene_path.c_str());
+  if (!input_stream.is_open())
+  {
+    logger::warn("Unable to open scene file: {0}", scene_path);
+    return;
+  }
   nlohmann::json j;
-  input_stream >> j;
+  try
+  {
+    input_stream >> j;
+  }
+  catch (const std::exception& ex)
+  {
+    logger::error("Unable to parse scene file: {0}. Error: {1}", scene_path, ex.what());
+    return;
+  }
 
   nlohmann::json jcamera_conf;
   if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { *camera_conf = camera_config_serializer::deserialize(jcamera_conf); }
 
   nlohmann::json jscene_root;
-  if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_serializer::deserialize(jscene_root, scene_root); }
+  if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root))
+  {
+    // Deserialize into a temporary scene to avoid partial updates if deserialization fails.
+    scene temp_scene;
+    try
+    {
+      scene_serializer::deserialize(jscene_root, &temp_scene);
+    }
+    catch (const std::exception& ex)
+    {
+      logger::error("Unable to deserialize scene data: {0}", ex.what());
+      return;
+    }
+    scene_root->objects.swap(temp_scene.objects);
+    // Swap transfers ownership efficiently; temp_scene will clean up prior objects on destruction.
+    int scene_id = scene_root->id;
+    hittable_type scene_type = scene_root->type;
+    std::string scene_material_id = scene_root->material_id;
+    TRY_PARSE(int, jscene_root, "id", scene_id);
+    TRY_PARSE(hittable_type, jscene_root, "type", scene_type);
+    TRY_PARSE(std::string, jscene_root, "material_id", scene_material_id);
+    scene_root->id = scene_id;
+    scene_root->type = scene_type;
+    scene_root->material_id = scene_material_id;
+    // Reset runtime selection pointer and scene editor indices (-1 means no selection).
+    selected_object = nullptr;
+    sew_model.selected_id = -1;
+    sew_model.d_model.selected_id = -1;
+  }
 
   input_stream.close();
 }
@@ -112,13 +157,43 @@ void app_instance::save_scene_state()
   nlohmann::json j;
   j["camera_config"] = camera_config_serializer::serialize(*camera_conf);
   j["scene"] = scene_serializer::serialize(scene_root);
-  std::ofstream o(io::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
+  std::ofstream output_stream(io::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
-  if (o.is_open())
+  if (output_stream.is_open())
   {
-    o.write(str.data(), str.length());
+    output_stream.write(str.data(), str.length());
   }
-  o.close();
+  output_stream.close();
+  sync_scene_file_timestamp();
+}
+
+bool app_instance::reload_scene_state_if_changed()
+{
+  std::error_code error;
+  const std::string scene_path = io::get_scene_file_path();
+  std::filesystem::file_time_type time = std::filesystem::last_write_time(scene_path, error);
+  if (error)
+  {
+    return false;
+  }
+  if (time == scene_file_last_write_time)
+  {
+    return false;
+  }
+  scene_file_last_write_time = time;
+  load_scene_state();
+}
+
+void app_instance::sync_scene_file_timestamp()
+{
+  std::error_code error;
+  const std::string scene_path = io::get_scene_file_path();
+  std::filesystem::file_time_type time = std::filesystem::last_write_time(scene_path, error);
+  if (error)
+  {
+    return;
+  }
+  scene_file_last_write_time = time;
 }
 
 void app_instance::save_rendering_state()
