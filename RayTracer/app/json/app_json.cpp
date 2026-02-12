@@ -90,12 +90,17 @@ void app_instance::load_scene_state()
   nlohmann::json jscene_root;
   if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root))
   {
-    for (hittable* object : scene_root->objects)
+    scene temp_scene;
+    try
     {
-      delete object;
+      scene_serializer::deserialize(jscene_root, &temp_scene);
     }
-    scene_root->objects.clear();
-    scene_serializer::deserialize(jscene_root, scene_root);
+    catch (const std::exception& ex)
+    {
+      logger::error("Unable to deserialize scene data: {0}", ex.what());
+      return;
+    }
+    scene_root->objects.swap(temp_scene.objects);
     selected_object = nullptr;
     sew_model.selected_id = -1;
     sew_model.d_model.selected_id = -1;
@@ -142,13 +147,13 @@ void app_instance::save_scene_state()
   nlohmann::json j;
   j["camera_config"] = camera_config_serializer::serialize(*camera_conf);
   j["scene"] = scene_serializer::serialize(scene_root);
-  std::ofstream o(io::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
+  std::ofstream output_stream(io::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
-  if (o.is_open())
+  if (output_stream.is_open())
   {
-    o.write(str.data(), str.length());
+    output_stream.write(str.data(), str.length());
   }
-  o.close();
+  output_stream.close();
   sync_scene_file_timestamp();
 }
 
