@@ -1,12 +1,15 @@
 #include "stdafx.h"
 
+#include <filesystem>
 #include <fstream>
+#include <system_error>
 
 #include "app/json/app_json.h"
 #include "app/json/vec3_json.h"
 #include "app/json/frame_renderer_json.h"
 #include "app/json/materials_json.h"
 #include "app/json/hittables_json.h"
+#include "math/hittables.h"
 
 nlohmann::json window_config_serializer::serialize(const window_config& value)
 {
@@ -63,17 +66,43 @@ camera_config camera_config_serializer::deserialize(const nlohmann::json& j)
 
 void app_instance::load_scene_state()
 {
-  std::ifstream input_stream(io::get_scene_file_path().c_str());
+  const std::string scene_path = io::get_scene_file_path();
+  std::ifstream input_stream(scene_path.c_str());
+  if (!input_stream.is_open())
+  {
+    logger::warn("Unable to open scene file: {0}", scene_path);
+    return;
+  }
   nlohmann::json j;
-  input_stream >> j;
+  try
+  {
+    input_stream >> j;
+  }
+  catch (const std::exception& ex)
+  {
+    logger::error("Unable to parse scene file: {0}. Error: {1}", scene_path, ex.what());
+    return;
+  }
 
   nlohmann::json jcamera_conf;
   if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { *camera_conf = camera_config_serializer::deserialize(jcamera_conf); }
 
   nlohmann::json jscene_root;
-  if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_serializer::deserialize(jscene_root, scene_root); }
+  if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root))
+  {
+    for (hittable* object : scene_root->objects)
+    {
+      delete object;
+    }
+    scene_root->objects.clear();
+    scene_serializer::deserialize(jscene_root, scene_root);
+    selected_object = nullptr;
+    sew_model.selected_id = -1;
+    sew_model.d_model.selected_id = -1;
+  }
 
   input_stream.close();
+  sync_scene_file_timestamp();
 }
 
 void app_instance::load_rendering_state()
@@ -119,6 +148,54 @@ void app_instance::save_scene_state()
     o.write(str.data(), str.length());
   }
   o.close();
+  sync_scene_file_timestamp();
+}
+
+bool app_instance::reload_scene_state_if_changed()
+{
+  if (!auto_reload_scene)
+  {
+    return false;
+  }
+
+  std::error_code error;
+  const std::string scene_path = io::get_scene_file_path();
+  std::filesystem::file_time_type last_write_time = std::filesystem::last_write_time(scene_path, error);
+  if (error)
+  {
+    return false;
+  }
+
+  if (!scene_file_time_known)
+  {
+    scene_file_last_write_time = last_write_time;
+    scene_file_time_known = true;
+    load_scene_state();
+    return true;
+  }
+
+  if (last_write_time == scene_file_last_write_time)
+  {
+    return false;
+  }
+
+  scene_file_last_write_time = last_write_time;
+  load_scene_state();
+  return true;
+}
+
+void app_instance::sync_scene_file_timestamp()
+{
+  std::error_code error;
+  const std::string scene_path = io::get_scene_file_path();
+  std::filesystem::file_time_type last_write_time = std::filesystem::last_write_time(scene_path, error);
+  if (error)
+  {
+    return;
+  }
+
+  scene_file_last_write_time = last_write_time;
+  scene_file_time_known = true;
 }
 
 void app_instance::save_rendering_state()

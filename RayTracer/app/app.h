@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+
 struct ID3D11ShaderResourceView;
 struct ID3D11Texture2D;
 
@@ -121,8 +123,14 @@ public:
   hittable* selected_object = nullptr;
   float move_speed = 15.0f;
 
+  bool auto_reload_scene = true;
+  std::filesystem::file_time_type scene_file_last_write_time{};
+  bool scene_file_time_known = false;
+
   void load_scene_state();
   void save_scene_state();
+  bool reload_scene_state_if_changed();
+  void sync_scene_file_timestamp();
   void load_rendering_state();
   void save_rendering_state();
   void load_window_state();

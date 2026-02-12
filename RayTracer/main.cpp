@@ -145,7 +145,8 @@ int main(int, char**)
       ImGui_ImplDX11_NewFrame();
       ImGui_ImplWin32_NewFrame();
       ImGui::NewFrame();
-    
+
+      state.reload_scene_state_if_changed();
       handle_input(state);
 
       // Draw UI
