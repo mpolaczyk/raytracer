@@ -102,7 +102,7 @@ void app_instance::load_scene_state()
       return;
     }
     scene_root->objects.swap(temp_scene.objects);
-    // Only objects are persisted; runtime scene data is rebuilt after reload.
+    // Swap transfers ownership efficiently; temp_scene will clean up prior objects on destruction.
     selected_object = nullptr;
     sew_model.selected_id = -1;
     sew_model.d_model.selected_id = -1;
