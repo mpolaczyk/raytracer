@@ -1,14 +1,34 @@
 ## RayTracer
 **CPU and GPU Ray Tracer**
 
-Author: [planet620]
+Features:
+- Sphere and static mesh
+- Specular, emissive and emissive materials
+- Gloss, reflection and refraction
+- Focal length and aperture
+- Blend between perspective and orthographic projection
+
+
+![a](a.jpg)
+![b](b.jpg)
+![c](c.jpg)
+![d](d.jpg)
+![e](e.jpg)
+![f](f.jpg)
+![g](g.jpg)
+![h](h.jpg)
+![i](i.jpg)
+![j](j.jpg)
+![k](k.jpg)
+![l](l.jpg)
+![m](m.jpg)
 
 ## Releases
 
-### [2.4]
+### 2.4
 - GPU-based implementation (compute shader)
 
-### [2.3]
+### 2.3
 - Cornell box scene finalized
 - Static mesh rendering
     - Backface detection for transparency
@@ -20,9 +40,7 @@ Author: [planet620]
 - Huge code refactor
 - Better logging with spdlog
 
-![Example output](ExampleOutput4.jpg)
-
-### [2.2]
+### 2.2
 - Full scene editor
     - Flying camera
     - Object selection and movement
@@ -30,7 +48,7 @@ Author: [planet620]
 
 ![User interface](Screenshot22.png)
 
-### [2.1]
+### 2.1
 - The same set of materials and primitives
 - Renderer interface, with example and reference CPU renderer, easy to hot-swap with another version
 - Simpler algorithm, no PDF in use
@@ -40,7 +58,7 @@ Author: [planet620]
 
 ![Example output](ExampleOutput2.png)
 
-### [1.0]
+### 1.0
 Based on books: [Ray Tracing in One Weekend] by Peter Shirley
 
 ![User interface](Screenshot.png)
@@ -87,16 +105,7 @@ Based on books: [Ray Tracing in One Weekend] by Peter Shirley
 
 ![Example output](ExampleOutput.png)
 
-### Build details
-Project file: Visual Studio 2022
-
-Windows SDK: 10.0
-
-Toolset: v143
-
-Language standard: ISO C++20
-
-### Third party dependencies
+## Third party dependencies
 DirectX 11
 
 [ocornut/imgui] v1.87
@@ -115,12 +124,6 @@ DirectX 11
 
 [//]: # (links)
 
-   [planet620]: <https://mpolaczyk.pl>
-   [1.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_1.0>
-   [2.0]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.0>
-   [2.1]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.1>
-   [2.2]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.2>
-   [2.3]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.3>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>
@@ -128,4 +131,3 @@ DirectX 11
    [Tiny obj]: <https://github.com/tinyobjloader/tinyobjloader>
    [spdlog]: <https://github.com/gabime/spdlog/tree/v1.x>
    [ispc]: <https://ispc.github.io/>
-   [Ray Tracing in One Weekend]: <https://raytracing.github.io>
