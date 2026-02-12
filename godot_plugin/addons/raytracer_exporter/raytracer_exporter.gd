@@ -78,7 +78,7 @@ func _build_camera(root: Node) -> Dictionary:
 	var aspect_ratio_h := _get_meta_float(camera, "raytracer_aspect_ratio_h", 9.0)
 	var aperture := _get_meta_float(camera, "raytracer_aperture", 0.0)
 	var dist_to_focus := _get_meta_float(camera, "raytracer_dist_to_focus", 1000.0)
-	var projection := _get_meta_float(camera, "raytracer_projection", 0.0)
+	var projection_type := _get_meta_float(camera, "raytracer_projection", 0.0)
 	var look_from := camera.global_transform.origin
 	var look_dir := -camera.global_transform.basis.z
 	return {
@@ -87,7 +87,7 @@ func _build_camera(root: Node) -> Dictionary:
 		"aspect_ratio_w": aspect_ratio_w,
 		"aperture": aperture,
 		"dist_to_focus": dist_to_focus,
-		"type": projection,
+		"type": projection_type,
 		"look_from": _vec3_dict(look_from),
 		"look_dir": _vec3_dict(look_dir)
 	}

@@ -103,6 +103,7 @@ void app_instance::load_scene_state()
 
   input_stream.close();
   sync_scene_file_timestamp();
+  scene_state_loaded = true;
 }
 
 void app_instance::load_rendering_state()
@@ -170,9 +171,8 @@ bool app_instance::reload_scene_state_if_changed()
   {
     scene_file_last_write_time = last_write_time;
     scene_file_time_known = true;
-    if (scene_root != nullptr && scene_root->objects.empty())
+    if (!scene_state_loaded)
     {
-      // Load once when the scene file first appears and nothing has been loaded yet.
       load_scene_state();
       return true;
     }
