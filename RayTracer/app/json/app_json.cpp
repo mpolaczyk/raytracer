@@ -119,8 +119,6 @@ void app_instance::load_scene_state()
   }
 
   input_stream.close();
-  sync_scene_file_timestamp();
-  scene_state_loaded = true;
 }
 
 void app_instance::load_rendering_state()
@@ -171,53 +169,31 @@ void app_instance::save_scene_state()
 
 bool app_instance::reload_scene_state_if_changed()
 {
-  if (!auto_reload_scene)
-  {
-    return false;
-  }
-
   std::error_code error;
   const std::string scene_path = io::get_scene_file_path();
-  std::filesystem::file_time_type file_last_write_time = std::filesystem::last_write_time(scene_path, error);
+  std::filesystem::file_time_type time = std::filesystem::last_write_time(scene_path, error);
   if (error)
   {
     return false;
   }
-
-  if (!scene_file_time_known)
-  {
-    scene_file_last_write_time = file_last_write_time;
-    scene_file_time_known = true;
-    if (!scene_state_loaded)
-    {
-      load_scene_state();
-      return true;
-    }
-    return false;
-  }
-
-  if (file_last_write_time == scene_file_last_write_time)
+  if (time == scene_file_last_write_time)
   {
     return false;
   }
-
-  scene_file_last_write_time = file_last_write_time;
+  scene_file_last_write_time = time;
   load_scene_state();
-  return true;
 }
 
 void app_instance::sync_scene_file_timestamp()
 {
   std::error_code error;
   const std::string scene_path = io::get_scene_file_path();
-  std::filesystem::file_time_type file_last_write_time = std::filesystem::last_write_time(scene_path, error);
+  std::filesystem::file_time_type time = std::filesystem::last_write_time(scene_path, error);
   if (error)
   {
     return;
   }
-
-  scene_file_last_write_time = file_last_write_time;
-  scene_file_time_known = true;
+  scene_file_last_write_time = time;
 }
 
 void app_instance::save_rendering_state()

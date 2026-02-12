@@ -123,10 +123,7 @@ public:
   hittable* selected_object = nullptr;
   float move_speed = 15.0f;
 
-  bool auto_reload_scene = true;
   std::filesystem::file_time_type scene_file_last_write_time{};
-  bool scene_file_time_known = false;
-  bool scene_state_loaded = false;
 
   void load_scene_state();
   void save_scene_state();
