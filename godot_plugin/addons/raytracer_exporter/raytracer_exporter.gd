@@ -11,7 +11,10 @@ const TYPE_XZ_RECT := 3
 const TYPE_YZ_RECT := 4
 const TYPE_STATIC_MESH := 5
 
+const EXPORT_CHECK_INTERVAL_MS := 200
+
 var _last_hash: int = 0
+var _next_check_time: int = 0
 
 func _enter_tree() -> void:
 	_ensure_export_setting()
@@ -21,6 +24,10 @@ func _exit_tree() -> void:
 	set_process(false)
 
 func _process(_delta: float) -> void:
+	var now := Time.get_ticks_msec()
+	if now < _next_check_time:
+		return
+	_next_check_time = now + EXPORT_CHECK_INTERVAL_MS
 	var root := get_editor_interface().get_edited_scene_root()
 	if root == null:
 		return
