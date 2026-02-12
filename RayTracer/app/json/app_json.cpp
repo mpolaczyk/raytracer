@@ -103,10 +103,16 @@ void app_instance::load_scene_state()
     }
     scene_root->objects.swap(temp_scene.objects);
     // Swap transfers ownership efficiently; temp_scene will clean up prior objects on destruction.
-    TRY_PARSE(int, jscene_root, "id", scene_root->id);
-    TRY_PARSE(hittable_type, jscene_root, "type", scene_root->type);
-    TRY_PARSE(std::string, jscene_root, "material_id", scene_root->material_id);
-    // Reset selection indices (-1 means no selection).
+    int scene_id = scene_root->id;
+    hittable_type scene_type = scene_root->type;
+    std::string scene_material_id = scene_root->material_id;
+    TRY_PARSE(int, jscene_root, "id", scene_id);
+    TRY_PARSE(hittable_type, jscene_root, "type", scene_type);
+    TRY_PARSE(std::string, jscene_root, "material_id", scene_material_id);
+    scene_root->id = scene_id;
+    scene_root->type = scene_type;
+    scene_root->material_id = scene_material_id;
+    // Reset runtime selection pointer and scene editor indices (-1 means no selection).
     selected_object = nullptr;
     sew_model.selected_id = -1;
     sew_model.d_model.selected_id = -1;

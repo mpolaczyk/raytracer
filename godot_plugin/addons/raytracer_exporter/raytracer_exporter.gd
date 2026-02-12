@@ -307,10 +307,10 @@ func _hash_node(node: Node) -> int:
 	return result
 
 func _hash_vector3(value: Vector3) -> int:
-	return hash(str(value))
+	return _hash_combine(hash(value.x), _hash_combine(hash(value.y), hash(value.z)))
 
 func _hash_vector2(value: Vector2) -> int:
-	return hash(str(value))
+	return _hash_combine(hash(value.x), hash(value.y))
 
 func _hash_combine(a: int, b: int) -> int:
 	return hash([a, b])
