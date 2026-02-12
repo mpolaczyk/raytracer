@@ -23,6 +23,7 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	set_process(false)
 
+# Godot editor callback for polling scene changes.
 func _process(_delta: float) -> void:
 	var now := Time.get_ticks_msec()
 	if now < _next_check_time:

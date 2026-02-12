@@ -90,6 +90,7 @@ void app_instance::load_scene_state()
   nlohmann::json jscene_root;
   if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root))
   {
+    // Deserialize into a temporary scene so the current state stays valid on failure.
     scene temp_scene;
     try
     {
@@ -166,7 +167,7 @@ bool app_instance::reload_scene_state_if_changed()
 
   std::error_code error;
   const std::string scene_path = io::get_scene_file_path();
-  std::filesystem::file_time_type last_write_time = std::filesystem::last_write_time(scene_path, error);
+  std::filesystem::file_time_type file_last_write_time = std::filesystem::last_write_time(scene_path, error);
   if (error)
   {
     return false;
@@ -174,7 +175,7 @@ bool app_instance::reload_scene_state_if_changed()
 
   if (!scene_file_time_known)
   {
-    scene_file_last_write_time = last_write_time;
+    scene_file_last_write_time = file_last_write_time;
     scene_file_time_known = true;
     if (!scene_state_loaded)
     {
@@ -184,12 +185,12 @@ bool app_instance::reload_scene_state_if_changed()
     return false;
   }
 
-  if (last_write_time == scene_file_last_write_time)
+  if (file_last_write_time == scene_file_last_write_time)
   {
     return false;
   }
 
-  scene_file_last_write_time = last_write_time;
+  scene_file_last_write_time = file_last_write_time;
   load_scene_state();
   return true;
 }
@@ -198,13 +199,13 @@ void app_instance::sync_scene_file_timestamp()
 {
   std::error_code error;
   const std::string scene_path = io::get_scene_file_path();
-  std::filesystem::file_time_type last_write_time = std::filesystem::last_write_time(scene_path, error);
+  std::filesystem::file_time_type file_last_write_time = std::filesystem::last_write_time(scene_path, error);
   if (error)
   {
     return;
   }
 
-  scene_file_last_write_time = last_write_time;
+  scene_file_last_write_time = file_last_write_time;
   scene_file_time_known = true;
 }
 
