@@ -8,20 +8,8 @@ Features:
 - Focal length and aperture
 - Blend between perspective and orthographic projection
 
-
-![a](a.jpg)
-![b](b.jpg)
-![c](c.jpg)
-![d](d.jpg)
-![e](e.jpg)
-![f](f.jpg)
-![g](g.jpg)
-![h](h.jpg)
-![i](i.jpg)
-![j](j.jpg)
-![k](k.jpg)
-![l](l.jpg)
-![m](m.jpg)
+![h](x1.jpg)
+![i](x2.jpg)
 
 ## Releases
 
