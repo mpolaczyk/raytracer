@@ -62,7 +62,6 @@ func _export_scene(root: Node) -> void:
 		push_error("RayTracer exporter: unable to write " + export_path)
 		return
 	file.store_string(json_text)
-	file.close()
 
 func _get_export_path() -> String:
 	var editor_settings := EditorSettings.get_singleton()

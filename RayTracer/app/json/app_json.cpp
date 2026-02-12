@@ -172,6 +172,7 @@ bool app_instance::reload_scene_state_if_changed()
     scene_file_time_known = true;
     if (scene_root != nullptr && scene_root->objects.empty())
     {
+      // Load once when the scene file first appears and nothing has been loaded yet.
       load_scene_state();
       return true;
     }
