@@ -1,0 +1,91 @@
+[gd_scene format=3 uid="uid://iry2vvgysf6j"]
+
+[ext_resource type="Material" uid="uid://co374xk448yjo" path="res://materials/glossy_white.tres" id="1_ka01a"]
+[ext_resource type="ArrayMesh" uid="uid://b3ny8shbwp2tp" path="res://meshes/cube.obj" id="2_ka01a"]
+[ext_resource type="Material" uid="uid://ctom2dcnwwb2p" path="res://materials/glass.tres" id="3_gsby8"]
+[ext_resource type="ArrayMesh" uid="uid://tdcqv3ij18is" path="res://meshes/plane.obj" id="4_8s4bl"]
+[ext_resource type="Material" uid="uid://ddcljy7lbd7j4" path="res://materials/light.tres" id="5_t206h"]
+[ext_resource type="Material" uid="uid://npespwfg35y6" path="res://materials/glass_red.tres" id="6_elscr"]
+[ext_resource type="ArrayMesh" uid="uid://dh77hvhoms88l" path="res://meshes/icosphere2.obj" id="7_8s4bl"]
+
+[node name="Root" type="Node3D" unique_id=1935051414]
+
+[node name="Foundation" type="MeshInstance3D" parent="." unique_id=1352607695]
+transform = Transform3D(1, 0, 0, 0, 0.1, 0, 0, 0, 1, 0, 0.2, 0)
+material_override = ExtResource("1_ka01a")
+mesh = ExtResource("2_ka01a")
+
+[node name="Light" type="MeshInstance3D" parent="Foundation" unique_id=768744655]
+transform = Transform3D(-4.371139e-08, -1, 0, 5, -2.1855696e-07, 0, 0, 0, 1, -1.3113417e-08, 2.0499997, 0)
+material_override = ExtResource("5_t206h")
+mesh = ExtResource("4_8s4bl")
+
+[node name="Foundation3" type="MeshInstance3D" parent="." unique_id=569158516]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-09, -1, 0, 0.1, -4.371139e-08, 0, 1.5, -1.3)
+material_override = ExtResource("1_ka01a")
+mesh = ExtResource("2_ka01a")
+
+[node name="Light" type="MeshInstance3D" parent="Foundation3" unique_id=222868079]
+transform = Transform3D(-4.371139e-08, -1, 0, 5, -2.1855696e-07, 0, 0, 0, 1, -1.3113417e-08, 2.0499997, 0)
+material_override = ExtResource("5_t206h")
+mesh = ExtResource("4_8s4bl")
+
+[node name="Foundation2" type="MeshInstance3D" parent="." unique_id=1283294155]
+transform = Transform3D(-4.371139e-08, 0.1, 0, -1, -4.371139e-09, 0, 0, 0, 1, -1.3, 1.5, 0)
+material_override = ExtResource("1_ka01a")
+mesh = ExtResource("2_ka01a")
+
+[node name="Light" type="MeshInstance3D" parent="Foundation2" unique_id=2138265438]
+transform = Transform3D(-4.371139e-08, -1, 0, 5, -2.1855696e-07, 0, 0, 0, 1, -1.3113417e-08, 2.0499997, 0)
+material_override = ExtResource("5_t206h")
+mesh = ExtResource("4_8s4bl")
+
+[node name="OuterCell" type="MeshInstance3D" parent="." unique_id=1899717231]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+material_override = ExtResource("3_gsby8")
+mesh = ExtResource("2_ka01a")
+
+[node name="TheObject" type="MeshInstance3D" parent="OuterCell" unique_id=1937336269]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, -0.100000024, 0)
+material_override = ExtResource("6_elscr")
+mesh = ExtResource("7_8s4bl")
+
+[node name="Floor2" type="MeshInstance3D" parent="." unique_id=136776289]
+transform = Transform3D(-4.371139e-08, -100, 0, 1, -4.371139e-06, 0, 0, 0, 100, -50, 0, -50)
+material_override = ExtResource("1_ka01a")
+mesh = ExtResource("4_8s4bl")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1905876174]
+transform = Transform3D(0.45399055, -0.362405, 0.813975, -3.585592e-08, 0.9135456, 0.4067366, -0.89100677, -0.1846546, 0.414741, 6.168696, 4.3731833, 4.9320116)
+fov = 33.7
+metadata/aspect_ratio_w = 16.0
+metadata/aspect_ratio_h = 9.0
+metadata/aperture = 0.0
+metadata/dist_to_focus = 100.0
+metadata/projection = 0.0
+metadata/enabled = false
+
+[node name="Camera3D2" type="Camera3D" parent="." unique_id=1377027921]
+transform = Transform3D(0.7071067, -0.2302114, 0.6685825, 0, 0.9455185, 0.32556808, -0.7071067, -0.23021142, 0.6685825, 6.43, 4.255, 6.43)
+fov = 33.7
+metadata/aspect_ratio_w = 1.0
+metadata/aspect_ratio_h = 1.0
+metadata/aperture = 0.0
+metadata/dist_to_focus = 100.0
+metadata/projection = 0.0
+metadata/enabled = false
+
+[node name="Camera3D3" type="Camera3D" parent="." unique_id=613743959]
+transform = Transform3D(0.7071067, -0.2302114, 0.6685825, 0, 0.9455185, 0.32556808, -0.7071067, -0.23021142, 0.6685825, 14.252416, 8.064147, 14.252416)
+fov = 13.7
+metadata/aspect_ratio_w = 1.0
+metadata/aspect_ratio_h = 1.0
+metadata/aperture = 0.0
+metadata/dist_to_focus = 20.0
+metadata/projection = 1.0
+metadata/enabled = true
+
+[node name="Sky" type="MeshInstance3D" parent="." unique_id=185567425]
+transform = Transform3D(-0.5045276, 86.339554, 0, -0.6812917, -39.81147, -61.428516, -0.53037107, -30.992382, 78.90841, 150, 200, 150)
+material_override = ExtResource("5_t206h")
+mesh = ExtResource("4_8s4bl")
