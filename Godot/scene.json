@@ -1,0 +1,346 @@
+{
+  "camera_config": {
+    "aperture": 0.0,
+    "aspect_ratio_h": 9.0,
+    "aspect_ratio_w": 16.0,
+    "dist_to_focus": 1000.0,
+    "field_of_view": 38.0,
+    "look_dir": {
+      "x": 0.0,
+      "y": 0.190809011459351,
+      "z": 0.981627225875854
+    },
+    "look_from": {
+      "x": 0.0,
+      "y": 13.0,
+      "z": 30.0
+    },
+    "type": 0.0
+  },
+  "scene": {
+    "id": 0,
+    "material_id": "",
+    "objects": [
+      {
+        "file_name": "res://meshes/plane.obj",
+        "id": 0,
+        "material_id": "res://materials/pearl.tres",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 10.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.57079637050629
+        },
+        "scale": {
+          "x": 10.0,
+          "y": 10.0,
+          "z": 20.0
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/plane.obj",
+        "id": 1,
+        "material_id": "res://materials/pearl.tres",
+        "origin": {
+          "x": 0.0,
+          "y": 20.0,
+          "z": 10.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.57079637050629
+        },
+        "scale": {
+          "x": 10.0,
+          "y": 10.0,
+          "z": 20.0
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/plane.obj",
+        "id": 2,
+        "material_id": "res://materials/light.tres",
+        "origin": {
+          "x": 0.0,
+          "y": 18.698450088501,
+          "z": 10.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.57079637050629
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 5.0,
+          "z": 20.0
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/plane.obj",
+        "id": 3,
+        "material_id": "res://materials/glossy_red.tres",
+        "origin": {
+          "x": -10.0,
+          "y": 10.0,
+          "z": 9.70268535614014
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 10.0,
+          "y": 10.0,
+          "z": 20.0
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/plane.obj",
+        "id": 4,
+        "material_id": "res://materials/pearl.tres",
+        "origin": {
+          "x": 0.0,
+          "y": 10.0,
+          "z": -10.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 1.57079637050629,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 9.99999904632568,
+          "y": 10.0,
+          "z": 9.99999904632568
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/plane.obj",
+        "id": 5,
+        "material_id": "res://materials/glossy_green.tres",
+        "origin": {
+          "x": 10.0,
+          "y": 10.0,
+          "z": 10.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": -3.14159250259399,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 10.0,
+          "y": 10.0,
+          "z": 20.0
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "id": 6,
+        "material_id": "res://materials/mirror.tres",
+        "origin": {
+          "x": 0.0,
+          "y": 3.5,
+          "z": -8.0
+        },
+        "radius": 3.49999833106995,
+        "type": 1
+      },
+      {
+        "id": 7,
+        "material_id": "res://materials/pearl.tres",
+        "origin": {
+          "x": 7.5,
+          "y": 2.5,
+          "z": -8.0
+        },
+        "radius": 2.4999988079071,
+        "type": 1
+      },
+      {
+        "id": 8,
+        "material_id": "res://materials/pearl.tres",
+        "origin": {
+          "x": -7.0,
+          "y": 2.5,
+          "z": -8.0
+        },
+        "radius": 2.4999988079071,
+        "type": 1
+      },
+      {
+        "id": 9,
+        "material_id": "res://materials/metal_copper.tres",
+        "origin": {
+          "x": 7.5,
+          "y": 13.8120803833008,
+          "z": -3.93001556396484
+        },
+        "radius": 1.49999928474426,
+        "type": 1
+      },
+      {
+        "id": 10,
+        "material_id": "res://materials/metal_copper.tres",
+        "origin": {
+          "x": -7.0,
+          "y": 13.8120803833008,
+          "z": -3.93001556396484
+        },
+        "radius": 1.49999928474426,
+        "type": 1
+      },
+      {
+        "file_name": "res://meshes/icosphere1.obj",
+        "id": 11,
+        "material_id": "res://materials/glass_matt.tres",
+        "origin": {
+          "x": 7.5,
+          "y": 13.8394527435303,
+          "z": -4.17712116241455
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 2.5,
+          "y": 2.5,
+          "z": 2.5
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/icosphere1.obj",
+        "id": 12,
+        "material_id": "res://materials/glass_matt.tres",
+        "origin": {
+          "x": -7.0,
+          "y": 13.83899974823,
+          "z": -4.17700004577637
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 2.5,
+          "y": 2.5,
+          "z": 2.5
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/cube.obj",
+        "id": 13,
+        "material_id": "res://materials/glass_green.tres",
+        "origin": {
+          "x": 6.0,
+          "y": 1.89100003242493,
+          "z": 3.55599999427795
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 1.21904265880585,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.69999992847443,
+          "y": 1.70000004768372,
+          "z": 1.69999992847443
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/cube.obj",
+        "id": 14,
+        "material_id": "res://materials/metal_gold.tres",
+        "origin": {
+          "x": 6.0,
+          "y": 8.0,
+          "z": 2.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.785398185253143,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.69999992847443,
+          "y": 1.70000004768372,
+          "z": 1.69999992847443
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/cube.obj",
+        "id": 15,
+        "material_id": "res://materials/glass_red.tres",
+        "origin": {
+          "x": -6.0,
+          "y": 1.89100003242493,
+          "z": 3.55599999427795
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 1.57079637050629,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.70000004768372,
+          "y": 1.70000028610229,
+          "z": 1.70000004768372
+        },
+        "shape_index": 0,
+        "type": 5
+      },
+      {
+        "file_name": "res://meshes/icosphere2.obj",
+        "id": 16,
+        "material_id": "res://materials/glass.tres",
+        "origin": {
+          "x": -0.0744621753692627,
+          "y": 3.0,
+          "z": 4.30000019073486
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 2.0,
+          "y": 2.0,
+          "z": 2.0
+        },
+        "shape_index": 0,
+        "type": 5
+      }
+    ],
+    "type": 0
+  }
+}

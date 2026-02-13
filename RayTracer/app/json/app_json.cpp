@@ -10,6 +10,7 @@
 #include "app/json/materials_json.h"
 #include "app/json/hittables_json.h"
 #include "math/hittables.h"
+#include "core/string_tools.h"
 
 nlohmann::json window_config_serializer::serialize(const window_config& value)
 {
@@ -111,7 +112,7 @@ void app_instance::load_scene_state()
     TRY_PARSE(std::string, jscene_root, "material_id", scene_material_id);
     scene_root->id = scene_id;
     scene_root->type = scene_type;
-    scene_root->material_id = scene_material_id;
+    scene_root->material_id = string_tools::get_name_from_godot_uri(scene_material_id);
     // Reset runtime selection pointer and scene editor indices (-1 means no selection).
     selected_object = nullptr;
     sew_model.selected_id = -1;

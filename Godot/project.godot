@@ -11,12 +11,13 @@ config_version=5
 [application]
 
 config/name="RaytracerTwin"
+run/main_scene="uid://boabwpxt11ape"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [editor_plugins]
 
-enabled=PackedStringArray()
+enabled=PackedStringArray("res://addons/raytracer_exporter/plugin.cfg")
 
 [physics]
 

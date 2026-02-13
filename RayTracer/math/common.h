@@ -309,6 +309,7 @@ namespace io
   // Directories
   std::string get_working_dir();
   std::string get_workspace_dir();
+  std::string get_godot_dir();
   std::string get_objects_dir();
   std::string get_images_dir();
   std::string get_vcxproj_dir();
@@ -316,6 +317,7 @@ namespace io
   // Files
   std::string get_vcxproj_file_path(const char* file_name);
   std::string get_workspace_file_path(const char* file_name);
+  std::string get_godot_file_path(const char* file_name);
   std::string get_images_file_path(const char* file_name);
   std::string get_objects_file_path(const char* file_name);
   std::string get_window_file_path();

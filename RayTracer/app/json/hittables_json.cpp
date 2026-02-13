@@ -4,6 +4,7 @@
 
 #include "app/json/vec3_json.h"
 #include "app/json/hittables_json.h"
+#include "core/string_tools.h"
 
 
 nlohmann::json hittable_serializer::serialize(const hittable* value)
@@ -119,6 +120,8 @@ void hittable_serializer::deserialize(const nlohmann::json& j, hittable* out_val
   TRY_PARSE(int, j, "id", out_value->id);
   TRY_PARSE(hittable_type, j, "type", out_value->type);
   TRY_PARSE(std::string, j, "material_id", out_value->material_id);
+  out_value->material_id = string_tools::get_name_from_godot_uri(out_value->material_id);
+
   assert(out_value->type != hittable_type::scene && !out_value->material_id.empty());
 }
 
@@ -215,6 +218,8 @@ void static_mesh_serializer::deserialize(const nlohmann::json& j, static_mesh* o
   hittable_serializer::deserialize(j, out_value);
 
   TRY_PARSE(std::string, j, "file_name", out_value->file_name);
+  out_value->file_name = string_tools::get_name_from_godot_uri(out_value->file_name);
+
   TRY_PARSE(int32_t, j, "shape_index", out_value->shape_index);
   
   nlohmann::json jorigin;

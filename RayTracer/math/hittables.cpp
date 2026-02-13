@@ -47,7 +47,7 @@ void scene::update_materials(material_instances* materials)
   for (hittable* obj : objects)
   {
     material* mat_ptr = materials->get_material(obj->material_id);
-    assert(mat_ptr != nullptr);
+    assert(mat_ptr != nullptr, "Material used on the hittable does not exist in the catalogue");
     obj->material_ptr = mat_ptr;
   }
 }
@@ -546,29 +546,53 @@ void scene::pre_render()
 void static_mesh::pre_render()
 {
   faces.clear();
-  faces = asset;  // clone
+  faces = asset;
 
-  float y_rotation = rotation.y / 180.0f * math::pi;
+  const float rx = rotation.x;// / 180.0f * math::pi;
+  const float ry = rotation.y;// / 180.0f * math::pi;
+  const float rz = rotation.z;// / 180.0f * math::pi;
+  const float cx = cosf(rx);
+  const float sx = sinf(rx);
+  const float cy = cosf(ry);
+  const float sy = sinf(ry);
+  const float cz = cosf(rz);
+  const float sz = sinf(rz);
 
-  // Translate asset vertices to the world coordinates
   for (int f = 0; f < asset.size(); f++)
   {
     const triangle_face& in = asset[f];
-    
-    // calculate world location for each vertex
+
     for (size_t vi = 0; vi < 3; ++vi)
     {
-      faces[f].vertices[vi].x = (cosf(y_rotation) * in.vertices[vi].x - sinf(y_rotation) * in.vertices[vi].z) * scale.x + origin.x;
-      faces[f].vertices[vi].y = in.vertices[vi].y * scale.x + origin.y;
-      faces[f].vertices[vi].z = (sinf(y_rotation) * in.vertices[vi].x + cosf(y_rotation) * in.vertices[vi].z) * scale.x + origin.z;
+      vec3 v = in.vertices[vi];
+
+      v.x *= scale.x;
+      v.y *= scale.y;
+      v.z *= scale.z;
+
+      // Rotation order in Godot: YXZ
+
+      // rotate Y
+      float x2 = v.x * cy - v.z * sy;
+      float z2 = v.x * sy + v.z * cy;
+      v.x = x2; 
+      v.z = z2;
+
+      // rotate X
+      float y1 = v.y * cx - v.z * sx;
+      float z1 = v.y * sx + v.z * cx;
+      v.y = y1; 
+      v.z = z1;
+
+      // rotate Z
+      float x3 = v.x * cz - v.y * sz;
+      float y3 = v.x * sz + v.y * cz;
+      v.x = x3; 
+      v.y = y3;
+
+      v += origin;
+
+      faces[f].vertices[vi] = v;
     }
-    
-    // convert normals too
-    //for (size_t ni = 0; ni < 3; ++ni)
-    //{
-    //  faces[f].normals[ni].x = (cosf(rotation.y) * in.normals[ni].x - sinf(rotation.y) * in.normals[ni].z);
-    //  faces[f].normals[ni].y = in.normals[ni].y;
-    //  faces[f].normals[ni].z = (sinf(rotation.y) * in.normals[ni].x + cosf(rotation.y) * in.normals[ni].z);
-    //}
   }
 }

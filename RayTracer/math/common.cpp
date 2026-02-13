@@ -431,11 +431,19 @@ namespace io
     return oss.str();
   }
 
+  std::string get_godot_dir()
+  {
+    std::string working_dir = get_working_dir();
+    std::ostringstream oss;
+    oss << working_dir << "..\\..\\Godot\\";
+    return oss.str();
+  }
+
   std::string get_objects_dir()
   {
-    std::string workspace_dir = get_workspace_dir();
+    std::string workspace_dir = get_godot_dir();
     std::ostringstream oss;
-    oss << workspace_dir << "Objects\\";
+    oss << workspace_dir << "meshes\\";
     return oss.str();
   }
 
@@ -471,6 +479,14 @@ namespace io
     return oss.str();
   }
 
+  std::string get_godot_file_path(const char* file_name)
+  {
+    std::string workspace_dir = get_godot_dir();
+    std::ostringstream oss;
+    oss << workspace_dir << file_name;
+    return oss.str();
+  }
+
   std::string get_images_file_path(const char* file_name)
   {
     std::string images_dir = get_images_dir();
@@ -494,7 +510,7 @@ namespace io
 
   std::string get_scene_file_path()
   {
-    return get_workspace_file_path("scene.json");
+    return get_godot_file_path("scene.json");
   }
 
   std::string get_rendering_file_path()
@@ -527,7 +543,9 @@ namespace obj_helper
     std::vector<tinyobj::material_t> materials; // not implemented
 
     std::string dir = io::get_objects_dir();
-    std::string path = io::get_objects_file_path(file_name.c_str());
+    std::ostringstream oss;
+    oss << file_name << ".obj";
+    std::string path = io::get_objects_file_path(oss.str().c_str());
 
     std::string error;
     if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &error, path.c_str(), dir.c_str(), true))

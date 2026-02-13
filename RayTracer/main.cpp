@@ -63,6 +63,7 @@ int main(int, char**)
   {
     logger::info("Working dir: {0}", io::get_working_dir());
     logger::info("Workspace dir: {0}", io::get_workspace_dir());
+    logger::info("Godot dir: {0}", io::get_godot_dir());
 
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
