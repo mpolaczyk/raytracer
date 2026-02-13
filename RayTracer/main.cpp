@@ -159,8 +159,13 @@ int main(int, char**)
       draw_output_window(state.ow_model, state);
       draw_scene_editor_window(state.sew_model, state);
 
+      state.scene_root->load_resources();
+      state.scene_root->pre_render();
+      state.scene_root->build_boxes();
+      state.scene_root->update_materials(state.materials);
+
       // Check if rendering is needed and do it 
-      if (state.renderer != nullptr)
+      if (state.renderer != nullptr && state.scene_root->query_lights())
       {
         const bool force_frame = state.renderer->wants_sync_render();
         const bool is_working = state.renderer->is_working();
@@ -180,12 +185,6 @@ int main(int, char**)
               state.output_texture = nullptr;
               state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);
             }
-
-            state.scene_root->load_resources();
-            state.scene_root->pre_render();
-            state.scene_root->build_boxes();
-            state.scene_root->update_materials(state.materials);
-            state.scene_root->query_lights();
 
             update_default_spawn_position(state);
 

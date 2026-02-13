@@ -370,6 +370,29 @@
     },
     {
       "color": {
+        "x": 0.1,
+        "y": 0.1,
+        "z": 0.1
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_probability": 0.0,
+      "id": "default",
+      "refraction_index": 0.0,
+      "refraction_probability": 0.0,
+      "smoothness": 0.6000000238418579,
+      "type": 1
+    },
+    {
+      "color": {
         "x": 1.0,
         "y": 1.0,
         "z": 1.0

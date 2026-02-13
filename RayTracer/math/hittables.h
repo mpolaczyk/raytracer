@@ -118,7 +118,7 @@ public:
 
   void build_boxes();
   void update_materials(material_instances* materials);
-  void query_lights();
+  bool query_lights();
   hittable* get_random_light();
 
   // Persistent members

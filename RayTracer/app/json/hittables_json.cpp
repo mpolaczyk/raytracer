@@ -122,7 +122,10 @@ void hittable_serializer::deserialize(const nlohmann::json& j, hittable* out_val
   TRY_PARSE(std::string, j, "material_id", out_value->material_id);
   out_value->material_id = string_tools::get_name_from_godot_uri(out_value->material_id);
 
-  assert(out_value->type != hittable_type::scene && !out_value->material_id.empty());
+  if (out_value->type != hittable_type::scene && out_value->material_id.empty())
+  {
+    out_value->material_id = "default";
+  }
 }
 
 void sphere_serializer::deserialize(const nlohmann::json& j, sphere* out_value)

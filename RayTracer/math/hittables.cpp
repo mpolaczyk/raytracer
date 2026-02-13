@@ -52,7 +52,7 @@ void scene::update_materials(material_instances* materials)
   }
 }
 
-void scene::query_lights()
+bool scene::query_lights()
 {
   lights_num = 0;
   for (hittable* object : objects)
@@ -64,7 +64,7 @@ void scene::query_lights()
       assert(lights_num < MAX_LIGHTS);
     }
   }
-  assert(lights_num > 0);
+  return lights_num > 0;
 }
 
 hittable* scene::get_random_light()

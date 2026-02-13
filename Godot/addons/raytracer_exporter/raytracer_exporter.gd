@@ -222,4 +222,5 @@ func _max_component(value: Vector3) -> float:
 func _get_meta_float(node: Node, key: String, default_value: float) -> float:
 	if node.has_meta(key):
 		return float(node.get_meta(key))
+	node.set_meta(key, default_value)
 	return default_value
