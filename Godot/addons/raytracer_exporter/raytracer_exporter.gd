@@ -81,6 +81,7 @@ func _build_camera(root: Node) -> Dictionary:
 	var aperture := _get_meta_float(camera, "aperture", 0.0)
 	var dist_to_focus := _get_meta_float(camera, "dist_to_focus", EXPORT_SCALE)
 	var projection_type := _get_meta_float(camera, "projection", 0.0)
+	var enabled := _get_meta_bool(camera, "enabled", true)
 	var look_from := camera.global_transform.origin
 	var look_dir := camera.global_transform.basis.z
 	return {
@@ -91,7 +92,8 @@ func _build_camera(root: Node) -> Dictionary:
 		"dist_to_focus": dist_to_focus*EXPORT_SCALE,
 		"type": projection_type,
 		"look_from": _vec3_dict(look_from),
-		"look_dir": _vec3_dict(look_dir)
+		"look_dir": _vec3_dict(look_dir),
+		"enabled" : enabled
 	}
 
 func _default_camera_config() -> Dictionary:
@@ -164,7 +166,7 @@ func _build_static_mesh(node: MeshInstance3D, object_id: int):
 	}
 
 func _find_first_camera(node: Node) -> Camera3D:
-	if node is Camera3D:
+	if node is Camera3D and _get_meta_bool(node, "enabled", true):
 		return node
 	for child in node.get_children():
 		var cam := _find_first_camera(child)
@@ -222,5 +224,11 @@ func _max_component(value: Vector3) -> float:
 func _get_meta_float(node: Node, key: String, default_value: float) -> float:
 	if node.has_meta(key):
 		return float(node.get_meta(key))
+	node.set_meta(key, default_value)
+	return default_value
+	
+func _get_meta_bool(node: Node, key: String, default_value: bool) -> bool:
+	if node.has_meta(key):
+		return bool(node.get_meta(key))
 	node.set_meta(key, default_value)
 	return default_value
