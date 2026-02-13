@@ -83,7 +83,7 @@ func _build_camera(root: Node) -> Dictionary:
 	var projection_type := _get_meta_float(camera, "projection", 0.0)
 	var enabled := _get_meta_bool(camera, "enabled", true)
 	var look_from := camera.global_transform.origin
-	var look_dir := camera.global_transform.basis.z
+	var look_dir := camera.global_transform.basis.z.normalized()
 	return {
 		"field_of_view": camera.fov,
 		"aspect_ratio_h": aspect_ratio_h,
@@ -190,7 +190,7 @@ func _hash_node(node: Node) -> int:
 	if node is Node3D:
 		var node3d := node as Node3D
 		result = _hash_combine(result, _hash_vector3(node3d.global_transform.origin))
-		result = _hash_combine(result, _hash_vector3(node3d.global_transform.basis.orthonormalized().get_euler()))
+		result = _hash_combine(result, _hash_vector3(node3d.global_transform.basis.get_euler()))
 		result = _hash_combine(result, _hash_vector3(node3d.scale))
 	if node is MeshInstance3D:
 		var mesh_instance := node as MeshInstance3D
@@ -199,8 +199,7 @@ func _hash_node(node: Node) -> int:
 			result = _hash_combine(result, hash(mesh_instance.mesh.resource_path))
 			result = _hash_combine(result, hash(mesh_instance.material_override.get_class()))
 			result = _hash_combine(result, hash(mesh_instance.material_override.resource_path))
-			if mesh_instance.mesh is SphereMesh:
-				result = _hash_combine(result, hash((mesh_instance.mesh as SphereMesh).radius))
+			result = _hash_combine(result, hash(node.get_aabb().size))
 	if node is Camera3D:
 		result = _hash_combine(result, hash(node.fov))
 		var meta_keys := node.get_meta_list()
