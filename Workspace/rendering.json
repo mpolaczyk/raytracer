@@ -2,6 +2,29 @@
   "materials": [
     {
       "color": {
+        "x": 0.10000000149011612,
+        "y": 0.10000000149011612,
+        "z": 0.10000000149011612
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_probability": 0.0,
+      "id": "default",
+      "refraction_index": 0.0,
+      "refraction_probability": 0.0,
+      "smoothness": 0.6000000238418579,
+      "type": 1
+    },
+    {
+      "color": {
         "x": 1.0,
         "y": 1.0,
         "z": 1.0
@@ -370,29 +393,6 @@
     },
     {
       "color": {
-        "x": 0.1,
-        "y": 0.1,
-        "z": 0.1
-      },
-      "emitted_color": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "gloss_color": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "gloss_probability": 0.0,
-      "id": "default",
-      "refraction_index": 0.0,
-      "refraction_probability": 0.0,
-      "smoothness": 0.6000000238418579,
-      "type": 1
-    },
-    {
-      "color": {
         "x": 1.0,
         "y": 1.0,
         "z": 1.0
@@ -439,10 +439,10 @@
     }
   ],
   "renderer_config": {
-    "ray_bounces": 12,
-    "rays_per_pixel": 80,
-    "resolution_horizontal": 600,
-    "resolution_vertical": 600,
+    "ray_bounces": 150,
+    "rays_per_pixel": 800,
+    "resolution_horizontal": 1920,
+    "resolution_vertical": 1920,
     "reuse_buffer": true,
     "type": 6,
     "white_point": 1.0

@@ -9,7 +9,7 @@ const TYPE_SPHERE := 1
 const TYPE_STATIC_MESH := 5
 
 const EXPORT_CHECK_INTERVAL_MSEC := 200
-const EXPORT_SCALE := 100
+const EXPORT_SCALE := 1
 
 var _last_hash: int = 0
 var _next_check_time: int = 0
@@ -79,7 +79,7 @@ func _build_camera(root: Node) -> Dictionary:
 	var aspect_ratio_w := _get_meta_float(camera, "aspect_ratio_w", 16.0)
 	var aspect_ratio_h := _get_meta_float(camera, "aspect_ratio_h", 9.0)
 	var aperture := _get_meta_float(camera, "aperture", 0.0)
-	var dist_to_focus := _get_meta_float(camera, "dist_to_focus", EXPORT_SCALE)
+	var dist_to_focus := _get_meta_float(camera, "dist_to_focus", 100)
 	var projection_type := _get_meta_float(camera, "projection", 0.0)
 	var enabled := _get_meta_bool(camera, "enabled", true)
 	var look_from := camera.global_transform.origin
