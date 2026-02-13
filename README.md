@@ -8,30 +8,20 @@ Features:
 - Focal length and aperture
 - Blend between perspective and orthographic projection
 
-## Godot scene exporter
-The `godot_plugin` folder contains an editor plugin that exports the currently edited Godot scene to the RayTracer JSON format whenever the scene changes.
+![ui1](ui1.jpg)
 
-1. Copy `godot_plugin/addons/raytracer_exporter` into your Godot project `addons/` folder.
-2. Enable **RayTracer Exporter** in **Project Settings → Plugins**.
-3. Set **Editor Settings → raytracer/export_path** to the absolute path of `Workspace/scene.json`.
-4. Add `raytracer_material_id` metadata to objects so the exported `material_id` matches an entry in `Workspace/rendering.json`.
-5. RayTracer watches `scene.json` and reloads it automatically when the file changes.
+Integration with Godot 4.6 for real time scene edition
+![ui2](ui2.jpg)
 
-Supported nodes:
-- **SphereMesh** → sphere export (radius uses node scale).
-- **PlaneMesh** → xz rectangle export (rotation is ignored; uses node scale).
-- **MeshInstance3D** with `raytracer_file_name` metadata → static mesh export.
-
-Optional metadata:
-- `raytracer_type`: override type (`sphere`, `static_mesh`, `xz_rect`, `xy_rect`, `yz_rect`).
-- `raytracer_shape_index`: mesh shape index for static meshes.
-- `raytracer_size`: `Vector2` size for `xy_rect`/`yz_rect` exports.
-- Camera: `raytracer_aspect_ratio_w`, `raytracer_aspect_ratio_h`, `raytracer_aperture`, `raytracer_dist_to_focus`, `raytracer_projection`.
+## Gallery
 
 ![x1](x1.jpg)
 ![x2](x2.jpg)
 
 ## Releases
+
+### 2.5
+- Integration with Godod
 
 ### 2.4
 - GPU-based implementation (compute shader)

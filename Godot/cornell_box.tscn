@@ -1,0 +1,115 @@
+[gd_scene format=3 uid="uid://boabwpxt11ape"]
+
+[ext_resource type="Material" uid="uid://bsw0chxv6wnig" path="res://materials/metal_white.tres" id="1_sm4vc"]
+[ext_resource type="ArrayMesh" uid="uid://tdcqv3ij18is" path="res://meshes/plane.obj" id="2_7ldjn"]
+[ext_resource type="Material" uid="uid://ddcljy7lbd7j4" path="res://materials/light.tres" id="3_s2fj0"]
+[ext_resource type="Material" uid="uid://cnlsq08swxeiy" path="res://materials/glossy_red.tres" id="4_ifxm0"]
+[ext_resource type="Material" uid="uid://co374xk448yjo" path="res://materials/glossy_white.tres" id="5_fc5bq"]
+[ext_resource type="Material" uid="uid://c7n0ibr8b8kip" path="res://materials/glossy_green.tres" id="6_te26v"]
+[ext_resource type="Material" uid="uid://dljuakycybbh1" path="res://materials/mirror.tres" id="7_2aaqa"]
+[ext_resource type="ArrayMesh" uid="uid://cvkwv0wk5dfe7" path="res://meshes/sphere.obj" id="8_myjkw"]
+[ext_resource type="Material" uid="uid://c6hg6x7ju0lbp" path="res://materials/pearl.tres" id="9_n4rdy"]
+[ext_resource type="Material" uid="uid://cgwxkeacpsaix" path="res://materials/metal_copper.tres" id="10_pr3h5"]
+[ext_resource type="Material" uid="uid://dfftd2tdmt5mx" path="res://materials/glass_matt.tres" id="11_p3ujr"]
+[ext_resource type="ArrayMesh" uid="uid://dh2ddijtqwavo" path="res://meshes/icosphere1.obj" id="12_ie2o5"]
+[ext_resource type="Material" uid="uid://yg4elcyjhqev" path="res://materials/glass_green.tres" id="13_lyoar"]
+[ext_resource type="ArrayMesh" uid="uid://b3ny8shbwp2tp" path="res://meshes/cube.obj" id="14_7jdyd"]
+[ext_resource type="Material" uid="uid://npespwfg35y6" path="res://materials/glass_red.tres" id="15_8qowf"]
+[ext_resource type="Material" uid="uid://ctom2dcnwwb2p" path="res://materials/glass.tres" id="16_680y2"]
+[ext_resource type="ArrayMesh" uid="uid://dh77hvhoms88l" path="res://meshes/icosphere2.obj" id="17_sjwfm"]
+
+[node name="Root" type="Node3D" unique_id=808767923]
+
+[node name="Box" type="Node3D" parent="." unique_id=134054431]
+
+[node name="Floor" type="MeshInstance3D" parent="Box" unique_id=1432491103]
+transform = Transform3D(-4.371139e-07, -10, 0, 10, -4.371139e-07, 0, 0, 0, 25, 0, 0, 15)
+material_override = ExtResource("1_sm4vc")
+mesh = ExtResource("2_7ldjn")
+
+[node name="Ceiling" type="MeshInstance3D" parent="Box" unique_id=1060842070]
+transform = Transform3D(-4.371139e-07, 10, 0, -10, -4.371139e-07, 0, 0, 0, 25, 0, 20, 15)
+material_override = ExtResource("3_s2fj0")
+mesh = ExtResource("2_7ldjn")
+
+[node name="WallLeft" type="MeshInstance3D" parent="Box" unique_id=749510797]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 25, -10, 10, 15)
+material_override = ExtResource("4_ifxm0")
+mesh = ExtResource("2_7ldjn")
+
+[node name="WallFront" type="MeshInstance3D" parent="Box" unique_id=1280920826]
+transform = Transform3D(-4.3711384e-07, 0, -9.999999, 0, 10, 0, 9.999999, 0, -4.3711384e-07, 0, 10, -10)
+material_override = ExtResource("5_fc5bq")
+mesh = ExtResource("2_7ldjn")
+
+[node name="WallBack" type="MeshInstance3D" parent="Box" unique_id=1782816157]
+transform = Transform3D(-4.371138e-07, 0, 9.999998, 0, 10, 0, -9.999998, 0, -4.371138e-07, 0, 10, 40)
+material_override = ExtResource("5_fc5bq")
+mesh = ExtResource("2_7ldjn")
+
+[node name="WallRight" type="MeshInstance3D" parent="Box" unique_id=1197580011]
+transform = Transform3D(-10, 0, 3.774895e-06, 0, 10, 0, -1.509958e-06, 0, -25, 10, 10, 15)
+material_override = ExtResource("6_te26v")
+mesh = ExtResource("2_7ldjn")
+
+[node name="Scene" type="Node3D" parent="." unique_id=755204226]
+
+[node name="Mirror" type="MeshInstance3D" parent="Scene" unique_id=576929320]
+transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 0, 3.5, -6.4)
+material_override = ExtResource("7_2aaqa")
+mesh = ExtResource("8_myjkw")
+
+[node name="PearlRight" type="MeshInstance3D" parent="Scene" unique_id=796410854]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 6.8, 2.5, -6.3)
+material_override = ExtResource("9_n4rdy")
+mesh = ExtResource("8_myjkw")
+
+[node name="PearlLeft" type="MeshInstance3D" parent="Scene" unique_id=1156382239]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -6.9, 2.5, -6.5000005)
+material_override = ExtResource("9_n4rdy")
+mesh = ExtResource("8_myjkw")
+
+[node name="SphereRight" type="MeshInstance3D" parent="Scene" unique_id=858243028]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 7.5, 13.81208, -3.9300156)
+material_override = ExtResource("10_pr3h5")
+mesh = ExtResource("8_myjkw")
+
+[node name="SphereLeft" type="MeshInstance3D" parent="Scene" unique_id=1244779695]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -7, 13.81208, -3.9300156)
+material_override = ExtResource("10_pr3h5")
+mesh = ExtResource("8_myjkw")
+
+[node name="IcoRight" type="MeshInstance3D" parent="Scene" unique_id=1768545254]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 7.5, 13.839453, -4.177121)
+material_override = ExtResource("11_p3ujr")
+mesh = ExtResource("12_ie2o5")
+
+[node name="IcoLeft" type="MeshInstance3D" parent="Scene" unique_id=1560359692]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -7, 13.839, -4.177)
+material_override = ExtResource("11_p3ujr")
+mesh = ExtResource("12_ie2o5")
+
+[node name="CubeRight" type="MeshInstance3D" parent="Scene" unique_id=158911917]
+transform = Transform3D(1.5407231, 0, -0.71845114, 0, 1.7, 0, 0.71845114, 0, 1.5407231, 6, 1.6910001, 3.556)
+material_override = ExtResource("13_lyoar")
+mesh = ExtResource("14_7jdyd")
+
+[node name="CubeLeft" type="MeshInstance3D" parent="Scene" unique_id=243293091]
+transform = Transform3D(1.5407228, 0, 0.71845096, 0, 1.6999999, 0, -0.71845096, 0, 1.5407228, -6, 1.691, 3.556)
+material_override = ExtResource("15_8qowf")
+mesh = ExtResource("14_7jdyd")
+surface_material_override/0 = ExtResource("4_ifxm0")
+
+[node name="IcoFront" type="MeshInstance3D" parent="Scene" unique_id=1830187169]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -0.074462175, 2.6000001, 4.3)
+material_override = ExtResource("16_680y2")
+mesh = ExtResource("17_sjwfm")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=991071518]
+transform = Transform3D(1, 0, 0, 0, 0.98162717, 0.190809, 0, -0.190809, 0.98162717, 0, 13, 30)
+fov = 38.0
+metadata/aspect_ratio_w = 1.0
+metadata/aspect_ratio_h = 1.0
+metadata/aperture = 100.0
+metadata/projection = 0.0
+metadata/dist_to_focus = 28.0

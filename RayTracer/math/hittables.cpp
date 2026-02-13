@@ -570,25 +570,14 @@ void static_mesh::pre_render()
       v.y *= scale.y;
       v.z *= scale.z;
 
-      // Rotation order in Godot: YXZ
+      // Rotation order in Godot: Y (world), then X and Z in local space.
+      const float vx = v.x;
+      const float vy = v.y;
+      const float vz = v.z;
 
-      // rotate Y
-      float x2 = v.x * cy - v.z * sy;
-      float z2 = v.x * sy + v.z * cy;
-      v.x = x2; 
-      v.z = z2;
-
-      // rotate X
-      float y1 = v.y * cx - v.z * sx;
-      float z1 = v.y * sx + v.z * cx;
-      v.y = y1; 
-      v.z = z1;
-
-      // rotate Z
-      float x3 = v.x * cz - v.y * sz;
-      float y3 = v.x * sz + v.y * cz;
-      v.x = x3; 
-      v.y = y3;
+      v.x = (cy * cz + sy * sx * sz) * vx + (-cy * sz + sy * sx * cz) * vy + (sy * cx) * vz;
+      v.y = (cx * sz) * vx + (cx * cz) * vy + (-sx) * vz;
+      v.z = (-sy * cz + cy * sx * sz) * vx + (sy * sz + cy * sx * cz) * vy + (cy * cx) * vz;
 
       v += origin;
 

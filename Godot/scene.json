@@ -1,19 +1,19 @@
 {
   "camera_config": {
-    "aperture": 0.0,
-    "aspect_ratio_h": 9.0,
-    "aspect_ratio_w": 16.0,
-    "dist_to_focus": 1000.0,
+    "aperture": 100.0,
+    "aspect_ratio_h": 1.0,
+    "aspect_ratio_w": 1.0,
+    "dist_to_focus": 2800.0,
     "field_of_view": 38.0,
     "look_dir": {
       "x": 0.0,
-      "y": 0.190809011459351,
-      "z": 0.981627225875854
+      "y": 19.0809011459351,
+      "z": 98.1627225875854
     },
     "look_from": {
       "x": 0.0,
-      "y": 13.0,
-      "z": 30.0
+      "y": 1300.0,
+      "z": 3000.0
     },
     "type": 0.0
   },
@@ -24,11 +24,11 @@
       {
         "file_name": "res://meshes/plane.obj",
         "id": 0,
-        "material_id": "res://materials/pearl.tres",
+        "material_id": "res://materials/metal_white.tres",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 10.0
+          "z": 1500.0
         },
         "rotation": {
           "x": 0.0,
@@ -36,9 +36,9 @@
           "z": 1.57079637050629
         },
         "scale": {
-          "x": 10.0,
-          "y": 10.0,
-          "z": 20.0
+          "x": 1000.0,
+          "y": 1000.0,
+          "z": 2500.0
         },
         "shape_index": 0,
         "type": 5
@@ -46,11 +46,11 @@
       {
         "file_name": "res://meshes/plane.obj",
         "id": 1,
-        "material_id": "res://materials/pearl.tres",
+        "material_id": "res://materials/light.tres",
         "origin": {
           "x": 0.0,
-          "y": 20.0,
-          "z": 10.0
+          "y": 2000.0,
+          "z": 1500.0
         },
         "rotation": {
           "x": 0.0,
@@ -58,9 +58,9 @@
           "z": -1.57079637050629
         },
         "scale": {
-          "x": 10.0,
-          "y": 10.0,
-          "z": 20.0
+          "x": 1000.0,
+          "y": 1000.0,
+          "z": 2500.0
         },
         "shape_index": 0,
         "type": 5
@@ -68,21 +68,21 @@
       {
         "file_name": "res://meshes/plane.obj",
         "id": 2,
-        "material_id": "res://materials/light.tres",
+        "material_id": "res://materials/glossy_red.tres",
         "origin": {
-          "x": 0.0,
-          "y": 18.698450088501,
-          "z": 10.0
+          "x": -1000.0,
+          "y": 1000.0,
+          "z": 1500.0
         },
         "rotation": {
           "x": 0.0,
           "y": 0.0,
-          "z": -1.57079637050629
+          "z": 0.0
         },
         "scale": {
-          "x": 1.0,
-          "y": 5.0,
-          "z": 20.0
+          "x": 1000.0,
+          "y": 1000.0,
+          "z": 2500.0
         },
         "shape_index": 0,
         "type": 5
@@ -90,21 +90,21 @@
       {
         "file_name": "res://meshes/plane.obj",
         "id": 3,
-        "material_id": "res://materials/glossy_red.tres",
+        "material_id": "res://materials/glossy_white.tres",
         "origin": {
-          "x": -10.0,
-          "y": 10.0,
-          "z": 9.70268535614014
+          "x": 0.0,
+          "y": 1000.0,
+          "z": -1000.0
         },
         "rotation": {
           "x": 0.0,
-          "y": 0.0,
+          "y": -1.57079637050629,
           "z": 0.0
         },
         "scale": {
-          "x": 10.0,
-          "y": 10.0,
-          "z": 20.0
+          "x": 999.999904632568,
+          "y": 1000.0,
+          "z": 999.999904632568
         },
         "shape_index": 0,
         "type": 5
@@ -112,11 +112,11 @@
       {
         "file_name": "res://meshes/plane.obj",
         "id": 4,
-        "material_id": "res://materials/pearl.tres",
+        "material_id": "res://materials/glossy_white.tres",
         "origin": {
           "x": 0.0,
-          "y": 10.0,
-          "z": -10.0
+          "y": 1000.0,
+          "z": 4000.0
         },
         "rotation": {
           "x": 0.0,
@@ -124,9 +124,9 @@
           "z": 0.0
         },
         "scale": {
-          "x": 9.99999904632568,
-          "y": 10.0,
-          "z": 9.99999904632568
+          "x": 999.999809265137,
+          "y": 1000.0,
+          "z": 999.999809265137
         },
         "shape_index": 0,
         "type": 5
@@ -136,19 +136,19 @@
         "id": 5,
         "material_id": "res://materials/glossy_green.tres",
         "origin": {
-          "x": 10.0,
-          "y": 10.0,
-          "z": 10.0
+          "x": 1000.0,
+          "y": 1000.0,
+          "z": 1500.0
         },
         "rotation": {
           "x": 0.0,
-          "y": -3.14159250259399,
+          "y": 3.14159250259399,
           "z": 0.0
         },
         "scale": {
-          "x": 10.0,
-          "y": 10.0,
-          "z": 20.0
+          "x": 1000.0,
+          "y": 1000.0,
+          "z": 2500.0
         },
         "shape_index": 0,
         "type": 5
@@ -158,54 +158,54 @@
         "material_id": "res://materials/mirror.tres",
         "origin": {
           "x": 0.0,
-          "y": 3.5,
-          "z": -8.0
+          "y": 350.0,
+          "z": -640.000009536743
         },
-        "radius": 3.49999833106995,
+        "radius": 349.999833106995,
         "type": 1
       },
       {
         "id": 7,
         "material_id": "res://materials/pearl.tres",
         "origin": {
-          "x": 7.5,
-          "y": 2.5,
-          "z": -8.0
+          "x": 680.000019073486,
+          "y": 250.0,
+          "z": -630.000019073486
         },
-        "radius": 2.4999988079071,
+        "radius": 249.99988079071,
         "type": 1
       },
       {
         "id": 8,
         "material_id": "res://materials/pearl.tres",
         "origin": {
-          "x": -7.0,
-          "y": 2.5,
-          "z": -8.0
+          "x": -690.000009536743,
+          "y": 250.0,
+          "z": -650.000047683716
         },
-        "radius": 2.4999988079071,
+        "radius": 249.99988079071,
         "type": 1
       },
       {
         "id": 9,
         "material_id": "res://materials/metal_copper.tres",
         "origin": {
-          "x": 7.5,
-          "y": 13.8120803833008,
-          "z": -3.93001556396484
+          "x": 750.0,
+          "y": 1381.20803833008,
+          "z": -393.001556396484
         },
-        "radius": 1.49999928474426,
+        "radius": 149.999928474426,
         "type": 1
       },
       {
         "id": 10,
         "material_id": "res://materials/metal_copper.tres",
         "origin": {
-          "x": -7.0,
-          "y": 13.8120803833008,
-          "z": -3.93001556396484
+          "x": -700.0,
+          "y": 1381.20803833008,
+          "z": -393.001556396484
         },
-        "radius": 1.49999928474426,
+        "radius": 149.999928474426,
         "type": 1
       },
       {
@@ -213,9 +213,9 @@
         "id": 11,
         "material_id": "res://materials/glass_matt.tres",
         "origin": {
-          "x": 7.5,
-          "y": 13.8394527435303,
-          "z": -4.17712116241455
+          "x": 750.0,
+          "y": 1383.94527435303,
+          "z": -417.712116241455
         },
         "rotation": {
           "x": 0.0,
@@ -223,9 +223,9 @@
           "z": 0.0
         },
         "scale": {
-          "x": 2.5,
-          "y": 2.5,
-          "z": 2.5
+          "x": 250.0,
+          "y": 250.0,
+          "z": 250.0
         },
         "shape_index": 0,
         "type": 5
@@ -235,9 +235,9 @@
         "id": 12,
         "material_id": "res://materials/glass_matt.tres",
         "origin": {
-          "x": -7.0,
-          "y": 13.83899974823,
-          "z": -4.17700004577637
+          "x": -700.0,
+          "y": 1383.899974823,
+          "z": -417.700004577637
         },
         "rotation": {
           "x": 0.0,
@@ -245,9 +245,9 @@
           "z": 0.0
         },
         "scale": {
-          "x": 2.5,
-          "y": 2.5,
-          "z": 2.5
+          "x": 250.0,
+          "y": 250.0,
+          "z": 250.0
         },
         "shape_index": 0,
         "type": 5
@@ -257,19 +257,19 @@
         "id": 13,
         "material_id": "res://materials/glass_green.tres",
         "origin": {
-          "x": 6.0,
-          "y": 1.89100003242493,
-          "z": 3.55599999427795
+          "x": 600.0,
+          "y": 169.10001039505,
+          "z": 355.599999427795
         },
         "rotation": {
           "x": 0.0,
-          "y": 1.21904265880585,
+          "y": -0.436332374811172,
           "z": 0.0
         },
         "scale": {
-          "x": 1.69999992847443,
-          "y": 1.70000004768372,
-          "z": 1.69999992847443
+          "x": 169.999992847443,
+          "y": 170.000004768372,
+          "z": 169.999992847443
         },
         "shape_index": 0,
         "type": 5
@@ -277,55 +277,33 @@
       {
         "file_name": "res://meshes/cube.obj",
         "id": 14,
-        "material_id": "res://materials/metal_gold.tres",
-        "origin": {
-          "x": 6.0,
-          "y": 8.0,
-          "z": 2.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.785398185253143,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.69999992847443,
-          "y": 1.70000004768372,
-          "z": 1.69999992847443
-        },
-        "shape_index": 0,
-        "type": 5
-      },
-      {
-        "file_name": "res://meshes/cube.obj",
-        "id": 15,
         "material_id": "res://materials/glass_red.tres",
         "origin": {
-          "x": -6.0,
-          "y": 1.89100003242493,
-          "z": 3.55599999427795
+          "x": -600.0,
+          "y": 169.099998474121,
+          "z": 355.599999427795
         },
         "rotation": {
           "x": 0.0,
-          "y": 1.57079637050629,
+          "y": 0.436332374811172,
           "z": 0.0
         },
         "scale": {
-          "x": 1.70000004768372,
-          "y": 1.70000028610229,
-          "z": 1.70000004768372
+          "x": 169.999969005585,
+          "y": 169.999992847443,
+          "z": 169.999969005585
         },
         "shape_index": 0,
         "type": 5
       },
       {
         "file_name": "res://meshes/icosphere2.obj",
-        "id": 16,
+        "id": 15,
         "material_id": "res://materials/glass.tres",
         "origin": {
-          "x": -0.0744621753692627,
-          "y": 3.0,
-          "z": 4.30000019073486
+          "x": -7.44621753692627,
+          "y": 260.000014305115,
+          "z": 430.000019073486
         },
         "rotation": {
           "x": 0.0,
@@ -333,9 +311,9 @@
           "z": 0.0
         },
         "scale": {
-          "x": 2.0,
-          "y": 2.0,
-          "z": 2.0
+          "x": 300.0,
+          "y": 300.0,
+          "z": 300.0
         },
         "shape_index": 0,
         "type": 5

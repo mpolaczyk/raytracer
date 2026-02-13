@@ -8,7 +8,8 @@ const TYPE_SCENE := 0
 const TYPE_SPHERE := 1
 const TYPE_STATIC_MESH := 5
 
-const EXPORT_CHECK_INTERVAL_MSEC := 50
+const EXPORT_CHECK_INTERVAL_MSEC := 200
+const EXPORT_SCALE := 100
 
 var _last_hash: int = 0
 var _next_check_time: int = 0
@@ -78,7 +79,7 @@ func _build_camera(root: Node) -> Dictionary:
 	var aspect_ratio_w := _get_meta_float(camera, "aspect_ratio_w", 16.0)
 	var aspect_ratio_h := _get_meta_float(camera, "aspect_ratio_h", 9.0)
 	var aperture := _get_meta_float(camera, "aperture", 0.0)
-	var dist_to_focus := _get_meta_float(camera, "dist_to_focus", 1000.0)
+	var dist_to_focus := _get_meta_float(camera, "dist_to_focus", EXPORT_SCALE)
 	var projection_type := _get_meta_float(camera, "projection", 0.0)
 	var look_from := camera.global_transform.origin
 	var look_dir := camera.global_transform.basis.z
@@ -87,7 +88,7 @@ func _build_camera(root: Node) -> Dictionary:
 		"aspect_ratio_h": aspect_ratio_h,
 		"aspect_ratio_w": aspect_ratio_w,
 		"aperture": aperture,
-		"dist_to_focus": dist_to_focus,
+		"dist_to_focus": dist_to_focus*EXPORT_SCALE,
 		"type": projection_type,
 		"look_from": _vec3_dict(look_from),
 		"look_dir": _vec3_dict(look_dir)
@@ -99,7 +100,7 @@ func _default_camera_config() -> Dictionary:
 		"aspect_ratio_h": 9.0,
 		"aspect_ratio_w": 16.0,
 		"aperture": 0.0,
-		"dist_to_focus": 1000.0,
+		"dist_to_focus": 100.0,
 		"type": 0.0,
 		"look_from": _vec3_dict(Vector3.ZERO),
 		"look_dir": _vec3_dict(Vector3(0.0, 0.0, -1.0))
@@ -142,7 +143,7 @@ func _build_sphere(node: MeshInstance3D, object_id: int):
 		"type": TYPE_SPHERE,
 		"material_id": _get_material_id(node),
 		"origin": _vec3_dict(node.global_transform.origin),
-		"radius": radius
+		"radius": radius*EXPORT_SCALE
 	}
 
 func _build_static_mesh(node: MeshInstance3D, object_id: int):
@@ -156,7 +157,7 @@ func _build_static_mesh(node: MeshInstance3D, object_id: int):
 		"origin": _vec3_dict(node.global_transform.origin),
 		"rotation": {
 			"x": euler.x,
-			"y": -euler.y,
+			"y": euler.y,
 			"z": euler.z
 		},
 		"scale": _vec3_dict(node.scale)
@@ -176,9 +177,9 @@ func _get_material_id(node: MeshInstance3D) -> String:
 
 func _vec3_dict(value: Vector3) -> Dictionary:
 	return {
-		"x": value.x,
-		"y": value.y,
-		"z": value.z
+		"x": value.x*EXPORT_SCALE,
+		"y": value.y*EXPORT_SCALE,
+		"z": value.z*EXPORT_SCALE
 	}
 
 func _hash_node(node: Node) -> int:
@@ -199,6 +200,7 @@ func _hash_node(node: Node) -> int:
 			if mesh_instance.mesh is SphereMesh:
 				result = _hash_combine(result, hash((mesh_instance.mesh as SphereMesh).radius))
 	if node is Camera3D:
+		result = _hash_combine(result, hash(node.fov))
 		var meta_keys := node.get_meta_list()
 		meta_keys.sort()
 		for meta_key in meta_keys:
