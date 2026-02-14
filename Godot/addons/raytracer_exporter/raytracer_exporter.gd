@@ -162,7 +162,7 @@ func _build_static_mesh(node: MeshInstance3D, object_id: int):
 			"y": euler.y,
 			"z": euler.z
 		},
-		"scale": _vec3_dict(node.scale)
+		"scale": _vec3_dict(node.global_transform.basis.get_scale())
 	}
 
 func _find_first_camera(node: Node) -> Camera3D:
