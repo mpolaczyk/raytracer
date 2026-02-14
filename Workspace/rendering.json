@@ -48,6 +48,52 @@
     },
     {
       "color": {
+        "x": 0.0,
+        "y": 0.9319491386413574,
+        "z": 0.9901960492134094
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_probability": 0.20000000298023224,
+      "id": "glass_blue",
+      "refraction_index": 1.5,
+      "refraction_probability": 1.0,
+      "smoothness": 1.0,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.23039215803146362,
+        "y": 0.5699249505996704,
+        "z": 1.0
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_probability": 0.20000000298023224,
+      "id": "glass_blue_matt",
+      "refraction_index": 1.5,
+      "refraction_probability": 1.0,
+      "smoothness": 0.8999999761581421,
+      "type": 1
+    },
+    {
+      "color": {
         "x": 0.5372549295425415,
         "y": 1.0,
         "z": 0.5372549295425415
@@ -94,6 +140,29 @@
     },
     {
       "color": {
+        "x": 0.18742786347866058,
+        "y": 0.18742786347866058,
+        "z": 0.9803921580314636
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_probability": 0.20000000298023224,
+      "id": "glass_indigo",
+      "refraction_index": 1.5,
+      "refraction_probability": 1.0,
+      "smoothness": 1.0,
+      "type": 1
+    },
+    {
+      "color": {
         "x": 1.0,
         "y": 1.0,
         "z": 1.0
@@ -108,8 +177,54 @@
         "y": 1.0,
         "z": 1.0
       },
-      "gloss_probability": 0.30000001192092896,
+      "gloss_probability": 0.20000001788139343,
       "id": "glass_matt",
+      "refraction_index": 1.5,
+      "refraction_probability": 1.0,
+      "smoothness": 0.8999999761581421,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.9901960492134094,
+        "y": 0.6839718818664551,
+        "z": 0.043685100972652435
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_probability": 0.20000000298023224,
+      "id": "glass_orange",
+      "refraction_index": 1.5,
+      "refraction_probability": 1.0,
+      "smoothness": 1.0,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.9803921580314636,
+        "y": 0.5478662252426147,
+        "z": 0.0
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_probability": 0.20000000298023224,
+      "id": "glass_orange_matt",
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
       "smoothness": 0.8999999761581421,
@@ -159,6 +274,52 @@
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
       "smoothness": 0.8999999761581421,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.6176471710205078,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_probability": 0.20000000298023224,
+      "id": "glass_violet",
+      "refraction_index": 1.5,
+      "refraction_probability": 1.0,
+      "smoothness": 1.0,
+      "type": 1
+    },
+    {
+      "color": {
+        "x": 0.9950980544090271,
+        "y": 0.9950980544090271,
+        "z": 0.0
+      },
+      "emitted_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "gloss_probability": 0.20000000298023224,
+      "id": "glass_yellow",
+      "refraction_index": 1.5,
+      "refraction_probability": 1.0,
+      "smoothness": 1.0,
       "type": 1
     },
     {
@@ -439,7 +600,7 @@
     }
   ],
   "renderer_config": {
-    "ray_bounces": 150,
+    "ray_bounces": 200,
     "rays_per_pixel": 800,
     "resolution_horizontal": 1920,
     "resolution_vertical": 1920,

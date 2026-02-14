@@ -1,0 +1,101 @@
+[gd_scene format=3 uid="uid://5d7327f5iwc8"]
+
+[ext_resource type="Material" uid="uid://bsw0chxv6wnig" path="res://materials/metal_white.tres" id="1_adbty"]
+[ext_resource type="ArrayMesh" uid="uid://tdcqv3ij18is" path="res://meshes/plane.obj" id="2_5iybs"]
+[ext_resource type="Material" uid="uid://dnditdksa5q0d" path="res://materials/glass_yellow.tres" id="3_ytt2q"]
+[ext_resource type="ArrayMesh" uid="uid://b3ny8shbwp2tp" path="res://meshes/cube.obj" id="4_0tdnr"]
+[ext_resource type="Material" uid="uid://crgbo3a1mxvj2" path="res://materials/glass_blue.tres" id="5_xl4kn"]
+[ext_resource type="Material" uid="uid://skjiysq4ybqm" path="res://materials/glass_orange.tres" id="6_cmrjc"]
+[ext_resource type="Material" uid="uid://coeaunw8q6jkt" path="res://materials/glass_violet.tres" id="7_0vcrp"]
+[ext_resource type="Material" uid="uid://47j8wr8l17h8" path="res://materials/glass_indigo.tres" id="8_0r1q1"]
+[ext_resource type="Material" uid="uid://npespwfg35y6" path="res://materials/glass_red.tres" id="9_lc1ey"]
+[ext_resource type="Material" uid="uid://yg4elcyjhqev" path="res://materials/glass_green.tres" id="10_v3d83"]
+[ext_resource type="Material" uid="uid://ddcljy7lbd7j4" path="res://materials/light.tres" id="11_olrm8"]
+[ext_resource type="Material" uid="uid://co374xk448yjo" path="res://materials/glossy_white.tres" id="12_5doju"]
+
+[node name="Root" type="Node3D" unique_id=1935051414]
+
+[node name="Floor2" type="MeshInstance3D" parent="." unique_id=136776289]
+transform = Transform3D(-4.371139e-08, -20.4, 0, 1, -8.917124e-07, 0, 0, 0, 20.25, -3.1999986, 0, -4.199997)
+material_override = ExtResource("1_adbty")
+mesh = ExtResource("2_5iybs")
+
+[node name="Camera3D2" type="Camera3D" parent="." unique_id=1377027921]
+transform = Transform3D(0.70710665, -0.27628857, 0.6508951, 0, 0.92050475, 0.39073104, -0.70710665, -0.27628857, 0.65089506, 6.790168, 5.7421923, 7.0730104)
+fov = 40.0
+metadata/aspect_ratio_w = 1.0
+metadata/aspect_ratio_h = 1.0
+metadata/aperture = 0.0
+metadata/dist_to_focus = 100.0
+metadata/projection = 0.0
+metadata/enabled = true
+
+[node name="Glass3" type="MeshInstance3D" parent="." unique_id=599423710]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 3.5527137e-16, 0, -2.842171e-15, 0.1, 0, 0.8, -0.9)
+material_override = ExtResource("3_ytt2q")
+mesh = ExtResource("4_0tdnr")
+
+[node name="Glass5" type="MeshInstance3D" parent="." unique_id=1756355309]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 3.5527137e-16, 0, -2.1316283e-15, 0.1, 0, 0.6, 0.7)
+material_override = ExtResource("5_xl4kn")
+mesh = ExtResource("4_0tdnr")
+
+[node name="Glass6" type="MeshInstance3D" parent="." unique_id=223651873]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 3.5527137e-16, 0, -3.1974422e-15, 0.1, 0, 0.9, -1.7)
+material_override = ExtResource("6_cmrjc")
+mesh = ExtResource("4_0tdnr")
+
+[node name="Glass2" type="MeshInstance3D" parent="." unique_id=1402161156]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 3.5527137e-16, 0, -1.4210855e-15, 0.1, 0, 0.39999998, 2.3000002)
+material_override = ExtResource("7_0vcrp")
+mesh = ExtResource("4_0tdnr")
+
+[node name="Glass4" type="MeshInstance3D" parent="." unique_id=296852216]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 3.5527137e-16, 0, -1.7763568e-15, 0.1, 0, 0.5, 1.4999999)
+material_override = ExtResource("8_0r1q1")
+mesh = ExtResource("4_0tdnr")
+
+[node name="Glass7" type="MeshInstance3D" parent="." unique_id=740885099]
+transform = Transform3D(1, 0, 0, 0, 1, 3.5527124e-16, 0, -3.5527137e-15, 0.099999964, 0, 1, -2.5)
+material_override = ExtResource("9_lc1ey")
+mesh = ExtResource("4_0tdnr")
+
+[node name="Glass8" type="MeshInstance3D" parent="." unique_id=540722673]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 3.5527137e-16, 0, -2.4868995e-15, 0.1, 0, 0.7, -0.099999994)
+material_override = ExtResource("10_v3d83")
+mesh = ExtResource("4_0tdnr")
+
+[node name="Plane2" type="MeshInstance3D" parent="." unique_id=823480097]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 3.0240002, 0.00999999, 0.01, -0.100000106)
+material_override = ExtResource("1_adbty")
+mesh = ExtResource("2_5iybs")
+
+[node name="Plane7" type="MeshInstance3D" parent="." unique_id=238143473]
+transform = Transform3D(-1.4641737e-31, 1.6870547e-14, -7.2505126, -1, -7.842784e-09, -5.151799e-14, -8.7054985e-10, 9.009, 1.432045e-14, 0.109999895, 7.2999997, 1.6)
+material_override = ExtResource("11_olrm8")
+mesh = ExtResource("2_5iybs")
+
+[node name="Plane" type="MeshInstance3D" parent="." unique_id=478511463]
+transform = Transform3D(1, 0, 0, 0, 4.7609997, 0, 0, 0, 12.144001, -5.2, 3.2, -0.20000005)
+material_override = ExtResource("12_5doju")
+mesh = ExtResource("2_5iybs")
+
+[node name="Plane5" type="MeshInstance3D" parent="." unique_id=654286708]
+transform = Transform3D(-1, 0, 1.0616623e-06, 0, 3.9329998, 0, -8.742278e-08, 0, -12.144001, 7.8999996, 1.3000001, -0.20000005)
+material_override = ExtResource("1_adbty")
+mesh = ExtResource("2_5iybs")
+
+[node name="Plane6" type="MeshInstance3D" parent="." unique_id=1104745918]
+transform = Transform3D(-2.7653691e-08, -3.0278044, -8.282189, -1, -1.8096517e-07, 1.0616623e-06, -9.374807e-08, 2.8234732, -8.88156, -6.500001, 5.4, 8.9)
+material_override = ExtResource("1_adbty")
+mesh = ExtResource("2_5iybs")
+
+[node name="Plane3" type="MeshInstance3D" parent="." unique_id=1063647202]
+transform = Transform3D(-4.371139e-08, 0, -7.5900006, 0, 5.2785, 0, 1, 0, -3.3176946e-07, 1.5999999, 2.3000002, -5.1000004)
+material_override = ExtResource("12_5doju")
+mesh = ExtResource("2_5iybs")
+
+[node name="Plane4" type="MeshInstance3D" parent="." unique_id=1439813673]
+transform = Transform3D(1.3113416e-07, 0, 7.5900006, 0, 4.14, 0, -1, 0, 9.953084e-07, 0.6999998, 1.3000001, 10.5)
+material_override = ExtResource("1_adbty")
+mesh = ExtResource("2_5iybs")

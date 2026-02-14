@@ -11,17 +11,28 @@ Features:
 ![ui1](ui1.jpg)
 
 Integration with Godot 4.6 for real time scene edition
+
 ![ui2](ui2.jpg)
 
 ## Gallery
 
+Cornell box
+
 ![x1](x1.jpg)
 ![x2](x2.jpg)
+
+Monument
+
+![monument](monument.jpg)
+
+Rainbow
+
+![rainbow](rainbow.jpg)
 
 ## Releases
 
 ### 2.5
-- Integration with Godod
+- Integration with Godot 4.6
 
 ### 2.4
 - GPU-based implementation (compute shader)
