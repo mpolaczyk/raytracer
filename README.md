@@ -29,6 +29,10 @@ Rainbow
 
 ![rainbow](rainbow.jpg)
 
+Man sitting
+
+![man_sitting](man_sitting.jpg)
+
 ## Releases
 
 ### 2.5

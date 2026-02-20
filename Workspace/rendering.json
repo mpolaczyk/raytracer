@@ -444,9 +444,9 @@
         "z": 0.0
       },
       "emitted_color": {
-        "x": 0.6399999856948853,
-        "y": 0.05000000074505806,
-        "z": 0.05000000074505806
+        "x": 0.9852941036224365,
+        "y": 0.09574513137340546,
+        "z": 0.009659715928137302
       },
       "gloss_color": {
         "x": 0.0,
@@ -600,10 +600,10 @@
     }
   ],
   "renderer_config": {
-    "ray_bounces": 200,
-    "rays_per_pixel": 800,
-    "resolution_horizontal": 1920,
-    "resolution_vertical": 1920,
+    "ray_bounces": 5,
+    "rays_per_pixel": 100,
+    "resolution_horizontal": 600,
+    "resolution_vertical": 600,
     "reuse_buffer": true,
     "type": 6,
     "white_point": 1.0

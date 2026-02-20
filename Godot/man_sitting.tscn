@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://d0tgn11cn46nu"]
+
+[ext_resource type="Material" uid="uid://co374xk448yjo" path="res://materials/glossy_white.tres" id="1_3equg"]
+[ext_resource type="Material" uid="uid://c6hg6x7ju0lbp" path="res://materials/pearl.tres" id="1_j85n4"]
+[ext_resource type="ArrayMesh" uid="uid://b3ny8shbwp2tp" path="res://meshes/cube.obj" id="2_j85n4"]
+[ext_resource type="Material" uid="uid://ddcljy7lbd7j4" path="res://materials/light.tres" id="3_g3t4r"]
+[ext_resource type="ArrayMesh" uid="uid://tdcqv3ij18is" path="res://meshes/plane.obj" id="4_5pqkj"]
+[ext_resource type="ArrayMesh" uid="uid://b6yrvn5xpgiql" path="res://meshes/male_sitting.obj" id="6_3equg"]
+[ext_resource type="Material" uid="uid://npespwfg35y6" path="res://materials/glass_red.tres" id="6_7kvst"]
+[ext_resource type="Material" uid="uid://skjiysq4ybqm" path="res://materials/glass_orange.tres" id="7_g3t4r"]
+[ext_resource type="Material" uid="uid://nr6qmlivxkw2" path="res://materials/glass_blue_matt.tres" id="8_5pqkj"]
+
+[node name="Root" type="Node3D" unique_id=1935051414]
+
+[node name="Floor2" type="MeshInstance3D" parent="." unique_id=136776289]
+transform = Transform3D(-4.371139e-08, -100, 0, 1, -4.371139e-06, 0, 0, 0, 100, -50, 0, -50)
+material_override = ExtResource("1_j85n4")
+mesh = ExtResource("4_5pqkj")
+
+[node name="Camera3D2" type="Camera3D" parent="." unique_id=1377027921]
+transform = Transform3D(-4.368476e-08, -0.034899496, 0.99939084, -1.5255054e-09, 0.99939084, 0.034899496, -1, 0, -4.3711392e-08, 8.4, 1.2, 0)
+fov = 20.5
+metadata/aspect_ratio_w = 1.0
+metadata/aspect_ratio_h = 1.0
+metadata/aperture = 0.0
+metadata/dist_to_focus = 3.5
+metadata/projection = 0.5
+metadata/enabled = true
+
+[node name="Sky" type="MeshInstance3D" parent="." unique_id=185567425]
+transform = Transform3D(-0.5045276, 86.339554, 0, -0.6812917, -39.81147, -61.428516, -0.53037107, -30.992382, 78.90841, 150, 200, 150)
+material_override = ExtResource("3_g3t4r")
+mesh = ExtResource("4_5pqkj")
+
+[node name="MaleSitting" type="MeshInstance3D" parent="." unique_id=984155417]
+transform = Transform3D(0.18280405, 0, 1.4888192, 0, 1.5, 0, -1.4888192, 0, 0.18280405, -0.1, -0.0036678612, 0)
+material_override = ExtResource("1_3equg")
+mesh = ExtResource("6_3equg")
+
+[node name="Cube" type="MeshInstance3D" parent="." unique_id=429760497]
+transform = Transform3D(0.28977773, 0, 0.077645704, 0, 0.44999996, 0, -0.077645704, 0, 0.28977773, -0.2700806, 0.22867526, 0.26642033)
+material_override = ExtResource("6_7kvst")
+mesh = ExtResource("2_j85n4")
+
+[node name="Light" type="MeshInstance3D" parent="." unique_id=768744655]
+transform = Transform3D(-4.371139e-08, -1.36, 0, -0.5, 2.9723749e-08, 8.742278e-08, -4.371139e-08, 2.5985325e-15, -1, -1.3113417e-08, 2.5950003, -1.7921668e-08)
+material_override = ExtResource("3_g3t4r")
+mesh = ExtResource("4_5pqkj")
+
+[node name="Light8" type="MeshInstance3D" parent="." unique_id=891151806]
+transform = Transform3D(-4.371139e-08, -1.36, 0, -0.5, 2.9723749e-08, 8.742278e-08, -4.371139e-08, 2.5985325e-15, -1, -1.3113417e-08, 2.4950004, -1.7921668e-08)
+material_override = ExtResource("3_g3t4r")
+mesh = ExtResource("4_5pqkj")
+
+[node name="Light5" type="MeshInstance3D" parent="." unique_id=780706831]
+transform = Transform3D(-4.37114e-08, -2.584, 0, -0.5000002, 5.6475127e-08, 3.3155092e-07, -4.37114e-08, 4.937212e-15, -3.7925005, -0.8, 6.5950003, -1.7921668e-08)
+material_override = ExtResource("3_g3t4r")
+mesh = ExtResource("4_5pqkj")
+
+[node name="Light2" type="MeshInstance3D" parent="." unique_id=222868079]
+transform = Transform3D(-2.1855694e-08, -1.1624999, 4.371139e-08, 0, -5.081449e-08, -1, 0.5, -5.081449e-08, 1.9106855e-15, -1.3113417e-08, 1, -1.495)
+material_override = ExtResource("3_g3t4r")
+mesh = ExtResource("4_5pqkj")
+
+[node name="Light7" type="MeshInstance3D" parent="." unique_id=1768793008]
+transform = Transform3D(-2.1855694e-08, -1.1624999, 4.371139e-08, 0, -5.081449e-08, -1, 0.5, -5.081449e-08, 1.9106855e-15, -1.3113417e-08, 1, -1.395)
+material_override = ExtResource("7_g3t4r")
+mesh = ExtResource("4_5pqkj")
+
+[node name="Light3" type="MeshInstance3D" parent="." unique_id=2138265438]
+transform = Transform3D(-2.185569e-08, 4.3711385e-08, 1.1624999, 4.371139e-08, 1, -5.081449e-08, -0.5, 2.1855696e-08, -5.081449e-08, 2.1765567e-07, 1, 1.5050002)
+material_override = ExtResource("3_g3t4r")
+mesh = ExtResource("4_5pqkj")
+
+[node name="Light6" type="MeshInstance3D" parent="." unique_id=1287121105]
+transform = Transform3D(-2.185569e-08, 4.3711385e-08, 1.1624999, 4.371139e-08, 1, -5.081449e-08, -0.5, 2.1855696e-08, -5.081449e-08, 2.1765567e-07, 1, 1.4050002)
+material_override = ExtResource("8_5pqkj")
+mesh = ExtResource("4_5pqkj")
+
+[node name="Light4" type="MeshInstance3D" parent="." unique_id=1912641741]
+transform = Transform3D(0.5000002, -6.884544e-08, -1.9895196e-14, 4.37114e-08, 3.1500006, -1.8970742e-07, 3.552715e-15, 1.376909e-07, 4.3399997, -7.6000004, 3, 0.005000159)
+material_override = ExtResource("1_3equg")
+mesh = ExtResource("4_5pqkj")

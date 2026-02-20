@@ -79,11 +79,12 @@ struct GPUConfig
 
 namespace
 {
-constexpr uint32_t kMaxGpuSpheres = 256;
-constexpr uint32_t kMaxGpuTriangles = 16384; // Maximum triangles supported (limited by structured buffer size and performance)
-constexpr uint32_t kMaxGpuMaterials = 256;
+// Keep in sync with raytracer.hlsl
+constexpr uint32_t kMaxGpuSpheres = 32;
+constexpr uint32_t kMaxGpuTriangles = 4096; // Maximum triangles supported (limited by structured buffer size and performance)
+constexpr uint32_t kMaxGpuMaterials = 64;
 constexpr uint32_t kThreadGroupSize = 8;
-constexpr uint32_t kMaxShaderBounces = 16; // Keep in sync with raytracer.hlsl
+constexpr uint32_t kMaxShaderBounces = 200;
 
 static_assert(sizeof(GPUMaterial) % 16 == 0, "GPUMaterial must stay 16-byte aligned");
 static_assert(sizeof(GPUSphere) % 16 == 0, "GPUSphere must stay 16-byte aligned");
@@ -532,7 +533,7 @@ bool gpu_reference_renderer::upload_scene_data()
     }
   }
 
-  logger::debug("Uploaded {} spheres / {} triangles / {} materials to GPU", scene_data.sphere_count, scene_data.triangle_count, scene_data.material_count);
+  logger::info("Uploaded {} spheres, {} triangles, {} materials to the GPU", scene_data.sphere_count, scene_data.triangle_count, scene_data.material_count);
 
   return true;
 }

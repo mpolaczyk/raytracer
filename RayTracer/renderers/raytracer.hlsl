@@ -2,9 +2,10 @@
 // DirectX 11 HLSL
 
 // Constants
-#define MAX_SPHERES 256
-#define MAX_TRIANGLES 16384
-#define MAX_BOUNCES 16
+#define MAX_SPHERES 32
+#define MAX_TRIANGLES 4096
+#define MAX_MATERIALS 64
+#define MAX_BOUNCES 200
 #define PI 3.14159265359f
 #define MIN_RAY_COLOR_THRESHOLD 0.1f
 
@@ -74,7 +75,7 @@ struct GPUConfig
 cbuffer SceneData : register(b0)
 {
     GPUSphere spheres[MAX_SPHERES];
-    GPUMaterial materials[MAX_SPHERES];
+    GPUMaterial materials[MAX_MATERIALS];
     uint sphere_count;
     uint material_count;
     uint triangle_count;
@@ -160,7 +161,7 @@ struct HitRecord
 // Sphere intersection
 bool hit_sphere(GPUSphere sphere, Ray r, float t_min, float t_max, inout HitRecord rec)
 {
-    float3 oc = r.origin - sphere.origin;
+    float3 oc = r.origin - sphere.origin.xyz;
     float a = dot(r.direction, r.direction);
     float half_b = dot(oc, r.direction);
     float c = dot(oc, oc) - sphere.radius * sphere.radius;
@@ -181,7 +182,7 @@ bool hit_sphere(GPUSphere sphere, Ray r, float t_min, float t_max, inout HitReco
     
     rec.t = root;
     rec.p = r.origin + r.direction * rec.t;
-    float3 outward_normal = (rec.p - sphere.origin) / sphere.radius;
+    float3 outward_normal = (rec.p - sphere.origin.xyz) / sphere.radius;
     rec.front_face = dot(r.direction, outward_normal) < 0.0f;
     rec.normal = rec.front_face ? outward_normal : -outward_normal;
     rec.material_index = sphere.material_index;
@@ -260,7 +261,7 @@ bool hit_scene(Ray r, float t_min, float t_max, inout HitRecord rec)
             rec = temp_rec;
         }
     }
-    
+
     for (uint j = 0; j < triangle_count; ++j)
     {
         if (hit_triangle(triangles[j], r, t_min, closest_so_far, temp_rec))
@@ -275,7 +276,7 @@ bool hit_scene(Ray r, float t_min, float t_max, inout HitRecord rec)
 }
 
 // Environment light
-float3 environment_light(Ray r)
+float3 environment_light_sky(Ray r)
 {
     float3 sky_color_zenith = float3(0.5f, 0.7f, 1.0f);  // white_blue
     float3 sky_color_horizon = float3(1.0f, 1.0f, 1.0f); // white
@@ -287,6 +288,10 @@ float3 environment_light(Ray r)
     
     float3 light = lerp(sky_color_horizon, sky_color_zenith, t);
     return clamp(light, 0.0f, 1.0f) * sky_brightness;
+}
+float3 environment_light_darkness(Ray r)
+{
+    return float3(0.0f, 0.0f, 0.0f);
 }
 
 // Refract function
@@ -319,7 +324,7 @@ float3 trace_ray(Ray r, inout uint seed)
             if (mat.type == MATERIAL_LIGHT)
             {
                 // Don't bounce off lights
-                incoming_light += mat.emitted_color * ray_color;
+                incoming_light += mat.emitted_color.xyz * ray_color;
                 break;
             }
             
@@ -339,7 +344,7 @@ float3 trace_ray(Ray r, inout uint seed)
                 r.direction = refraction_dir + diffuse_dir * (1.0f - mat.smoothness);
                 
                 // Refraction color
-                ray_color *= mat.color;
+                ray_color *= mat.color.xyz;
                 continue;
             }
             
@@ -355,12 +360,12 @@ float3 trace_ray(Ray r, inout uint seed)
             r.direction = lerp(diffuse_dir, specular_dir, blend);
             
             // Calculate color for this hit
-            incoming_light += mat.emitted_color * ray_color;
-            ray_color *= lerp(mat.color, mat.gloss_color, can_gloss_bounce ? 1.0f : 0.0f);
+            incoming_light += mat.emitted_color.xyz * ray_color;
+            ray_color *= lerp(mat.color.xyz, mat.gloss_color.xyz, can_gloss_bounce ? 1.0f : 0.0f);
         }
         else
         {
-            float3 env_light = environment_light(r);
+            float3 env_light = environment_light_darkness(r);
             incoming_light += env_light * ray_color;
             break;
         }
@@ -375,17 +380,17 @@ Ray get_camera_ray(float u, float v, inout uint seed)
     Ray r;
     
     float3 rd = camera.lens_radius * random_in_unit_disk(seed);
-    float3 offset = camera.u * rd.x + camera.v * rd.y;
+    float3 offset = camera.u.xyz * rd.x + camera.v.xyz * rd.y;
     
     // Shoot rays from the plane that is proportionally smaller to focus plane
     // 0.0f - perspective camera
     // 1.0f - orthographic camera
-    float3 c_horizontal = camera.horizontal * camera.type;
-    float3 c_vertical = camera.vertical * camera.type;
-    float3 c_lower_left_corner = camera.look_from - c_horizontal / 2.0f - c_vertical / 2.0f;
+    float3 c_horizontal = camera.horizontal.xyz * camera.type;
+    float3 c_vertical = camera.vertical.xyz * camera.type;
+    float3 c_lower_left_corner = camera.look_from.xyz - c_horizontal / 2.0f - c_vertical / 2.0f;
     float3 cpo = c_lower_left_corner + c_horizontal * u + c_vertical * v;
-    float3 fpo = camera.lower_left_corner + camera.horizontal * u + camera.vertical * v;
-    float3 fpf = fpo - camera.w * camera.dist_to_focus;
+    float3 fpo = camera.lower_left_corner.xyz + camera.horizontal.xyz * u + camera.vertical.xyz * v;
+    float3 fpf = fpo - camera.w.xyz * camera.dist_to_focus;
     r.origin = cpo - offset;
     r.direction = normalize(fpf - cpo + offset);
     
